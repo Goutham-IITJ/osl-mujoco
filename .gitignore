@@ -1,0 +1,20 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+MJMODEL.TXT
+
+# Generated analysis artefacts.  Everything in build/ is reproducible:
+#   python tools/build_mjcf.py --report
+#   python tools/validate_mjcf.py --audit
+#   python tools/verify_visorigin.py
+#   python tools/render_poses.py
+# The two evidence PNGs are the exception and stay tracked, because README.md
+# cites them and a reader should not need MuJoCo or a 90-second render to look.
+build/*
+!build/verify/
+build/verify/*
+!build/verify/*.png
+
+# models/ and docs/ ARE generated, but they are the deliverable -- keep them
+# tracked so a reviewer can read the MJCF without running the pipeline.
