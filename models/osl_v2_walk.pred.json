@@ -1,0 +1,106 @@
+{
+  "scene": "walk",
+  "note": "Phase 2 scaffold.  knee_prox/shank/foot are the CAD device; pelvis, residual_thigh, socket and contra_thigh are anthropometric PLACEHOLDERS (not CAD, unfitted).  Device mass/axes are cross-checked in the bench/ground sidecars. Full validator + check_model coverage is added in the walk-chain task.",
+  "device_mass": 4.955763334215726,
+  "mass": {
+    "knee_prox": 0.4498464355029181,
+    "shank": 3.590757962651618,
+    "foot": 0.9151589360611898
+  },
+  "human_mass": {
+    "pelvis": 10.0,
+    "residual_thigh": 3.5,
+    "socket": 0.6,
+    "contra_thigh": 12.075
+  },
+  "hip_z": 0.7523940309897013,
+  "hip_half_width": 0.09,
+  "residual_thigh_len": 0.2,
+  "socket_len": 0.06,
+  "knee_prox_pos_in_socket": [
+    0.0,
+    0.0,
+    -0.32020326216877143
+  ],
+  "knee_prox_world_neutral": [
+    0.0,
+    0.09,
+    0.23219076882092987
+  ],
+  "joint_world_neutral": {
+    "hip": [
+      0.0,
+      0.09,
+      0.7523940309897013
+    ],
+    "knee": [
+      0.00065,
+      0.09,
+      0.4253007688209299
+    ],
+    "ankle": [
+      0.0,
+      0.09,
+      0.09346076882092988
+    ],
+    "contra_hip": [
+      0.0,
+      -0.09,
+      0.7523940309897013
+    ]
+  },
+  "qpos_order": [
+    "hip",
+    "socket_piston",
+    "socket_flex",
+    "socket_abad",
+    "socket_rot",
+    "knee",
+    "ankle",
+    "contra_hip"
+  ],
+  "nq": 8,
+  "actuators": [
+    "hip_pos",
+    "knee_pos",
+    "ankle_pos",
+    "contra_hip_pos"
+  ],
+  "passive_socket_dof": [
+    "socket_piston",
+    "socket_flex",
+    "socket_abad",
+    "socket_rot"
+  ],
+  "flat_foot_ankle": 0.04183715467795359,
+  "spawn_clearance": 0.002,
+  "collision_geoms": [
+    "knee_prox_shell",
+    "knee_module",
+    "mid_pylon",
+    "ankle_module",
+    "sole",
+    "contra_foot"
+  ],
+  "contact": {
+    "timestep": 0.0005,
+    "solref": [
+      0.002,
+      1.0
+    ],
+    "solimp": [
+      0.95,
+      0.99,
+      0.001,
+      0.5,
+      2.0
+    ],
+    "friction": [
+      0.9,
+      0.9,
+      0.005
+    ],
+    "condim": 3,
+    "penetration_limit": 0.0005
+  }
+}
