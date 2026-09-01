@@ -99,7 +99,7 @@
   <worldbody>
     <light pos="0.4 -0.6 1.2" dir="-0.3 0.45 -1" directional="true"/>
     <geom name="floor" class="floor"/>
-    <body name="thigh" pos="0 0 0.232190768821">
+    <body name="knee_prox" pos="0 0 0.232190768821">
       <freejoint name="root"/>
       <inertial pos="0.000172943607824 -0.00742058415316 0.199694188319" quat="0.692268352096 0.154467170014 -0.676390801559 0.198494094724" mass="0.449846435503" diaginertia="0.000365086530033 0.000458588838347 0.000473992134262"/>
       <geom class="visual" mesh="6656k11_ultra_thin_ball_bearing_6" pos="0.000635048481996 -0.0267214711265 0.193110267543" quat="0.00721027917942 0.0105607288942 -0.707026145913 0.707071786931" rgba="0.6 0.6 0.6 1"/>
@@ -130,8 +130,8 @@
       <geom class="visual" mesh="p_b1013_proxpyramid" pos="0.000366447625883 0.0299124304667 0.209610514746" quat="0.0016739341048 -0.00167232090943 0.707107286774 -0.707102316697" rgba="0 0 0 1"/>
       <geom class="visual" mesh="part_37" pos="0.000653683016208 -0.0307755845181 0.193110067374" quat="0.705432975975 3.76701213134e-07 -1.99603796756e-06 0.708776633646" rgba="1 0.94902 0.909804 1"/>
       <geom class="visual" mesh="part_38" pos="0.000653683016208 -0.0307755845181 0.193110067374" quat="0.705432975975 3.76701213134e-07 -1.99603796756e-06 0.708776633646" rgba="1 0.94902 0.909804 1"/>
-      <site name="imu_thigh" pos="0.00065 0 0.24311" size="0.005" rgba="0.1 0.8 0.9 1"/>
-      <geom class="collision" name="thigh_shell" type="box" pos="0.000554678120669 -0.00151715468354 0.207188300666" size="0.0391201325672 0.0394983906458 0.0530149615031"/>
+      <site name="imu_knee_prox" pos="0.00065 0 0.24311" size="0.005" rgba="0.1 0.8 0.9 1"/>
+      <geom class="collision" name="knee_prox_shell" type="box" pos="0.000554678120669 -0.00151715468354 0.207188300666" size="0.0391201325672 0.0394983906458 0.0530149615031"/>
       <body name="shank" pos="0.00065 0 0.19311">
         <joint name="knee" type="hinge" axis="0 -1 0" pos="0 0 0" range="-0.0872664625997 2.09439510239" damping="0.3" armature="0.01" frictionloss="0.4"/>
         <inertial pos="0.00409669653625 0.00283231336593 -0.161111975184" quat="0.506715216985 0.568467412873 0.428729966231 -0.486081377377" mass="3.59075796265" diaginertia="0.00676855556583 0.0406336020618 0.041532334712"/>
@@ -349,9 +349,9 @@
     <jointpos name="ankle_q" joint="ankle"/>
     <jointvel name="ankle_qd" joint="ankle"/>
     <actuatorfrc name="ankle_tau" actuator="ankle_pos"/>
-    <framequat name="imu_thigh_quat" objtype="site" objname="imu_thigh"/>
-    <gyro name="imu_thigh_gyro" site="imu_thigh"/>
-    <accelerometer name="imu_thigh_acc" site="imu_thigh"/>
+    <framequat name="imu_knee_prox_quat" objtype="site" objname="imu_knee_prox"/>
+    <gyro name="imu_knee_prox_gyro" site="imu_knee_prox"/>
+    <accelerometer name="imu_knee_prox_acc" site="imu_knee_prox"/>
     <framequat name="imu_shank_quat" objtype="site" objname="imu_shank"/>
     <gyro name="imu_shank_gyro" site="imu_shank"/>
     <accelerometer name="imu_shank_acc" site="imu_shank"/>
