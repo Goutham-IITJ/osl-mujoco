@@ -11,7 +11,7 @@ Viewer keys worth knowing: space pauses, Tab shows the control panel (drag the
 knee/ankle sliders under "Control").  The Group toggles hide geom groups -- the
 visual meshes are group 2; group 3 is the collision geometry, which only exists
 in the ground scene: the blade mesh at the sole, plus four bounding boxes that
-stop the shank and thigh reaching the floor.
+stop the shank and knee_prox reaching the floor.
 
 --flat loads the `flat` keyframe, which puts the ankle at +2.40 deg.  That is
 the angle that levels the sole: at ankle = 0 the blade is toe-down and the leg
@@ -32,7 +32,7 @@ from mjcommon import joint_limits, nid, scene_path, viewer_loop  # noqa: E402
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--scene", choices=("bench", "ground"), default="bench")
+    ap.add_argument("--scene", choices=("bench", "ground", "walk"), default="bench")
     ap.add_argument("--knee", type=float, default=0.0, help="initial knee angle, deg")
     ap.add_argument("--ankle", type=float, default=0.0, help="initial ankle angle, deg")
     ap.add_argument("--flat", action="store_true",
