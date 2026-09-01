@@ -43,7 +43,7 @@ largest translations:
   COM error vs declared, as-is   : median   0.000  p90   10.150  max  158.535 mm  (n=650)
 Folding wins on 207 links, as-is on 14.
   note: foot mate taken from the export as-is and cross-checked: length axis 89.73 deg from the ankle axis, sole 2.18 deg from level (real alignment tilt, preserved), blade x=[-0.1665,+0.0756] with the toe toward -X, sole at z=-0.2302 -> ankle 0.0915 m above the ground
-  note: thigh: bounding box thigh_shell [0.0782 0.079  0.106 ] m over 28 parts, 20.7 % full -- protective volume, not a shape claim
+  note: knee_prox: bounding box knee_prox_shell [0.0782 0.079  0.106 ] m over 28 parts, 20.7 % full -- protective volume, not a shape claim
   note: shank: bounding box knee_module [0.1281 0.1189 0.2038] m over 80 parts, 22.2 % full -- protective volume, not a shape claim
   note: shank: bounding box mid_pylon [0.0658 0.1024 0.0692] m over 11 parts, 11.2 % full -- protective volume, not a shape claim
   note: shank: bounding box ankle_module [0.1365 0.1184 0.1922] m over 51 parts, 19.8 % full -- protective volume, not a shape claim
@@ -76,13 +76,13 @@ The blade runs much further from the bolts toward -X than +X, so the
 long forefoot is -X and the short heel is +X.
 
 ## Rigid clusters and how the straddling ones were resolved
-38 clusters carry geometry -> {'thigh': 4, 'shank': 26, 'foot': 8}
+38 clusters carry geometry -> {'knee_prox': 4, 'shank': 26, 'foot': 8}
 9 were assigned by the belt-drive axis rule rather than the plain z-split:
-  -> thigh  zbar +0.1933   28 parts  p_b0012_outputpulley_5mm_50teeth
+  -> knee_prox  zbar +0.1933   28 parts  p_b0012_outputpulley_5mm_50teeth
        concentric with the knee axis (rotating output)
-  -> thigh  zbar +0.1931   12 parts  6656k11_ultra_thin_ball_bearing_13
+  -> knee_prox  zbar +0.1931   12 parts  6656k11_ultra_thin_ball_bearing_13
        concentric with the knee axis (rotating output)
-  -> thigh  zbar +0.1931    3 parts  p_b0303_encoderhousing_1
+  -> knee_prox  zbar +0.1931    3 parts  p_b0303_encoderhousing_1
        concentric with the knee axis (rotating output)
   -> foot   zbar -0.1213    1 parts  gt3_5mm_325mm_belt
        concentric with the ankle axis (rotating output)
@@ -113,7 +113,7 @@ density rules actually in use (kg/m^3, parts):
    2700.0  aluminium battery bracket       2 parts
    1900.0  FR-4 PCB                        1 parts
    1550.0  carbon-fibre foot               1 parts
-  thigh  0.4498 kg  com(world) [ 0.0002 -0.0074  0.1997]  kept 28  culled 60
+  knee_prox  0.4498 kg  com(world) [ 0.0002 -0.0074  0.1997]  kept 28  culled 60
   shank  3.5908 kg  com(world) [0.0047 0.0028 0.032 ]  kept 142  culled 347
   foot   0.9152 kg  com(world) [-0.0066 -0.0037 -0.1608]  kept 47  culled 26
   TOTAL  4.9558 kg
@@ -155,7 +155,7 @@ and heel roll-off are exact (both convex).  Everything above the ankle
 gets an axis-aligned BOUNDING box whose only job is to keep the leg out
 of the floor -- the fill fractions say plainly that these are not shape
 claims:
-  thigh thigh_shell   [ 78.2  79.  106. ] mm   28 parts   20.7 % full
+  knee_prox knee_prox_shell [ 78.2  79.  106. ] mm   28 parts   20.7 % full
   shank knee_module   [128.1 118.9 203.8] mm   80 parts   22.2 % full
   shank mid_pylon     [ 65.8 102.4  69.2] mm   11 parts   11.2 % full
   shank ankle_module  [136.5 118.4 192.2] mm   51 parts   19.8 % full
