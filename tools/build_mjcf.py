@@ -23,7 +23,7 @@ Pipeline
 2. drop the 32 mesh-less Onshape phantom links
    (`parallel_*`, `planar_*`, `cylindrical_*`, `*_loop_closure`)
 3. contract every `fixed` joint into rigid clusters (union-find)
-4. assign each cluster to thigh / shank / foot, resolving the ones
+4. assign each cluster to knee_prox / shank / foot, resolving the ones
    concentric with a hinge axis by the belt-drive rule below
 5. re-verify the Ossur Variflex foot mate (_check_foot); nothing is repaired,
    the export's mate is correct
@@ -85,7 +85,7 @@ ANTERIOR = np.array([-1.0, 0.0, 0.0])
 # the sagittal plane) is that joint's bearing / output-pulley / gear-stop
 # group.  In a belt-driven actuator the output pulley rotates *relative to
 # the housing*, so it is rigidly part of the OTHER segment: the knee housing
-# is shank-fixed, so knee-concentric clusters belong to the thigh; the ankle
+# is shank-fixed, so knee-concentric clusters belong to the knee_prox; the ankle
 # housing is shank-fixed, so ankle-concentric clusters belong to the foot.
 AXIS_CLUSTER_RADIUS = 0.020
 
@@ -185,11 +185,11 @@ ADAPTER_LINK = "p_b2015_proxpyramidvariflex"
 # approximation and it is the first thing to revisit if roll-over shape starts
 # to matter.  Zero invented numbers either way -- the geometry is the CAD's.
 #
-# Above the ankle the job is different.  The shank and thigh do not need a
+# Above the ankle the job is different.  The shank and knee_prox do not need a
 # faithful contact shape; they need to not be able to reach the floor.  So each
 # gets axis-aligned BOUNDING BOXES, one per real module, and the code says
 # bounding rather than shape on purpose: measured fill fractions are 22.2 %
-# (knee module), 11.2 % (mid/pylon), 19.8 % (ankle module) and 20.7 % (thigh).
+# (knee module), 11.2 % (mid/pylon), 19.8 % (ankle module) and 20.7 % (knee_prox).
 # Those boxes enclose a lot of air.  Two alternatives were measured and dropped:
 #
 #   * capsules, fitted by PCA to each module -- rejected with numbers.  The knee
@@ -283,7 +283,87 @@ JOINTS = {
 # particular is far too soft to hold a stance limb and is expected to change as
 # soon as the model carries load; see the walk scene.
 
-SEGMENTS = ("thigh", "shank", "foot")
+SEGMENTS = ("knee_prox", "shank", "foot")
+
+# ===========================================================================
+# PHASE 2 -- HUMAN SCAFFOLD FOR THE `walk` SCENE.
+#
+# READ THIS BEFORE TRUSTING ANY NUMBER BELOW.  Everything above is measured
+# from the CAD and is the point of this repo.  Everything in THIS block is the
+# opposite: the pelvis, the residual (amputated) thigh, the socket and the
+# intact contralateral leg are NOT in the Onshape export, because they are
+# anatomy, not the device.  They exist only so the CAD-derived leg has a hip to
+# hang from, a socket interface to load, and a second leg and a floor to walk
+# against -- the "realistic, walkable" model the professor asked for.
+#
+# So these are PRIMITIVES (capsules / boxes) with PLACEHOLDER masses and
+# lengths, and they are flagged as such at runtime (see OslModel._emit_walk,
+# which appends a note to every build).  This is deliberately NOT the "generic
+# capsule model" the ground rules forbid: that rule protects the DEVICE from
+# being replaced by a rod, and the device here is still the exact CAD mesh
+# tree.  The capsules are only the human it bolts onto, and the intent is to
+# replace them -- or reconcile them -- with the myoOSL musculoskeletal model
+# (MyoAssist / myo_sim) once the two are cross-checked.  Until then, treat
+# every constant here as a round number chosen to be plausible, not as data.
+#
+# Anthropometry is 50th-percentile male (body mass ~75 kg), segment fractions
+# after Winter, "Biomechanics and Motor Control of Human Movement" (2009), with
+# the transfemoral residual limb taken at roughly a 50 % level.  None of it is
+# fitted to this patient or this build.
+# ===========================================================================
+BODY_MASS = 75.0            # kg, reference 50th-pct male (Winter 2009)
+
+# -- suspended pelvis (the "gantry"): welded to the world for now; a prescribed
+#    trajectory will drive it later, so no balance controller is needed yet.
+PELVIS_MASS = 10.0          # kg, pelvis + lumped lower-HAT the gantry carries
+PELVIS_HALF = (0.070, 0.110, 0.060)   # m, pelvis box half-extents (x, y, z)
+HIP_HALF_WIDTH = 0.090      # m, each hip offset laterally from pelvis midline
+# device (residual) leg on +Y, intact leg on -Y.
+
+# -- residual thigh (amputated limb the socket grips)
+RES_THIGH_MASS = 3.5        # kg, transfemoral residual limb, ~50 % level
+RES_THIGH_LEN = 0.20        # m, residual femur length (~1/2 of a ~0.40 m femur)
+RES_THIGH_RADIUS = 0.065    # m
+
+# -- socket + pyramid adapter: the compliant interface between limb and device.
+#    FOUR PASSIVE DOFs, each a spring-damper toward 0 (no actuator): axial
+#    piston (limb sinks into the socket under load) plus flexion, ab/adduction
+#    and internal/external rotation of the socket on the residuum.  The
+#    stiffnesses and dampings are UNFITTED -- placeholders in one place so bench
+#    data can calibrate them later, exactly like JOINTS[*]['kp'].
+SOCKET_MASS = 0.6           # kg, socket + liner + pyramid hardware
+SOCKET_LEN = 0.06           # m, socket depth below the residual limb
+SOCKET_RADIUS = 0.060       # m
+SOCKET_DOF = (
+    # (name, type, axis, range, stiffness, damping)  -- axis in socket frame,
+    # z = limb long axis, x = anterior/posterior, y = medio/lateral.
+    ("socket_piston", "slide", (0.0, 0.0, 1.0), (-0.020, 0.020), 80000.0, 800.0),
+    ("socket_flex",   "hinge", (0.0, 1.0, 0.0),
+     (math.radians(-10.0), math.radians(10.0)), 40.0, 2.0),
+    ("socket_abad",   "hinge", (1.0, 0.0, 0.0),
+     (math.radians(-10.0), math.radians(10.0)), 40.0, 2.0),
+    ("socket_rot",    "hinge", (0.0, 0.0, 1.0),
+     (math.radians(-15.0), math.radians(15.0)), 25.0, 1.5),
+)
+
+# -- hip joints (pelvis -> thigh).  Single sagittal flexion/extension hinge for
+#    now, the DOF a walking trajectory drives; ab/ad and rotation can be added.
+#    Positive = flexion (thigh swings anterior, i.e. toward -X): a +Y hinge on a
+#    down-pointing (-Z) thigh moves the distal end toward -X, so axis = +Y.
+HIP = dict(
+    axis=(0.0, 1.0, 0.0),
+    range=(math.radians(-20.0), math.radians(120.0)),
+    damping=1.0, armature=0.0, frictionloss=0.0, kp=150.0,
+    forcerange=(-200.0, 200.0),   # placeholder hip torque limit
+)
+
+# -- contralateral (intact) leg: ONE lumped rigid body (thigh+shank+foot),
+#    hip-hinged so it can swing, with a box foot that contacts the floor.  Mass
+#    is the whole-leg fraction 0.161 * BODY_MASS.
+CONTRA_MASS = round(0.161 * BODY_MASS, 3)   # kg (~12.08)
+CONTRA_RADIUS = 0.060       # m, lumped-leg capsule radius
+CONTRA_FOOT_HALF = (0.110, 0.045, 0.030)    # m, foot box half-extents (x,y,z)
+CONTRA_FOOT_XOFF = -0.030   # m, foot centred slightly anterior (-X)
 
 
 # ---------------------------------------------------------------------------
@@ -603,11 +683,11 @@ class OslModel:
             dk = math.hypot(c[0] - KNEE_POS[0], c[2] - KNEE_POS[2])
             da = math.hypot(c[0] - ANKLE_POS[0], c[2] - ANKLE_POS[2])
             if dk < AXIS_CLUSTER_RADIUS:
-                seg, why = "thigh", "concentric with the knee axis (rotating output)"
+                seg, why = "knee_prox", "concentric with the knee axis (rotating output)"
             elif da < AXIS_CLUSTER_RADIUS:
                 seg, why = "foot", "concentric with the ankle axis (rotating output)"
             elif c[2] > KNEE_POS[2]:
-                seg, why = "thigh", "above the knee axis"
+                seg, why = "knee_prox", "above the knee axis"
             elif c[2] < ANKLE_POS[2]:
                 seg, why = "foot", "below the ankle axis"
             else:
@@ -764,7 +844,7 @@ class OslModel:
             groups[best if best else "mid_pylon"].append(n)
 
         return {
-            "thigh": [("thigh_shell", sorted(self.kept.get("thigh", [])))],
+            "knee_prox": [("knee_prox_shell", sorted(self.kept.get("knee_prox", [])))],
             "shank": [(k, groups[k]) for k in
                       ("knee_module", "mid_pylon", "ankle_module") if groups[k]],
             "foot": [],  # the blade mesh is the foot's collision geometry
@@ -880,7 +960,7 @@ class OslModel:
             The foot takes both, ankle first, because the ankle pivot itself is
             carried by the knee.
             """
-            if seg == "thigh":
+            if seg == "knee_prox":
                 return H
             if seg == "shank":
                 return (H - K) @ rot_y(-qk).T + K
@@ -1043,7 +1123,7 @@ class OslModel:
         for n in self.kept.get("foot", []):
             t = (self.world_tris(n) - ANKLE_POS) @ R.T + ANKLE_POS
             lo = min(lo, float(t[:, 2].min()))
-        for seg in ("thigh", "shank"):
+        for seg in ("knee_prox", "shank"):
             for n in self.kept.get(seg, []):
                 lo = min(lo, float(self.world_tris(n)[:, 2].min()))
         return -lo + SPAWN_CLEARANCE
@@ -1051,7 +1131,7 @@ class OslModel:
     def highest_z(self) -> float:
         """Top of the proximal pyramid, i.e. where a socket would bolt on."""
         return max(float(self.world_tris(n)[:, 2].max())
-                   for n in self.kept.get("thigh", []))
+                   for n in self.kept.get("knee_prox", []))
 
     def _lift_for(self, scene: str) -> float:
         """Vertical offset applied to the whole leg: 0 on the bench, and enough
@@ -1059,10 +1139,237 @@ class OslModel:
         the ground."""
         return 0.0 if scene == "bench" else -self.lowest_z() + SPAWN_CLEARANCE
 
+    # -- primitive (non-CAD) inertia, for the human scaffold ---------------
+
+    @staticmethod
+    def _box_diag(m: float, half) -> tuple:
+        """Diagonal inertia of a solid box about its centre, half-extents `half`."""
+        hx, hy, hz = half
+        return (m / 3.0 * (hy * hy + hz * hz),
+                m / 3.0 * (hx * hx + hz * hz),
+                m / 3.0 * (hx * hx + hy * hy))
+
+    @staticmethod
+    def _cyl_diag(m: float, r: float, length: float) -> tuple:
+        """Diagonal inertia of a solid cylinder about its centre, long axis = z."""
+        transverse = m * (3.0 * r * r + length * length) / 12.0
+        axial = 0.5 * m * r * r
+        return (transverse, transverse, axial)
+
+    @staticmethod
+    def _prim_inertial(com, mass: float, diag) -> str:
+        """An explicit <inertial> for a primitive scaffold body (axis-aligned)."""
+        return (f'<inertial pos="{fmt(com)}" quat="1 0 0 0" mass="{fmt(mass)}"'
+                f' diaginertia="{fmt(diag)}"/>')
+
+    # -- the CAD device sub-tree, shared by every scene --------------------
+
+    def _emit_device(self, add, used: dict, d0: int, *, freejoint: bool,
+                     collision: bool, knee_prox_pos: str) -> None:
+        """
+        Emit the CAD-derived device knee_prox -> shank -> foot, rooted at
+        indentation depth d0.
+
+        The geometry is identical in every scene; only three things vary, all
+        passed in: where the root sits (knee_prox_pos), whether it carries a
+        freejoint (ground only), and whether the collision geometry is emitted
+        (any scene with a floor).  Factoring it out lets the walk scene nest the
+        very same device under the socket, and keeps the bench/ground output
+        byte-for-byte identical to before -- call with d0=2.
+        """
+        j = JOINTS
+        add(d0, f'<body name="knee_prox" pos="{knee_prox_pos}">')
+        if freejoint:
+            add(d0 + 1, '<freejoint name="root"/>')
+        add(d0 + 1, self._inertial("knee_prox", np.zeros(3)),
+                    self._geoms("knee_prox", np.zeros(3), used),
+            f'<site name="imu_knee_prox" pos="{fmt(KNEE_POS + [0, 0, 0.05])}"'
+            ' size="0.005" rgba="0.1 0.8 0.9 1"/>')
+        if collision:
+            add(d0 + 1, self._module_boxes("knee_prox", np.zeros(3)))
+
+        add(d0 + 1, f'<body name="shank" pos="{fmt(KNEE_POS)}">')
+        add(d0 + 2, f'<joint name="knee" type="hinge" axis="{fmt(j["knee"]["axis"])}" pos="0 0 0"'
+               f' range="{fmt(j["knee"]["range"])}" damping="{j["knee"]["damping"]}"'
+               f' armature="{j["knee"]["armature"]}"'
+               f' frictionloss="{j["knee"]["frictionloss"]}"/>',
+               self._inertial("shank", KNEE_POS),
+               self._geoms("shank", KNEE_POS, used),
+               '<site name="imu_shank" pos="0 0 -0.12" size="0.005" rgba="0.1 0.8 0.9 1"/>',
+               '<site name="loadcell" pos="0 0 -0.184" size="0.005" rgba="0.9 0.9 0.2 1"/>')
+        if collision:
+            add(d0 + 2, self._module_boxes("shank", KNEE_POS))
+
+        add(d0 + 2, f'<body name="foot" pos="{fmt(ANKLE_POS - KNEE_POS)}">')
+        add(d0 + 3, f'<joint name="ankle" type="hinge" axis="{fmt(j["ankle"]["axis"])}" pos="0 0 0"'
+               f' range="{fmt(j["ankle"]["range"])}" damping="{j["ankle"]["damping"]}"'
+               f' armature="{j["ankle"]["armature"]}"'
+               f' frictionloss="{j["ankle"]["frictionloss"]}"/>',
+               self._inertial("foot", ANKLE_POS),
+               self._geoms("foot", ANKLE_POS, used))
+        if collision:
+            add(d0 + 3, self._foot_collision(used), self._sole_site())
+        add(d0 + 2, "</body>")
+        add(d0 + 1, "</body>")
+        add(d0, "</body>")
+
+    # -- the walk scene: human scaffold + the device it bolts onto ---------
+
+    def _emit_walk(self, add, used: dict) -> None:
+        """
+        Emit the walk-scene body tree:
+
+            pelvis (suspended, welded to the world -- the gantry)
+              +- residual_thigh   via `hip`         (1 sagittal DOF)
+              |    +- socket       via 4 PASSIVE DOFs (piston + 3 rotations)
+              |         +- knee_prox -> shank -> foot   (the CAD device)
+              +- contra_thigh      via `contra_hip`  (1 sagittal DOF, lumped leg)
+
+        Only knee_prox/shank/foot are CAD.  Everything else is an anthropometric
+        placeholder (see the PHASE 2 constants block) and is flagged at runtime.
+        The hip height is DERIVED, not chosen, so the device sole rests
+        SPAWN_CLEARANCE above the floor at the neutral pose -- the same trick the
+        ground scene uses for its flat keyframe.
+        """
+        hi_z = self.highest_z()                       # pyramid top, device frame
+        knee_prox_z = -SOCKET_LEN - hi_z              # knee_prox origin in socket frame
+        # Derive the hip height from the UNLEVELLED (qpos=0, CAD-pose) clearance,
+        # not flat_foot_lift(): the pelvis is welded, so its height is fixed for
+        # every pose.  Pinning it to the leveled lift would leave the CAD-pose
+        # forefoot ~1.8 mm below the floor at the default reset (qpos=0) -- the
+        # "leg through the ground" failure mode.  Using the qpos=0 lift keeps the
+        # device sole SPAWN_CLEARANCE above the floor at the default pose; the
+        # `stand` keyframe then levels the ankle, which only raises it further.
+        device_lift = -self.lowest_z() + SPAWN_CLEARANCE      # == _lift_for("ground")
+        hip_z = device_lift + hi_z + SOCKET_LEN + RES_THIGH_LEN
+        l_contra = hip_z - SPAWN_CLEARANCE            # intact-leg length, hip -> sole
+        self._walk = dict(hip_z=hip_z, knee_prox_z=knee_prox_z, l_contra=l_contra)
+
+        # ---- pelvis: the suspended gantry (welded; a trajectory drives it later)
+        add(2, f'<body name="pelvis" pos="0 0 {fmt(hip_z)}">')
+        add(3, self._prim_inertial(np.zeros(3), PELVIS_MASS,
+                                   self._box_diag(PELVIS_MASS, PELVIS_HALF)),
+               f'<geom type="box" size="{fmt(np.array(PELVIS_HALF))}" contype="0"'
+               ' conaffinity="0" group="2" density="0" rgba="0.75 0.72 0.68 1"/>',
+               '<site name="pelvis_center" pos="0 0 0" size="0.01"'
+               ' rgba="0.9 0.6 0.1 1"/>')
+
+        # ---- residual (amputated) thigh
+        add(3, f'<body name="residual_thigh" pos="0 {fmt(HIP_HALF_WIDTH)} 0">')
+        add(4, f'<joint name="hip" type="hinge" axis="{fmt(np.array(HIP["axis"]))}"'
+               f' pos="0 0 0" range="{fmt(HIP["range"])}" damping="{HIP["damping"]}"'
+               f' armature="{HIP["armature"]}" frictionloss="{HIP["frictionloss"]}"/>',
+               self._prim_inertial(np.array([0.0, 0.0, -0.5 * RES_THIGH_LEN]),
+                                   RES_THIGH_MASS,
+                                   self._cyl_diag(RES_THIGH_MASS, RES_THIGH_RADIUS,
+                                                  RES_THIGH_LEN)),
+               f'<geom type="capsule" fromto="0 0 0 0 0 {fmt(-RES_THIGH_LEN)}"'
+               f' size="{fmt(RES_THIGH_RADIUS)}" contype="0" conaffinity="0"'
+               ' group="2" density="0" rgba="0.82 0.66 0.60 1"/>')
+
+        # ---- socket: 4 PASSIVE spring-damper DOFs (piston + 3 rotations)
+        add(4, f'<body name="socket" pos="0 0 {fmt(-RES_THIGH_LEN)}">')
+        for nm, jt, ax, rng, stiff, damp in SOCKET_DOF:
+            add(5, f'<joint name="{nm}" type="{jt}" axis="{fmt(np.array(ax))}"'
+                   f' pos="0 0 0" range="{fmt(rng)}" stiffness="{fmt(stiff)}"'
+                   f' damping="{fmt(damp)}" springref="0"/>')
+        add(5, self._prim_inertial(np.array([0.0, 0.0, -0.5 * SOCKET_LEN]),
+                                   SOCKET_MASS,
+                                   self._cyl_diag(SOCKET_MASS, SOCKET_RADIUS,
+                                                  SOCKET_LEN)),
+               f'<geom type="capsule" fromto="0 0 0 0 0 {fmt(-SOCKET_LEN)}"'
+               f' size="{fmt(SOCKET_RADIUS)}" contype="0" conaffinity="0"'
+               ' group="2" density="0" rgba="0.35 0.55 0.75 0.6"/>')
+
+        # ---- the CAD device, hung from the socket (no joint: a rigid bolt)
+        self._emit_device(add, used, 5, freejoint=False, collision=True,
+                          knee_prox_pos=f"0 0 {fmt(knee_prox_z)}")
+
+        add(4, "</body>")          # socket
+        add(3, "</body>")          # residual_thigh
+
+        # ---- contralateral (intact) leg: one lumped rigid body + a box foot
+        foot_cz = -(l_contra - CONTRA_FOOT_HALF[2])
+        cap_end = -(l_contra - 2.0 * CONTRA_FOOT_HALF[2])
+        add(3, f'<body name="contra_thigh" pos="0 {fmt(-HIP_HALF_WIDTH)} 0">')
+        add(4, f'<joint name="contra_hip" type="hinge"'
+               f' axis="{fmt(np.array(HIP["axis"]))}" pos="0 0 0"'
+               f' range="{fmt(HIP["range"])}" damping="{HIP["damping"]}"'
+               f' armature="{HIP["armature"]}" frictionloss="{HIP["frictionloss"]}"/>',
+               self._prim_inertial(np.array([0.0, 0.0, -0.45 * l_contra]),
+                                   CONTRA_MASS,
+                                   self._cyl_diag(CONTRA_MASS, CONTRA_RADIUS,
+                                                  l_contra)),
+               f'<geom type="capsule" fromto="0 0 0 0 0 {fmt(cap_end)}"'
+               f' size="{fmt(CONTRA_RADIUS)}" contype="0" conaffinity="0"'
+               ' group="2" density="0" rgba="0.60 0.60 0.66 1"/>',
+               f'<geom class="collision" name="contra_foot" type="box"'
+               f' pos="{fmt(CONTRA_FOOT_XOFF)} 0 {fmt(foot_cz)}"'
+               f' size="{fmt(np.array(CONTRA_FOOT_HALF))}"/>',
+               f'<site name="contra_sole_site" type="box"'
+               f' pos="{fmt(CONTRA_FOOT_XOFF)} 0 {fmt(foot_cz)}"'
+               f' size="{fmt(np.array(CONTRA_FOOT_HALF))}" rgba="0.9 0.3 0.3 0.15"/>')
+        add(3, "</body>")          # contra_thigh
+        add(2, "</body>")          # pelvis
+
+        self.notes.append(
+            f"WALK SCENE IS A SCAFFOLD: knee_prox/shank/foot are the CAD device, "
+            f"but pelvis ({PELVIS_MASS} kg), residual_thigh ({RES_THIGH_MASS} kg, "
+            f"{RES_THIGH_LEN} m), socket ({SOCKET_MASS} kg, 4 passive DOFs) and "
+            f"contra_thigh ({CONTRA_MASS} kg) are anthropometric PLACEHOLDERS, "
+            f"not CAD.  Hip derived at z={hip_z:.4f} m so the device sole rests "
+            f"{SPAWN_CLEARANCE * 1000:.0f} mm above the floor at the default pose "
+            f"(qpos=0); the `stand` keyframe levels the ankle, raising it further. "
+            f"Socket stiffness/damping are unfitted.  Reconcile with myoOSL."
+        )
+
+    def _walk_controls(self, add) -> None:
+        """Actuators, sensors and the neutral-stance keyframe for the walk scene.
+
+        Actuated joints: hip, knee, ankle, contra_hip (a trajectory or controller
+        drives these).  The four socket DOFs are PASSIVE -- no actuator -- and are
+        only observed, via jointpos sensors, so socket compliance is visible.
+        """
+        a = self.flat_foot_ankle
+        add(1, "<actuator>")
+        add(2, f'<position name="hip_pos" joint="hip" kp="{HIP["kp"]}"'
+               f' ctrlrange="{fmt(HIP["range"])}" forcerange="{fmt(HIP["forcerange"])}"/>')
+        for nm in ("knee", "ankle"):
+            add(2, f'<position name="{nm}_pos" joint="{nm}" kp="{JOINTS[nm]["kp"]}"'
+                   f' ctrlrange="{fmt(JOINTS[nm]["range"])}"'
+                   f' forcerange="{fmt(JOINTS[nm]["forcerange"])}"/>')
+        add(2, f'<position name="contra_hip_pos" joint="contra_hip" kp="{HIP["kp"]}"'
+               f' ctrlrange="{fmt(HIP["range"])}" forcerange="{fmt(HIP["forcerange"])}"/>')
+        add(1, "</actuator>", "<sensor>")
+        for nm in ("hip", "knee", "ankle", "contra_hip"):
+            add(2, f'<jointpos name="{nm}_q" joint="{nm}"/>',
+                   f'<jointvel name="{nm}_qd" joint="{nm}"/>',
+                   f'<actuatorfrc name="{nm}_tau" actuator="{nm}_pos"/>')
+        for nm, *_ in SOCKET_DOF:
+            add(2, f'<jointpos name="{nm}_q" joint="{nm}"/>')
+        for s in ("imu_knee_prox", "imu_shank"):
+            add(2, f'<framequat name="{s}_quat" objtype="site" objname="{s}"/>',
+                   f'<gyro name="{s}_gyro" site="{s}"/>',
+                   f'<accelerometer name="{s}_acc" site="{s}"/>')
+        add(2, '<force name="loadcell_f" site="loadcell"/>',
+               '<torque name="loadcell_t" site="loadcell"/>',
+               '<touch name="sole_touch" site="sole_site"/>',
+               '<touch name="contra_touch" site="contra_sole_site"/>')
+        add(1, "</sensor>")
+        # neutral stance: feet flat (ankle at the sole-levelling angle), socket
+        # relaxed.  qpos doc order = hip, socket_piston, socket_flex, socket_abad,
+        # socket_rot, knee, ankle, contra_hip (nq=8, no freejoint).  ctrl order =
+        # hip, knee, ankle, contra_hip.
+        add(1, "<keyframe>",
+            f'  <key name="stand" qpos="0 0 0 0 0 0 {fmt(a)} 0" ctrl="0 0 {fmt(a)} 0"/>',
+            "</keyframe>")
+
     def build(self, scene: str) -> str:
-        assert scene in ("bench", "ground")
+
+        assert scene in ("bench", "ground", "walk")
         used, assets, tri = self._asset_block()
-        lift = self._lift_for(scene)
+        # walk places the device via the socket, not a world-frame lift.
+        lift = 0.0 if scene == "walk" else self._lift_for(scene)
 
         j = JOINTS
         L: list = []
@@ -1105,7 +1412,7 @@ class OslModel:
                assets)
         add(1, "</asset>", "<worldbody>")
         add(2, '<light pos="0.4 -0.6 1.2" dir="-0.3 0.45 -1" directional="true"/>')
-        if scene == "ground":
+        if scene in ("ground", "walk"):
             add(2, '<geom name="floor" class="floor"/>')
         else:
             # marker on the pyramid's own top face, where a socket bolts on --
@@ -1114,65 +1421,39 @@ class OslModel:
                    f' pos="{fmt(np.array([KNEE_POS[0], 0.0, self.highest_z()]))}"'
                    ' size="0.006" rgba="0.9 0.6 0.1 1"/>')
 
-        # ---- thigh: the proximal knee output plus the socket pyramid ----
-        add(2, f'<body name="thigh" pos="0 0 {fmt(lift)}">')
-        if scene == "ground":
-            add(3, '<freejoint name="root"/>')
-        add(3, self._inertial("thigh", np.zeros(3)),
-               self._geoms("thigh", np.zeros(3), used),
-            f'<site name="imu_thigh" pos="{fmt(KNEE_POS + [0, 0, 0.05])}"'
-            ' size="0.005" rgba="0.1 0.8 0.9 1"/>')
-        if scene == "ground":
-            add(3, self._module_boxes("thigh", np.zeros(3)))
-
-        # ---- shank ----
-        add(3, f'<body name="shank" pos="{fmt(KNEE_POS)}">')
-        add(4, f'<joint name="knee" type="hinge" axis="{fmt(j["knee"]["axis"])}" pos="0 0 0"'
-               f' range="{fmt(j["knee"]["range"])}" damping="{j["knee"]["damping"]}"'
-               f' armature="{j["knee"]["armature"]}"'
-               f' frictionloss="{j["knee"]["frictionloss"]}"/>',
-               self._inertial("shank", KNEE_POS),
-               self._geoms("shank", KNEE_POS, used),
-               '<site name="imu_shank" pos="0 0 -0.12" size="0.005" rgba="0.1 0.8 0.9 1"/>',
-               '<site name="loadcell" pos="0 0 -0.184" size="0.005" rgba="0.9 0.9 0.2 1"/>')
-        if scene == "ground":
-            add(4, self._module_boxes("shank", KNEE_POS))
-
-        # ---- foot ----
-        add(4, f'<body name="foot" pos="{fmt(ANKLE_POS - KNEE_POS)}">')
-        add(5, f'<joint name="ankle" type="hinge" axis="{fmt(j["ankle"]["axis"])}" pos="0 0 0"'
-               f' range="{fmt(j["ankle"]["range"])}" damping="{j["ankle"]["damping"]}"'
-               f' armature="{j["ankle"]["armature"]}"'
-               f' frictionloss="{j["ankle"]["frictionloss"]}"/>',
-               self._inertial("foot", ANKLE_POS),
-               self._geoms("foot", ANKLE_POS, used))
-        if scene == "ground":
-            add(5, self._foot_collision(used), self._sole_site())
-        add(4, "</body>")
-        add(3, "</body>")
-        add(2, "</body>")
+        # ---- the body tree.  bench/ground root the CAD device directly at the
+        #      world; walk hangs the identical device off the human scaffold. ----
+        if scene == "walk":
+            self._emit_walk(add, used)
+        else:
+            self._emit_device(add, used, 2, freejoint=(scene == "ground"),
+                              collision=(scene == "ground"),
+                              knee_prox_pos=f"0 0 {fmt(lift)}")
         add(1, "</worldbody>")
 
-        add(1, "<actuator>")
-        for nm in ("knee", "ankle"):
-            add(2, f'<position name="{nm}_pos" joint="{nm}" kp="{j[nm]["kp"]}"'
-                   f' ctrlrange="{fmt(j[nm]["range"])}"'
-                   f' forcerange="{fmt(j[nm]["forcerange"])}"/>')
-        add(1, "</actuator>", "<sensor>")
-        for nm in ("knee", "ankle"):
-            add(2, f'<jointpos name="{nm}_q" joint="{nm}"/>',
-                   f'<jointvel name="{nm}_qd" joint="{nm}"/>',
-                   f'<actuatorfrc name="{nm}_tau" actuator="{nm}_pos"/>')
-        for s in ("imu_thigh", "imu_shank"):
-            add(2, f'<framequat name="{s}_quat" objtype="site" objname="{s}"/>',
-                   f'<gyro name="{s}_gyro" site="{s}"/>',
-                   f'<accelerometer name="{s}_acc" site="{s}"/>')
-        add(2, '<force name="loadcell_f" site="loadcell"/>',
-               '<torque name="loadcell_t" site="loadcell"/>')
-        if scene == "ground":
-            add(2, '<touch name="sole_touch" site="sole_site"/>')
-        add(1, "</sensor>")
-        add(1, self._keyframe(scene))
+        if scene == "walk":
+            self._walk_controls(add)
+        else:
+            add(1, "<actuator>")
+            for nm in ("knee", "ankle"):
+                add(2, f'<position name="{nm}_pos" joint="{nm}" kp="{j[nm]["kp"]}"'
+                       f' ctrlrange="{fmt(j[nm]["range"])}"'
+                       f' forcerange="{fmt(j[nm]["forcerange"])}"/>')
+            add(1, "</actuator>", "<sensor>")
+            for nm in ("knee", "ankle"):
+                add(2, f'<jointpos name="{nm}_q" joint="{nm}"/>',
+                       f'<jointvel name="{nm}_qd" joint="{nm}"/>',
+                       f'<actuatorfrc name="{nm}_tau" actuator="{nm}_pos"/>')
+            for s in ("imu_knee_prox", "imu_shank"):
+                add(2, f'<framequat name="{s}_quat" objtype="site" objname="{s}"/>',
+                       f'<gyro name="{s}_gyro" site="{s}"/>',
+                       f'<accelerometer name="{s}_acc" site="{s}"/>')
+            add(2, '<force name="loadcell_f" site="loadcell"/>',
+                   '<torque name="loadcell_t" site="loadcell"/>')
+            if scene == "ground":
+                add(2, '<touch name="sole_touch" site="sole_site"/>')
+            add(1, "</sensor>")
+            add(1, self._keyframe(scene))
         add(0, "</mujoco>")
 
         self._ntri = tri
@@ -1225,6 +1506,8 @@ class OslModel:
         against MuJoCo's own `mesh_vert` placed by its own resolved geom frames
         settles it from outside the shared assumption.
         """
+        if scene == "walk":
+            return self._walk_predictions()
         lift = self._lift.get(scene, self._lift_for(scene))
         z = np.array([0.0, 0.0, lift])
         lo, hi = self.mesh_bbox
@@ -1274,6 +1557,68 @@ class OslModel:
             },
         }
 
+    def _walk_predictions(self) -> dict:
+        """
+        Sidecar for the walk scene.  Deliberately partial: the device masses and
+        joint axes are the same CAD numbers cross-checked in the bench/ground
+        sidecars, so they are not re-asserted here as if independent.  The human
+        scaffold numbers are PLACEHOLDERS, not measurements, and are reported
+        under `human_mass` purely so check_model.py can see them and exclude them
+        from the CAD MASS_RANGE test.  The device pose is given in world at the
+        neutral qpos (all joints 0) so the walk-chain validator has something to
+        reproduce with MuJoCo's own forward kinematics.
+        """
+        w = getattr(self, "_walk", {}) or {}
+        hip_z = float(w.get("hip_z", 0.0))
+        kp_z = float(w.get("knee_prox_z", 0.0))
+        # device root (knee_prox) in world at the neutral pose:
+        # pelvis(hip_z) -> thigh(+y, 0) -> socket(-RES_THIGH_LEN) -> knee_prox(kp_z)
+        kp_world = np.array([0.0, HIP_HALF_WIDTH,
+                             hip_z - RES_THIGH_LEN + kp_z])
+        return {
+            "scene": "walk",
+            "note": ("Phase 2 scaffold.  knee_prox/shank/foot are the CAD device; "
+                     "pelvis, residual_thigh, socket and contra_thigh are "
+                     "anthropometric PLACEHOLDERS (not CAD, unfitted).  Device "
+                     "mass/axes are cross-checked in the bench/ground sidecars. "
+                     "Full validator + check_model coverage is added in the "
+                     "walk-chain task."),
+            "device_mass": float(sum(self.inertia[s]["mass"] for s in SEGMENTS)),
+            "mass": {s: float(self.inertia[s]["mass"]) for s in SEGMENTS},
+            "human_mass": {"pelvis": PELVIS_MASS, "residual_thigh": RES_THIGH_MASS,
+                           "socket": SOCKET_MASS, "contra_thigh": CONTRA_MASS},
+            "hip_z": hip_z,
+            "hip_half_width": HIP_HALF_WIDTH,
+            "residual_thigh_len": RES_THIGH_LEN,
+            "socket_len": SOCKET_LEN,
+            "knee_prox_pos_in_socket": [0.0, 0.0, kp_z],
+            "knee_prox_world_neutral": kp_world.tolist(),
+            "joint_world_neutral": {
+                "hip": [0.0, HIP_HALF_WIDTH, hip_z],
+                "knee": (kp_world + KNEE_POS).tolist(),
+                "ankle": (kp_world + ANKLE_POS).tolist(),
+                "contra_hip": [0.0, -HIP_HALF_WIDTH, hip_z],
+            },
+            "qpos_order": ["hip", "socket_piston", "socket_flex", "socket_abad",
+                           "socket_rot", "knee", "ankle", "contra_hip"],
+            "nq": 8,
+            "actuators": ["hip_pos", "knee_pos", "ankle_pos", "contra_hip_pos"],
+            "passive_socket_dof": [nm for nm, *_ in SOCKET_DOF],
+            "flat_foot_ankle": float(self.flat_foot_ankle),
+            "spawn_clearance": SPAWN_CLEARANCE,
+            "collision_geoms": ([lab for s in SEGMENTS
+                                 for lab, _, _ in self.module_bounds.get(s, [])]
+                                + ["sole", "contra_foot"]),
+            "contact": {
+                "timestep": float(TIMESTEP),
+                "solref": list(SOLREF),
+                "solimp": list(SOLIMP),
+                "friction": list(FRICTION),
+                "condim": int(CONDIM),
+                "penetration_limit": float(PENETRATION_LIMIT),
+            },
+        }
+
 
 # ---------------------------------------------------------------------------
 
@@ -1292,7 +1637,7 @@ def main() -> None:
             print(f"{seg:6s} {z:+9.4f} {vol * 1e6:9.1f} {n:4d}  {big[:38]:38s} {why}")
         print()
 
-    for scene in ("bench", "ground"):
+    for scene in ("bench", "ground", "walk"):
         xml = m.build(scene)
         path = os.path.join(MODELS, f"osl_v2_{scene}.xml")
         with open(path, "w", encoding="utf-8") as fh:
