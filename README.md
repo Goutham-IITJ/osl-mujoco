@@ -10,29 +10,46 @@ estimation can be developed and broken safely.
 
 ## What you get
 
-Two scenes are generated into `models/`. `osl_v2_bench.xml` welds the leg to the
+Three scenes are generated into `models/`. `osl_v2_bench.xml` welds the leg to the
 world, which is the configuration for testing controllers and watching the joints
 move without worrying about balance. `osl_v2_ground.xml` gives it a free joint,
 puts a floor underneath, and carries collision geometry — the Variflex blade at
 the sole, plus one bounding box per module above the ankle — for stance and
-loading. Both scenes ship a `flat` keyframe that levels the sole — which is *not*
-ankle = 0, see the flat-foot finding below — and in the ground scene it also drops
-the leg onto the floor. Whether the ground scene stands or topples has not been
-established — a single leg with no socket, hip or balance controller is not
-obviously stable, though a static check suggests the COM does project inside the
-sole footprint with margin. `check_model.py` prints the base height before and
-after a second of settling, which answers it.
+loading. The bench and ground scenes both ship a `flat` keyframe that levels the
+sole — which is *not* ankle = 0, see the flat-foot finding below — and in the
+ground scene it also drops the leg onto the floor. Whether the ground scene stands
+or topples has not been established — a single leg with no socket, hip or balance
+controller is not obviously stable, though a static check suggests the COM does
+project inside the sole footprint with margin. `check_model.py` prints the base
+height before and after a second of settling, which answers it.
 
-Both scenes carry the same three-body chain — thigh, shank, foot — with a knee
-hinge and an ankle hinge, position actuators on both, and a sensor suite that
-mirrors what the real leg reports: joint encoders, actuator torque, a thigh IMU,
-a shank IMU, and the six-axis load cell.
+`osl_v2_walk.xml` is the Phase 2 scaffold: the same CAD device, now hung under a
+minimal human model so it can be driven along a walking trajectory. A pelvis is
+suspended over the floor — welded, because a prescribed trajectory will drive it
+later and there is no balance controller — a residual thigh swings from it on a
+`hip` hinge, a socket couples that thigh to the device through four *passive*,
+spring-damped DOFs (a vertical piston plus flexion, ab/adduction and rotation —
+the compliance a real socket–limb interface has), and the device bolts rigidly
+beneath the socket. A second, lumped intact leg swings from the pelvis on its own
+hip hinge so the model has two feet on the floor. It ships a `stand` keyframe with
+the feet flat and the socket relaxed. Everything above the device — pelvis, thigh,
+socket, intact leg — is an anthropometric **placeholder**: not CAD, not fitted,
+sized from 50th-percentile tables and meant to be reconciled with the `myoOSL`
+human later. See the note under *Simplifications*.
+
+All three scenes carry the same CAD device — the three-body chain knee_prox, shank,
+foot, with a knee hinge and an ankle hinge, position actuators on both, and a
+sensor suite that mirrors what the real leg reports: joint encoders, actuator
+torque, a knee_prox IMU, a shank IMU, and the six-axis load cell. The walk scene
+adds hip and contralateral-hip actuators and reports the four passive socket DOFs
+as joint-position sensors, so socket travel is observable.
 
 ```
 python scripts/check_model.py                      # compile, CAD cross-check, contact
 python scripts/view_osl.py                         # interactive viewer, bench
 python scripts/view_osl.py --scene ground          # viewer with the floor
 python scripts/view_osl.py --scene ground --flat   # standing, sole level
+python scripts/view_osl.py --scene walk            # device on the walking scaffold
 python scripts/view_osl.py --knee 60 --ankle -15   # start in a pose
 python scripts/demo_sweep.py                       # sinusoidal knee/ankle sweep
 python scripts/demo_sweep.py --headless --csv build/sweep.csv
@@ -40,10 +57,10 @@ python scripts/demo_sweep.py --headless --csv build/sweep.csv
 
 In the viewer, `Tab` opens the control panel where the knee and ankle sliders
 live and `space` pauses. The Group toggles hide geom groups: the visual meshes
-are group 2, and group 3 is the collision geometry, which exists only in the
-ground scene — the blade mesh at the sole, plus the four bounding boxes that stop
-the shank and thigh reaching the floor. The bench scene has no collision
-geometry at all.
+are group 2, and group 3 is the collision geometry, which exists in the ground and
+walk scenes — the blade mesh at the sole, plus the four bounding boxes that stop
+the shank and knee_prox reaching the floor, and in the walk scene a box under the
+intact foot. The bench scene has no collision geometry at all.
 
 ## Model summary
 
@@ -53,7 +70,7 @@ these directly; `check_model.py` prints the world values):
 
 | | mass | COM, world (m) | parts kept | parts culled |
 |---|---|---|---|---|
-| thigh | 0.4498 kg | +0.0002, −0.0074, +0.1997 | 28 | 60 |
+| knee_prox | 0.4498 kg | +0.0002, −0.0074, +0.1997 | 28 | 60 |
 | shank | 3.5908 kg | +0.0047, +0.0028, +0.0320 | 142 | 347 |
 | foot | 0.9152 kg | −0.0066, −0.0037, −0.1608 | 47 | 26 |
 | **total** | **4.9558 kg** | | **217** | **433** |
@@ -119,11 +136,11 @@ wide is the giveaway. `build/verify/visorigin_AB.png` shows both, and
 
 **Rigid clusters straddling a joint go to the segment opposite the housing.**
 The 618 `fixed` joints contract by union-find into clusters, 38 of which carry
-geometry, and each is assigned to thigh, shank or foot. Nine of the 38 sit
+geometry, and each is assigned to knee_prox, shank or foot. Nine of the 38 sit
 concentric with a hinge axis, where a plain "above or below the joint" split
 would be a coin flip. The resolution is mechanical: in a belt-driven actuator the
 output pulley rotates *relative to* its housing, and both housings are
-shank-fixed, so a cluster concentric with the knee axis belongs to the thigh and
+shank-fixed, so a cluster concentric with the knee axis belongs to knee_prox and
 one concentric with the ankle axis belongs to the foot. That is a 20 mm radius
 test in the sagittal plane, applied before the z-split.
 
@@ -145,7 +162,7 @@ survive exactly and only the 14 mm arch is bridged — deliberately, since under
 load the real blade flattens toward that chord. It shares the visual geom's pose
 exactly, because the previous failure mode was the leg standing on something the
 viewer does not draw. Above the ankle each module gets one axis-aligned bounding
-box: `thigh_shell` 78 × 79 × 106 mm, `knee_module` 128 × 119 × 204 mm,
+box: `knee_prox_shell` 78 × 79 × 106 mm, `knee_module` 128 × 119 × 204 mm,
 `mid_pylon` 66 × 102 × 69 mm and `ankle_module` 137 × 118 × 192 mm, respectively
 21 %, 22 %, 11 % and 20 % full by the volume of the parts they contain. Those
 fill fractions are printed so nobody mistakes a box for a shape claim.
@@ -193,7 +210,7 @@ to (+0.06001, −0.08521) in the foot frame; the next-longest hull edge is only
 0.49 mm rms, with a residual tilt of +0.29° sagittal and under 0.01° frontal.
 That the frontal residual is negligible is what makes this fixable at all, since
 one ankle hinge could never have corrected a frontal tilt. The pose is the `flat`
-keyframe in both scenes; `view_osl.py --flat` loads it. `build_mjcf.py` derives the
+keyframe in the bench and ground scenes; `view_osl.py --flat` loads it. `build_mjcf.py` derives the
 standing height by rotating CAD meshes and `validate_mjcf.py` re-derives it by
 rotating the *emitted XML's* collision points about the *emitted* ankle anchor, and
 both land on the same +2.00 mm above the floor, which is the spawn clearance and
@@ -240,8 +257,24 @@ the shipped model stays purely CAD-derived.
 An earlier version of this file claimed the opposite — that the model was too
 *heavy*, against a 3.0–4.5 kg range. That range was recollection with no source
 behind it and it was wrong. `MASS_RANGE` is now 4.70–5.20 kg, the window the
-CAD-only total should land in given two absent motors, and both scenes sit
-inside it.
+CAD-only total should land in given two absent motors. It governs the **device**,
+so in the walk scene the validator range-checks the device mass alone and ignores
+the scaffold; by that measure all three scenes sit inside it.
+
+**The walk scene's human scaffold is a placeholder, not a measurement.** The
+pelvis (10 kg), residual thigh (3.5 kg, 0.20 m), socket (0.6 kg) and lumped intact
+leg (~12 kg) are anthropometric round numbers — 50th-percentile segment masses and
+lengths of the kind tabulated in Winter's *Biomechanics and Motor Control* — with
+capsule and box geometry that carries `contype=0`, so none of it collides with
+anything except through the box under the intact foot. The four socket DOFs have
+hand-set stiffness and damping standing in for a socket–limb compliance that has
+not been characterised. None of this is CAD and none of it is fitted: it exists so
+the CAD device has a hip to hang from and two feet to stand on while a walking
+trajectory is developed, and it is meant to be replaced by — or reconciled
+against — the `myoOSL` musculoskeletal human in MyoAssist. The hip height is not
+chosen but derived (unloaded leg length below a welded pelvis), so the device sole
+sits 2 mm above the floor at the default pose, exactly as the ground scene lifts
+the free leg.
 
 **Everything inside the actuators is collapsed.** Belts, pulleys, gearboxes and
 bearings contribute mass and geometry but no relative motion; the knee and ankle
@@ -260,8 +293,8 @@ blade's own mesh, collided by its convex hull, which is honest geometry. Above i
 are four bounding boxes at roughly 20 % fill, whose only job is to keep the leg
 out of the floor; any result that depends on *where* the shank or the knee touches
 something is not yet meaningful. There is no self-collision model either —
-MuJoCo's `filterparent` removes thigh↔shank and shank↔foot automatically, and
-thigh↔foot was shown unreachable across the joint ranges rather than modelled.
+MuJoCo's `filterparent` removes knee_prox↔shank and shank↔foot automatically, and
+knee_prox↔foot was shown unreachable across the joint ranges rather than modelled.
 
 **Contact timing is set, contact depth is measured rather than predicted.** Both
 scenes now write `solref="0.002 1"` and `solimp="0.95 0.99 0.001 0.5 2"` instead
@@ -289,16 +322,16 @@ collidable geom and fails if they ever disagree.
 
 `tools/oslcad.py` is the geometry layer — STL reading, exact mesh mass
 properties, the URDF graph, rigid-cluster contraction, density rules.
-`tools/build_mjcf.py` turns that into the two MJCF scenes and is where every
+`tools/build_mjcf.py` turns that into the three MJCF scenes and is where every
 measured constant lives. Alongside each scene it writes
 `models/osl_v2_<scene>.pred.json`: the masses, world centres of mass, hinge
 anchors and mesh bounding box it expects MuJoCo to report, so that
 `check_model.py` can hold MuJoCo to the CAD instead of merely asking whether it
 compiled.
 `tools/validate_mjcf.py` re-implements MuJoCo's compile checks in pure Python so
-the model can be verified without MuJoCo installed; both scenes currently pass
-clean, 1767 and 1815 checks with no warnings. It also independently re-derives the
-`flat` keyframe from the emitted XML, because a keyframe whose whole purpose is
+the model can be verified without MuJoCo installed; all three scenes currently pass
+clean — 1767, 1815 and 1979 checks with no warnings. It also independently re-derives
+the `flat` keyframe from the emitted XML, because a keyframe whose whole purpose is
 "stand the leg level on the floor" is exactly the kind of claim that can be
 silently false — the sole geometry it replaced sat 4.6 mm below the mesh it was
 meant to hug and nothing noticed.
@@ -312,7 +345,7 @@ segment on the wrong body, a flipped axis, a misplaced hinge.
 
 `scripts/check_model.py`, `scripts/view_osl.py` and `scripts/demo_sweep.py` are
 the three things you actually run, sharing `scripts/mjcommon.py`. `check_model.py`
-is the only one that is a test: it compiles both scenes, compares masses, centres
+is the only one that is a test: it compiles all three scenes, compares masses, centres
 of mass, hinge anchors and mesh bounding boxes against the sidecar, reads the
 resting contact depth off `contact.dist`, watches a second of settling, and
 re-derives the collision sweep and the flat keyframe from MuJoCo's own kinematics.
@@ -368,8 +401,14 @@ right height but not the right shape. The contact timing is set and the tests th
 would measure its consequences are written, but nothing in `check_model.py` has
 been run against real MuJoCo from here, so the resting penetration and the
 settling behaviour are still unmeasured — that single command is the cheapest
-outstanding thing anyone can do to this repo. Most of all, there is no hip, no
-thigh segment and no socket, so the ground scene is a leg standing on its own
-rather than something that can walk — that is the next block of work, and it is
-being built to line up with the `myoOSL` environment in MyoAssist (Tan et al. 2025)
-rather than diverging from it.
+outstanding thing anyone can do to this repo. The walk scene now supplies the hip,
+residual thigh, four-DOF socket and intact leg the ground scene lacked, so the
+device can hang from a pelvis and stand on two feet. But everything above the
+device there is an unfitted anthropometric placeholder (see *Simplifications*): the
+segment masses, and the socket's stiffness and damping, want identification against
+real transfemoral data or reconciliation with the `myoOSL` human in MyoAssist
+(Tan et al. 2025), which the scaffold is deliberately shaped to line up with rather
+than diverge from. And nothing drives it yet — there is no prescribed pelvis
+trajectory and no gait controller, so the walk scene can stand but not step.
+Getting from a standing scaffold to a natural walking trajectory is the next block
+of work.
