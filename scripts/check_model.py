@@ -112,7 +112,7 @@ def stand_test(model, data, pred: dict, fails: list) -> None:
         d = contact_depths(data)
         worst = max(worst, float(d.max()) if d.size else 0.0)
         ncon = max(ncon, int(data.ncon))
-    root = nid(model, mujoco.mjtObj.mjOBJ_BODY, "thigh")
+    root = nid(model, mujoco.mjtObj.mjOBJ_BODY, "knee_prox")
     tilt = math.degrees(math.acos(min(1.0, abs(float(data.xmat[root].reshape(3, 3)[2, 2])))))
 
     print(f"  --- flat-stance contact test, {LOAD * model.opt.timestep:.3f} s "
