@@ -97,7 +97,9 @@ def quat_to_mat(q: np.ndarray) -> np.ndarray:
 
 def validate(path: str, cad: OslCad, model: B.OslModel) -> bool:
     r = Report()
-    scene = "ground" if "ground" in os.path.basename(path) else "bench"
+    base = os.path.basename(path)
+    scene = ("walk" if "walk" in base else
+             "ground" if "ground" in base else "bench")
 
     try:
         root = ET.parse(path).getroot()
@@ -351,6 +353,18 @@ def validate(path: str, cad: OslCad, model: B.OslModel) -> bool:
                 pts = (sgn * half) @ gR.T + gp + wpos
                 geom_bbox_lo.append(pts.min(0))
                 geom_bbox_hi.append(pts.max(0))
+            elif g.get("type") == "capsule" and g.get("fromto") is not None:
+                # walk-scene human scaffold: capsules are not collidable, but
+                # their extent still defines the model bbox that the COM-inside-
+                # bbox check relies on.  A capsule is a segment plus a radius, so
+                # its world AABB is the two endpoints padded by that radius.
+                ft = nums(g, "fromto")
+                rad = float(nums(g, "size")[0])
+                gp = nums(g, "pos") if g.get("pos") else np.zeros(3)
+                gR = quat_to_mat(q) if q is not None else np.eye(3)
+                ends = np.array([ft[:3], ft[3:]]) @ gR.T + gp + wpos
+                geom_bbox_lo.append(ends.min(0) - rad)
+                geom_bbox_hi.append(ends.max(0) + rad)
             if cls == "collision" and pts is not None:
                 collidable.append((g.get("name"), nm, pts))
 
@@ -474,17 +488,33 @@ def validate(path: str, cad: OslCad, model: B.OslModel) -> bool:
               f"point {low * 1000:+.2f} mm above the floor")
 
     # ---- kinematics against the CAD measurement ---------------------------
-    lift = bodies["thigh"][2]
+    # Measure the knee/ankle axes RELATIVE TO THE DEVICE ROOT (knee_prox), not
+    # the world.  In bench/ground the root sits at (0, 0, lift), so this is the
+    # old z-only subtraction; in the walk scene it hangs off the socket at
+    # (0, HIP_HALF_WIDTH, .), where a world-frame z-only offset would be wrong.
+    # Using the root's full world position makes the check confirm the device's
+    # internal CAD geometry survived nesting, in every scene.
+    origin = bodies["knee_prox"]
     for jn, want in (("knee", B.KNEE_POS), ("ankle", B.ANKLE_POS)):
-        got = joints[jn]["wpos"] - np.array([0, 0, lift])
+        got = joints[jn]["wpos"] - origin
         r.check(float(np.linalg.norm(got - want)) < 1e-6,
-                f"joint {jn!r} sits at {np.round(got, 6)}, CAD says {want}")
+                f"joint {jn!r} sits at {np.round(got, 6)} rel. knee_prox, "
+                f"CAD says {want}")
 
     # ---- physics plausibility --------------------------------------------
     total = sum(float(b.find("inertial").get("mass"))
                 for b in root.iter("body") if b.find("inertial") is not None)
-    r.check(MASS_RANGE[0] <= total <= MASS_RANGE[1],
-            f"total mass {total:.3f} kg is outside the expected "
+    # The CAD MASS_RANGE governs only the DEVICE (knee_prox/shank/foot).  In the
+    # walk scene `total` also carries the anthropometric scaffold (pelvis, limb,
+    # socket, intact leg), which are placeholders and not CAD, so range-check the
+    # device sum alone.  In bench/ground the device is the whole model, so this
+    # is the same number as before.
+    device_total = sum(
+        float(b.find("inertial").get("mass"))
+        for b in root.iter("body")
+        if b.get("name") in set(B.SEGMENTS) and b.find("inertial") is not None)
+    r.check(MASS_RANGE[0] <= device_total <= MASS_RANGE[1],
+            f"device mass {device_total:.3f} kg is outside the expected "
             f"{MASS_RANGE[0]}-{MASS_RANGE[1]} kg for the CAD-derived model "
             f"(published hardware figure {B.PUBLISHED_MASS} kg, motors absent "
             f"from the export)", warn_only=True)
@@ -500,14 +530,15 @@ def validate(path: str, cad: OslCad, model: B.OslModel) -> bool:
                 f"body {b.get('name')!r} COM {np.round(com, 4)} lies outside the "
                 f"model bbox")
 
-    if scene == "ground":
+    if scene in ("ground", "walk"):
         r.check(lo[2] > -1e-6,
                 f"geometry dips below the floor by {-lo[2] * 1000:.1f} mm")
         r.check(lo[2] < 0.02,
                 f"the leg floats {lo[2] * 1000:.1f} mm above the floor", warn_only=True)
 
+    extra = f"  (device {device_total:.4f} kg)" if scene == "walk" else ""
     print(f"\n{os.path.basename(path)}: bbox "
-          f"{np.round(lo, 4)} .. {np.round(hi, 4)}  total mass {total:.4f} kg")
+          f"{np.round(lo, 4)} .. {np.round(hi, 4)}  total mass {total:.4f} kg{extra}")
     return r.summary(os.path.basename(path))
 
 
@@ -543,7 +574,7 @@ def main() -> None:
     model = B.OslModel()
     cad = model.cad
     allok = True
-    for scene in ("bench", "ground"):
+    for scene in ("bench", "ground", "walk"):
         p = os.path.join(MODELS, f"osl_v2_{scene}.xml")
         if not os.path.exists(p):
             print(f"FAIL  {p} not found -- run tools/build_mjcf.py first")
