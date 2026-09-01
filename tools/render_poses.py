@@ -40,7 +40,7 @@ POSES = [
     (60, -15),
 ]
 
-SEG_TINT = {"thigh": (1.00, 0.55, 0.15), "shank": None, "foot": (0.20, 0.75, 0.35)}
+SEG_TINT = {"knee_prox": (1.00, 0.55, 0.15), "shank": None, "foot": (0.20, 0.75, 0.35)}
 
 
 def axis_angle(axis: np.ndarray, ang: float) -> np.ndarray:
@@ -142,7 +142,7 @@ def main() -> None:
     write_png(args.out, hstack_images(imgs, gap=6, bg=(1, 1, 1)))
     lbl = "  ".join(f"k{k:+d}/a{a:+d}" for k, a in POSES)
     print(f"\nwrote {os.path.relpath(args.out, B.ROOT)}\n  panels: {lbl}"
-          f"\n  thigh tinted orange, foot green, shank as-modelled; "
+          f"\n  knee_prox tinted orange, foot green, shank as-modelled; "
           f"sagittal view, anterior to the LEFT (-X)")
 
 
