@@ -120,9 +120,9 @@ tau_act     = clip(kp*(ref - q) - kv*qd, -142.2, +142.2)
 
 with `[COMPUTED from the MJCF]` `I_eff = 0.251998 + 0.01 armature = 0.261998 kg·m²`,
 `b = 0.3 N·m·s/rad`, `frictionloss = 0.4 N·m`, `m·g·d = 8.8529 N·m`. Running
-`gain_sweep_bench.py` on Windows should agree with the tables below to within the integrator
-difference (semi-implicit Euler here vs MuJoCo's), and any disagreement larger than a few
-percent is a finding in itself, not a nuisance.
+`experiments/run_gain_sweep.py` on Windows should agree with the tables below to within the
+integrator difference (semi-implicit Euler here vs MuJoCo's), and any disagreement larger
+than a few percent is a finding in itself, not a nuisance.
 
 **Gains, from ζ = 0.7 crediting the damping the model already has.** Solving
 `ζ = (kv + b_joint) / (2√(kp·I_eff))` for `kv` rather than ignoring the authored
@@ -227,7 +227,7 @@ better position to be in — it means the choice is a modelling argument, not a 
 **This is controller tuning, not a change to the physical OSL model.** kp and kv are
 properties of the tracking controller. They are written only into the compiled `mjModel` at
 runtime; `models/osl_v2_bench.xml` is never opened for writing. That claim is auditable
-rather than asserted: section [8] of `gain_sweep_bench.py` re-reads `forcerange` and
+rather than asserted: section [8] of `experiments/run_gain_sweep.py` re-reads `forcerange` and
 `ctrlrange` after the entire sweep and fails the run if either differs from the authored
 values, and it re-runs one configuration to confirm bit-identical output. Mass, inertia,
 geometry, joint limits, damping, frictionloss and armature are untouched throughout.
@@ -306,7 +306,7 @@ Both are read-only with respect to models. Run from the `osl-mujoco` root.
 needs; that venv is not modified):**
 
 ```
-.venv\Scripts\python.exe experiments\gain_sweep_bench.py
+.venv\Scripts\python.exe experiments\run_gain_sweep.py
 ```
 
 Writes `build/gain_sweep/gain_sweep_trace.csv` and `gain_sweep_metrics.csv`. It runs nine
@@ -332,7 +332,9 @@ venv reproduces the §C prediction tables for side-by-side comparison.
 
 Created, all new:
 
-- `experiments/gain_sweep_bench.py` — the runtime-only MuJoCo sweep. numpy + mujoco + stdlib
+- `experiments/run_gain_sweep.py` — the runtime-only MuJoCo sweep (originally written as one
+  file, `experiments/gain_sweep_bench.py`; the reusable half now lives in `oslbench/`, see
+  `docs/REFACTOR_MAP.md`). numpy + mujoco + stdlib
   `csv` only, so it runs in the existing venv. Logs 18 columns per step including torque
   recorded three independent ways (the `knee_tau` actuatorfrc sensor, `data.actuator_force`,
   and the unclamped analytic `kp*(cmd−q) − kv*qd`) so that the gain injection itself is
