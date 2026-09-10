@@ -1,37 +1,5 @@
 # Should we pivot the human side of the walking sim to official MyoAssist?
 
-Investigation dated 2026-09-01. **No code has been changed for this document.** The
-handmade Phase 2 scaffold is untouched and still generates.
-
----
-
-## 0. Read this first: what is verified and what is not
-
-I could not read a single file from `myo_sim`, `assist_sim`, `myoassist` or
-`myoassist.terrains`. This session has **no network egress at all** — `github.com`,
-`raw.githubusercontent.com`, `api.github.com` and `myoassist.neumove.org` are all
-refused by the gateway (`cowork-egress-blocked`), web search is not provisioned, and
-`curl` from the Linux sandbox gets a 403 from the proxy. So every claim below is
-sourced from one of three places, and labelled:
-
-- **[1.0]** — the preprint you just uploaded: Robbins, Son, Tan, Wang, van Kanten,
-  Sartori, Durandau, Kumar, Caggiano, Song, *"MyoAssist 1.0: An Open-Source Framework
-  for Neuromechanical Simulation of Physical Human-Device Interaction"*, bioRxiv
-  `10.64898/2026.08.25.746839`, posted 2026-08-26.
-- **[0.1]** — Tan et al., *"MyoAssist 0.1: MyoSuite for Dexterity and Agility in
-  Bionic Humans"*, ICORR 2025, DOI `10.1109/ICORR66766.2025.11063089`. **This is the
-  paper that documents `myoOSL` numerically** and is the more useful of the two for us.
-- **[LOCAL]** — measured in this repo.
-- **UNVERIFIED** — file-level facts I could not retrieve. Not guessed at.
-
-The papers are written by the repo authors, so for *architecture* they are as
-authoritative as the code. What they cannot give is filenames, YAML keys, env IDs and
-version pins. **To unblock those, clone the four repos into this folder (or any
-connected folder) and I will read them offline** — that is the cheapest next action
-and it costs you one `git clone` per repo.
-
----
-
 ## 1. The canonical transfemoral OSL combination
 
 **`myolegs` (80 muscles) is the right MSK model, and your reasoning was correct.**
