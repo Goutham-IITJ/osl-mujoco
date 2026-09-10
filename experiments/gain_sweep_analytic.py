@@ -2,9 +2,9 @@
 """
 gain_sweep_analytic.py -- closed-form / numerical PREDICTION of the bench gain sweep.
 
-This is a companion to gain_sweep_bench.py, not a replacement.  It reproduces the
+This is a companion to run_gain_sweep.py, not a replacement.  It reproduces the
 exact 1-DOF dynamics MuJoCo integrates for models/osl_v2_bench.xml with the ankle
-held fixed, so its numbers are a falsifiable prediction: run gain_sweep_bench.py on
+held fixed, so its numbers are a falsifiable prediction: run run_gain_sweep.py on
 Windows and the two should agree to within the integrator difference.  It exists
 because it needs only numpy/matplotlib, so the tuning argument can be made and
 plotted without MuJoCo.
