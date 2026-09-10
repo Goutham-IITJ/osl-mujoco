@@ -1,6 +1,6 @@
 # Live demo: OSL V2 CAD bench — AB19 human knee trajectory tracking
 
-Run: `.venv\Scripts\python.exe experiments\demo_bench_ab19.py`
+Run: `.venv\Scripts\python.exe experiments\run_live_demo.py`
 
 Two windows open by themselves: the MuJoCo viewer with the CAD-derived bench, and a live
 dashboard. The demo runs at half speed by default (`--speed 1.0` for real time).
@@ -30,14 +30,20 @@ plots against percent of gait cycle: the full reference knee angle with the simu
 trajectory accumulating over it, the tracking error against its zero line, and the bench
 actuator torque, each with a marker at the current phase.
 
-Before the window opens, the demo runs the quantitative experiment
-`bench_track_ab19.py` in-process and replays the identical span through the one shared
-`step_once()` function, and it refuses to start unless the two agree to within 1e-12 on
-angle, velocity, torque and command. It also verifies that the loaded model really is
-`models/osl_v2_bench.xml` with the authored 0.5 ms timestep, that the CSV really is the
-1.2050 s AB19 cycle, and that the gains are the validated pair. So the claim "the picture
-and the numbers come from the same code" is a check the program performs, not an
-assertion in a slide.
+Before the window opens, the demo runs the quantitative experiment in-process — the same
+`oslbench.simulation.BenchSimulation` that `experiments/run_bench_ab19.py` uses — and
+replays the identical span through the one shared `step()` function, and it refuses to
+start unless the two agree to within 1e-12 on angle, velocity, torque and command. It also
+verifies that the loaded model really is `models/osl_v2_bench.xml` with the authored 0.5 ms
+timestep, that the CSV really is the 1.2050 s AB19 cycle, and that the gains are the
+validated pair. So the claim "the picture and the numbers come from the same code" is a
+check the program performs, not an assertion in a slide.
+
+There is only one implementation of the control law and one implementation of the stepping
+loop in this repository, so "the same code" is structural rather than enforced: the live
+demo and the benchmark both call `oslbench.controller.PDController` and
+`oslbench.simulation.BenchSimulation.step`, and there is nowhere else for either of them
+to get a different answer. `docs/CODE_MAP.md` points at both files.
 
 The measured result, which the demo prints again at the end of every cycle, is an RMS
 tracking error of 4.36°, a peak error of 9.09°, a peak actuator torque of 16.00 N·m,
@@ -98,14 +104,20 @@ every backend it skips and why; `web`, `tk` and `terminal` pin one of them; `non
 the second window off. `--port` moves the page off 8787 (0 picks any free port, and an
 already-occupied port falls back to a free one automatically), and `--no-browser` starts
 the server but does not open a browser, printing the URL instead. `--dash-geometry` only
-affects the tkinter backend. Running `.venv\Scripts\python.exe experiments\demo_dashboard.py`
+affects the tkinter backend. Running `.venv\Scripts\python.exe -m oslbench.dashboard`
 opens the dashboard alone on synthetic data, with no MuJoCo and no model, which is the
 quickest way to confirm the second window works on a given machine.
 
 ## Files
 
-`experiments/demo_bench_ab19.py` is the demo; `experiments/demo_dashboard.py` draws the
-second window and contains no physics. Neither one modifies the model, the controller, the
-reference CSV, the quantitative experiment, or any official MyoAssist or KA_L1 source. The
-demo writes nothing to disk unless `--record` is given, and it re-asserts the knee's
-force and control ranges after every run to prove the model was untouched.
+`experiments/run_live_demo.py` is the entry point — argument parsing and four calls, no
+physics of its own. `oslbench/viewer.py` holds the camera derivation, the viewer loop, the
+consistency proof and the `--record` path; `oslbench/dashboard.py` draws the second window
+and contains no physics, no plant and no controller. The controller and the stepping loop
+are `oslbench/controller.py` and `oslbench/simulation.py`, shared with the quantitative
+benchmark.
+
+None of these modifies the model, the controller, the reference CSV, the quantitative
+experiment, or any official MyoAssist or KA_L1 source. The demo writes nothing to disk
+unless `--record` is given, and it re-asserts the knee's force and control ranges after
+every run to prove the model was untouched.
