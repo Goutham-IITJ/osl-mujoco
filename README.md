@@ -8,6 +8,234 @@ The point of this repository is to have a trustworthy digital twin *before* the
 real hardware is touched, so that motor control, IMU processing and gait-phase
 estimation can be developed and broken safely.
 
+Two things live here. The **model** — built from CAD, described from *What you get*
+onward — and the **bench experiment**, which drives that model's knee along a real
+human's knee-angle trajectory with a PD controller and measures how well it follows.
+Start with the experiment; `docs/CODE_MAP.md` is one page and tells you where every
+piece of it is.
+
+## Quick Start
+
+Windows PowerShell, from a clean machine. Everything below is run from the repository
+root.
+
+**1. Create the two environments.** The bench experiment needs two, and they are
+deliberately kept apart — see the table below for why.
+
+```powershell
+# the simulation environment: MuJoCo, no plotting
+py -3.10 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install mujoco==3.12.0 numpy glfw PyOpenGL
+
+# the analysis environment: plotting, no MuJoCo
+py -3.12 -m venv .venv-analysis
+.\.venv-analysis\Scripts\python.exe -m pip install --upgrade pip
+.\.venv-analysis\Scripts\python.exe -m pip install numpy matplotlib scipy
+```
+
+**2. Check that the tests pass.** These need numpy only, so any Python will do, and they
+run in under a second:
+
+```powershell
+.\.venv\Scripts\python.exe tests\run_tests.py
+```
+
+**3. Run the things.** In order of what is most worth seeing first:
+
+```powershell
+# the validated AB19 benchmark: 2410 steps, CSV + metrics + figures
+.\.venv\Scripts\python.exe experiments\run_bench_ab19.py
+
+# is the result still the validated one?  compares 21 columns + every metric
+.\.venv\Scripts\python.exe experiments\verify_against_oracle.py
+
+# the live demo: MuJoCo viewer + a live dashboard in the browser
+.\.venv\Scripts\python.exe experiments\run_live_demo.py
+
+# the gain sweep that chose kp = 600
+.\.venv\Scripts\python.exe experiments\run_gain_sweep.py
+
+# figures from an already-logged CSV -- this is the one that needs .venv-analysis
+.\.venv-analysis\Scripts\python.exe experiments\plot_bench_results.py
+```
+
+`run_bench_ab19.py` also draws the figures itself if matplotlib happens to be importable;
+in `.venv` it is not, so it writes the CSV, prints the report, and tells you to run
+`plot_bench_results.py`. Use `--no-plot` to silence that.
+
+**Where the output goes.** Everything lands under `build\`, which is gitignored:
+
+| Path | Written by | Contents |
+| --- | --- | --- |
+| `build\bench_track_ab19\bench_track_ab19.csv` | `run_bench_ab19.py` | 2410 rows × 21 columns, one row per 0.5 ms step |
+| `build\bench_track_ab19\bench_track_ab19_metrics.csv` | `run_bench_ab19.py` | the summary metrics and the 5 audit flags |
+| `build\bench_track_ab19\bench_track_ab19.png` | `plot_bench_results.py` | the six-panel results figure |
+| `build\bench_track_ab19\bench_track_ab19_human_reference.png` | `plot_bench_results.py` | the human reference figure |
+| `build\gain_sweep\` | `run_gain_sweep.py` | the sweep trace and its metrics |
+| `build\verify_oracle\` | `verify_against_oracle.py` | the fresh run it compares against the oracle |
+| `tests\oracle\` | — | the frozen validated result. **Committed, not generated.** |
+
+**Which environment do I need?** Four exist on this machine and only the first two belong
+to this experiment:
+
+| Environment | Python | Holds | Used for |
+| --- | --- | --- | --- |
+| `osl-mujoco\.venv` | 3.10 | mujoco 3.12.0, numpy, glfw, PyOpenGL — **no matplotlib** | everything that runs physics: the benchmark, the sweep, the live demo, the oracle check, the tests |
+| `osl-mujoco\.venv-analysis` | 3.12 | numpy, matplotlib, scipy, h5py — **no mujoco** | offline figures only (`plot_bench_results.py`), and the dataset tooling |
+| `myo_folder\.venv-myoassist` | — | MyoAssist + MyoSuite | *not this experiment.* The MyoAssist musculoskeletal work, which is paused. |
+| `myo_folder\.venv-myoassist-ctrl` | — | MyoAssist reflex-controller stack | *not this experiment.* Same. |
+
+The split is not tidiness. `.venv` is the environment the validated result was produced in
+and it is left alone on purpose, so the physics cannot silently change underneath a
+recorded number; matplotlib and scipy pull in a large dependency tree and neither is needed
+to step MuJoCo. That is also why plotting is a separate offline entry point reading a CSV
+rather than a call at the end of the simulation, and why the live dashboard is a browser
+page rather than a matplotlib window.
+
+**The bench experiment needs neither MyoAssist environment, and touches no MyoAssist file.**
+
+## How the bench experiment works
+
+```
+   build/AB19_knee_gait_reference.csv
+   real human gait data -- subject AB19, one right-leg cycle, 101 samples
+                    |
+                    v
+   +--------------------------------------+
+   |  REFERENCE PROCESSING                |   oslbench/reference.py
+   |  validate columns, audit, cubic      |   101 samples -> 2410 steps
+   |  spline resample onto dt = 0.5 ms    |
+   +--------------------------------------+
+                    |
+                    v
+              q_ref(t)   the commanded knee angle, in radians
+                    |
+                    v
+   +--------------------------------------+
+   |  PD CONTROLLER                       |   oslbench/controller.py:95
+   |                                      |
+   |    error = q_ref - q                 |   Kp = 600.0    N.m/rad
+   |    tau   = Kp * error - Kd * qdot    |   Kd = 17.253   N.m.s/rad
+   +--------------------------------------+
+                    |
+                    v
+   +--------------------------------------+
+   |  ACTUATOR SATURATION                 |   two separate clamps
+   |  command -> ctrlrange  (the ROM)     |   knee ROM  [-5, 120] deg
+   |  torque  -> forcerange (authority)   |   knee tau  +/- 142.2 N.m
+   +--------------------------------------+
+                    |
+                    v
+   +--------------------------------------+
+   |  MuJoCo ACTUATOR                     |   models/osl_v2_bench.xml
+   |  tau = Kp*(ctrl - q) - Kd*qdot,      |   position actuator on the
+   |  clamped, applied to the knee hinge  |   knee joint
+   +--------------------------------------+
+                    |
+                    v
+   +--------------------------------------+
+   |  MuJoCo PHYSICS STEP                 |   mj_step, every 0.5 ms
+   |  I_eff = 0.261998 kg.m^2, gravity,   |   fixed base: the segment
+   |  joint damping, joint friction       |   above the knee is welded
+   +--------------------------------------+
+                    |
+                    v
+              q(t)   the ACTUAL knee angle
+                    |
+      +-------------+-------------+-------------+
+      |             |             |             |
+      v             v             v             v
+  tracking      actuator        joint       mechanical
+   error         torque       velocity        power
+ q_ref - q     tau (N.m)     qdot (rad/s)   tau * qdot
+      |             |             |             |
+      +-------------+------+------+-------------+
+                           |
+                           v
+              +--------------------------+
+              |  LOGGER                  |   oslbench/logging.py
+              |  one row per step,       |   no physics in here
+              |  21 columns              |
+              +--------------------------+
+                           |
+        +------------------+------------------+
+        |                  |                  |
+        v                  v                  v
+   bench_track        METRICS            PLOTS
+   _ab19.csv          RMS / peak /       six-panel figure
+   2410 rows          torque / lag       drawn AFTER the run
+                   oslbench/metrics.py   oslbench/plotting.py
+```
+
+Nine things that flowchart is meant to make unambiguous, because each of them is a
+question that has actually been asked:
+
+1. **The reference is real human data.** It is not a synthetic sine wave and not an
+   idealised curve. It is subject AB19 of the Camargo et al. lower-limb dataset, trial
+   `levelground / ccw / normal / 01_01`, one right-leg cycle of 1.2050 s. The audit that
+   runs on load prints five flags, and all five concern the dataset's *moment* and *power*
+   columns, which are defective and are carried through unused; the angle column that
+   drives the experiment is sound.
+
+2. **The controller runs during the simulation.** `error = q_ref - q` and
+   `tau = Kp*error - Kd*qdot` are evaluated inside the stepping loop, once per step, at
+   2 kHz — using the angle and velocity MuJoCo reported on the previous step. It is not
+   pre-computed, and there is no recorded torque being played back.
+
+3. **MuJoCo physics runs every 0.5 ms.** 2410 steps for one gait cycle. That timestep is
+   authored in `models/osl_v2_bench.xml` and the experiment reads it rather than assuming
+   it; the tests fail if it changes.
+
+4. **The controller is not plotting anything.** `oslbench/controller.py` imports no
+   plotting library, writes no file and prints nothing. It is 154 lines and the control law
+   is three of them.
+
+5. **The simulation is not generating plots in real time.** `oslbench/simulation.py` has no
+   figure in it. The only case where anything is drawn while the physics runs is the live
+   demo, and there the drawing is a *consumer* of state that the simulation published — see
+   point 7.
+
+6. **The offline plots are generated after the simulation, from the logged CSV.**
+   `experiments/plot_bench_results.py` reads `bench_track_ab19.csv` and draws figures. It
+   never loads a model and never steps physics — which is why it runs in
+   `.venv-analysis`, an environment that has no MuJoCo installed at all. That is a
+   structural proof rather than a promise.
+
+7. **The live dashboard is visualisation only and cannot affect the controller.** The
+   browser page has no plant model and no controller in it; it polls the simulation loop
+   about sixteen times a second for a snapshot of the one shared state and draws it on a
+   canvas. Because it redraws in the browser's process it cannot slow the physics, and
+   because it has nothing to integrate it cannot become a second simulation. Before the
+   viewer opens, `oslbench/viewer.py:consistency_check` replays a span of the quantitative
+   benchmark through the live code path and refuses to start unless angle, velocity, torque
+   and command agree to 1e-12.
+
+8. **The six-panel figure is generated from recorded simulation results.** Every point on
+   it was read out of the CSV that a completed run wrote. It is not a live trace, not a
+   sketch, and not measured on hardware.
+
+9. **The physical hardware has not been validated.** Nothing here has been compared against
+   the real Open-Source Leg. There is no encoder log, no bench torque measurement and no
+   hardware trial. Every number in this repository is a simulation result, and
+   `docs/BENCH_EXPERIMENT.md` lists specifically which parts of the model are placeholders.
+
+The validated result, which `verify_against_oracle.py` re-checks column by column:
+
+| RMS error | peak error | peak torque | saturation | peak velocity |
+| --- | --- | --- | --- | --- |
+| 4.3616° | 9.0907° | 16.0041 N·m (11.25 % of authority) | 0.00 % | 5.0559 rad/s |
+
+90.1 % of that RMS error is a 29.5 ms servo phase lag: remove the shift and the error
+falls to 0.4333°. The fix for a lag is feedforward or advancing the reference, not more
+stiffness — which is why `kp` stays at 600.
+
+`docs/BENCH_EXPERIMENT.md` is the long form of all of this, in question-and-answer form,
+including what the torque is not (it is not a human knee moment) and what the sim-to-real
+limitations are. `docs/LIVE_DEMO.md` covers the two-window demo, `docs/VALIDATION.md` the
+proof that reorganising the code did not change the result, and
+`BENCH_TUNING_AND_DATASET.md` where kp = 600 came from and where the AB19 data came from.
+
 ## What you get
 
 Three scenes are generated into `models/`. `osl_v2_bench.xml` welds the leg to the
@@ -355,6 +583,14 @@ else. The other files in `scripts/`, plus `build/osl_v2_*.urdf`,
 the record: the URDF-sanitiser attempts and the early rods-and-capsules smoke test.
 Neither is the simulation.
 
+`oslbench/` is the bench experiment's library — the model loader, the PD controller,
+the gait reference, the stepping loop, the logger, the metrics, the offline figures, and
+the live viewer and dashboard, one job per module. `experiments/` holds the thin entry
+points that call it and `tests/` the assert-based test suite. `docs/CODE_MAP.md` is a
+one-page index of all of it, `docs/BENCH_EXPERIMENT.md` the long explanation, and
+`docs/REFACTOR_MAP.md` the record of what the code looked like when it was two large
+scripts instead.
+
 To rebuild from the CAD:
 
 ```
@@ -392,11 +628,12 @@ conventions, including their failure paths, which establishes that they would fi
 
 ## Not done yet
 
-Gait-phase estimation, IMU filtering, the actual motor control algorithms,
-sim-to-real transfer. The sensor suite and the CSV log from `demo_sweep.py` exist
-to feed exactly those, but none of them are started. Transmission parameters and
-densities want identification against the real leg. Contact above the ankle is
-bounding boxes, so knee-on-ground and shank contact will resolve at about the
+Gait-phase estimation, IMU filtering, and sim-to-real transfer. Joint control now has a
+first result — the bench experiment above tracks a real human knee trajectory with a PD
+servo — but that is a baseline, not a hardware controller: no feedforward, no impedance
+law, no electrical motor model, and nothing compared against the real leg. Transmission
+parameters and densities want identification against the real hardware. Contact above the
+ankle is bounding boxes, so knee-on-ground and shank contact will resolve at about the
 right height but not the right shape. The contact timing is set and the tests that
 would measure its consequences are written, but nothing in `check_model.py` has
 been run against real MuJoCo from here, so the resting penetration and the
