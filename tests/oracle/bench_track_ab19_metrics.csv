@@ -1,0 +1,34 @@
+metric,value
+rms_err_deg,4.361613372292228
+peak_err_deg,9.090662089393883
+mae_err_deg,3.2798529494340207
+peak_tau_Nm,16.004120587370423
+pct_authority,11.25465582796795
+sat_pct,0.0
+peak_vel_rad_s,5.055899819703143
+peak_ref_vel_rad_s,5.10772683377614
+peak_power_W,58.21357505829603
+mean_abs_power_W,12.485135982791574
+ref_clamped_steps,0
+ankle_dev_deg,0.2934172991916203
+force_limit_Nm,142.2
+final_time_s,1.2049999999999228
+n_steps,2410
+rms_err_deg_after_50ms,4.451034473978376
+peak_err_deg_after_50ms,9.090662089393883
+lag_ms,29.500000000000004
+lag_pct_gc,2.4481327800829877
+rms_err_deg_lag_removed,0.4333162512910977
+pct_err_from_lag,90.06523012691126
+ref_T,1.2049999999999983
+ref_exceeded_rom,False
+ref_n_below,0
+ref_n_above,0
+ref_sign_ok,True
+ref_peak_moment,514.822959188782
+ref_peak_power,1424.59335295026
+audit_flag_1,"peak moment is 7.57 N.m/kg if the column is N.m -- a human walking knee peaks near 0.4-0.6 N.m/kg, so the moment column is off by roughly 15x or is in another unit (0.515 N.m/kg would be plausible)"
+audit_flag_2,"|human_knee_moment| and |human_knee_power| are correlated at 0.99962 -- they are ONE signal scaled, not two independent measurements. Moment and power have different zero crossings in real gait, so this cannot be biomechanics."
+audit_flag_3,power/moment is nearly CONSTANT and uncorrelated with the reference angular velocity (corr -0.26) -- so human_knee_power is not moment x omega for this angle column.  The two kinetic columns are not a matched pair; treat both as UNVERIFIED and re-check the extraction.
+audit_flag_4,"peak |human_knee_moment| falls on the very FIRST sample (0 % gait phase); the early-stance moment peak should sit near 15-25 %, which suggests a boundary/alignment problem in the kinetic columns"
+audit_flag_5,"human_knee_moment decays almost MONOTONICALLY from its maximum at 0 % to 3 % of peak by 40 % gait phase (100 % of samples decreasing). A human knee moment is biphasic with an early-stance peak near 15-25 %, so this is not a knee-moment waveform -- most likely the wrong column, a unit/scale error, or a filter/boundary artefact in the extraction."
