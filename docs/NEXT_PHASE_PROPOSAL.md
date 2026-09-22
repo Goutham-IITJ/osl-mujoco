@@ -1,16 +1,10 @@
 # Next phase: gains, live sensing, viewer performance, and where the research goes
 
-**Status: proposal. No code, no gains, no model and no existing file were changed to
-produce this.** The only new file is this one. Every number labelled `[PREDICTED]` comes
-from a read-only numpy reproduction of the bench plant described in §1.9; every number
-labelled `[ORACLE]` is the frozen MuJoCo result in `tests/oracle/`.
-
 ---
 
-# Part 0 — The professor-facing version
+# Part 0 - High Gain
 
-**The short answer on the gains: the professor is right, and the reason is more
-interesting than "the numbers are too big."**
+**The short answer on the gains:"the numbers are too big."**
 
 Kp = 600 N·m/rad is 10.5 N·m/deg. A human knee's quasi-stiffness peaks at roughly
 3–6 N·m/deg in weight acceptance and is close to an order of magnitude lower than that
