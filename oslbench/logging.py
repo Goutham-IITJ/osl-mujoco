@@ -72,6 +72,15 @@ SWEEP_CSV_HEADER = ("time_s", "kp", "kv", "ref_rad", "ref_deg", "sim_rad", "sim_
                     "tau_sensor_Nm", "tau_actforce_Nm", "tau_unclamped_Nm",
                     "pct_authority", "saturated", "ankle_q_rad", "ankle_tau_Nm")
 
+# The drivetrain trace is the 21 bench columns UNCHANGED, plus the ten signals that do
+# not exist without the actuator layer.  Appending rather than interleaving is what lets
+# `read_bench_csv`, `plot_bench_results` and the oracle comparison read this file as an
+# ordinary bench trace: they look columns up by NAME and ignore any they do not know.
+DRIVETRAIN_EXTRA_HEADER = ("i_q_A", "tau_request_Nm", "theta_a_rad", "theta_a_dot_rad_s",
+                           "theta_s_rad", "tau_m_Nm", "tau_f_Nm", "tau_a_Nm", "tau_j_Nm",
+                           "K_s_Nm_rad", "servo_force_Nm")
+DRIVETRAIN_CSV_HEADER = BENCH_CSV_HEADER + DRIVETRAIN_EXTRA_HEADER
+
 
 class BenchLog:
     """The per-step table for the AB19 benchmark: 21 columns, pre-formatted as text.
@@ -114,6 +123,53 @@ class BenchLog:
         return len(self._rows)
 
 
+class DrivetrainBenchLog(BenchLog):
+    """The bench table plus the actuator-layer channels: the same 21 columns, then 11.
+
+    WHY A SUBCLASS AND NOT A SECOND LOGGER
+        Every column `BenchLog` writes means exactly the same thing here, and the
+        drivetrain run has to stay comparable with the servo run column by column.
+        Re-deriving those 21 fields in a parallel class is how the two traces would
+        quietly drift apart in format or precision.  So the parent formats its own row
+        and this class appends to it.
+
+    WHAT THE EXTRA COLUMNS ARE, AND THE DISTINCTION THAT MATTERS MOST
+        tau_request_Nm  what the PD law ASKED FOR, in joint torque.  Not applied.
+        i_q_A           that request divided by k_t_joint: the current actually commanded.
+        tau_m, tau_f    motor torque and friction torque on the ACTUATOR OUTPUT shaft.
+        tau_a_Nm        net ACTUATOR-SIDE torque.  NOT a joint torque: multiply by n_t.
+        tau_j_Nm        the torque the BELT TRANSMITS to the knee -- the only one of
+                        these that MuJoCo feels, written to qfrc_applied.
+        servo_force_Nm  the MuJoCo position actuator's own force, which must read 0 at
+                        every step.  Logged so that "the servo is disconnected" is a
+                        column in the data rather than a claim in a docstring.
+        None of these is a human knee moment.  The human columns stay where they were.
+    """
+
+    header = DRIVETRAIN_CSV_HEADER
+
+    def __init__(self, force_limit: float):
+        super().__init__(force_limit)
+        self.peak_i_q = 0.0
+        self.peak_servo = 0.0
+
+    def append(self, state, res, k: int, layer=None, request_Nm: float = 0.0,
+               servo_Nm: float = 0.0) -> None:
+        """Record one step.  `layer` is the drivetrain_sim.LayerStep for this step."""
+        super().append(state, res, k)
+        if layer is None:
+            extra = ("",) * len(DRIVETRAIN_EXTRA_HEADER)
+        else:
+            self.peak_i_q = max(self.peak_i_q, abs(float(layer.i_q)))
+            self.peak_servo = max(self.peak_servo, abs(float(servo_Nm)))
+            extra = (f"{layer.i_q:.8f}", f"{request_Nm:.6f}",
+                     f"{layer.theta_a:.9f}", f"{layer.theta_a_dot:.6f}",
+                     f"{layer.theta_s:.9e}", f"{layer.tau_m:.6f}",
+                     f"{layer.tau_f:.6f}", f"{layer.tau_a:.6f}",
+                     f"{layer.tau_j:.6f}", f"{layer.K_s:.4f}", f"{servo_Nm:.9f}")
+        self._rows[-1] = self._rows[-1] + extra
+
+
 class SweepLog:
     """The gain sweep's per-step table: 18 columns, decimated (default every 2nd step
     -> 1 kHz), with the gains carried on every row so the trace is self-describing."""
@@ -150,7 +206,11 @@ class SweepLog:
 
 # ------------------------------------------------------------------------- writers
 def write_bench_csv(path: str, log: BenchLog, provenance: list[str]) -> str:
-    """Write the 21-column benchmark trace with its provenance comments.
+    """Write a benchmark trace with its provenance comments.
+
+    The header comes from `log.header`, not from the module constant, so a subclass
+    that adds columns writes them.  For `BenchLog` itself the two are the same object,
+    so this is identical to what it did before -- including for the frozen oracle.
 
     The `#` lines are written directly rather than through csv.writer: they contain
     commas, csv.writer would quote them, and the quote would break the `#`-prefix test
@@ -161,7 +221,7 @@ def write_bench_csv(path: str, log: BenchLog, provenance: list[str]) -> str:
         for line in provenance:
             fh.write(f"# {line}\n")
         w = csv.writer(fh)
-        w.writerow(list(BENCH_CSV_HEADER))
+        w.writerow(list(log.header))
         w.writerows(log.rows())
     return path
 

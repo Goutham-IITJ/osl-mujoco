@@ -63,15 +63,15 @@ def build_dashboard(res, n, metrics, args):
     """
     phase = np.asarray(res["gait_phase_percent"], float)
     ref_deg = np.degrees(np.asarray(res["ref_rad"], float))
-    stride = max(1, n // vw.MAX_PLOT_PTS)          # display decimation only
+    stride = max(1, n // vw.MAX_PLOT_PTS)          # retain short step transients
     pad = 6.0
     limits = dict(
         ang=(math.floor((ref_deg.min() - pad) / 5) * 5,
              math.ceil((ref_deg.max() + pad) / 5) * 5),
-        err=(-math.ceil(1.3 * metrics["peak_err_deg"] / 5) * 5,
-             math.ceil(1.3 * metrics["peak_err_deg"] / 5) * 5),
-        tau=(-math.ceil(1.3 * metrics["peak_tau_Nm"] / 5) * 5,
-             math.ceil(1.3 * metrics["peak_tau_Nm"] / 5) * 5),
+        err=(-math.ceil(1.15 * metrics["peak_err_deg"] / 5) * 5,
+             math.ceil(1.15 * metrics["peak_err_deg"] / 5) * 5),
+        tau=(-math.ceil(1.10 * metrics["peak_tau_Nm"] / 5) * 5,
+             math.ceil(1.10 * metrics["peak_tau_Nm"] / 5) * 5),
         stance_end=STANCE_END)
     return dash.make_dashboard(
         vw.TITLE, vw.SUBTITLE, dict(subject=SUBJECT, trial=TRIAL),
@@ -85,6 +85,12 @@ def main() -> int:
         description="Live view of the AB19 bench knee-tracking experiment "
                     "(fixed-base bench -- NOT human walking).")
     ap.add_argument("--csv", default=DEFAULT_REFERENCE_CSV)
+    ap.add_argument("--step-deg", type=float, default=None,
+                    help="use a generated 0 -> STEP_DEG position step instead of AB19")
+    ap.add_argument("--step-time", type=float, default=0.2,
+                    help="time of the step in seconds (default: 0.2)")
+    ap.add_argument("--step-duration", type=float, default=1.5,
+                    help="total generated step duration in seconds (default: 1.5)")
     ap.add_argument("--kp", type=float, default=KP, help="N.m/rad")
     ap.add_argument("--kv", type=float, default=KD, help="N.m.s/rad (= Kd)")
     ap.add_argument("--speed", type=float, default=0.5,
@@ -126,10 +132,14 @@ def main() -> int:
     print("=" * 78)
 
     # ---- verify everything, quietly, before a window exists -----------------------
+    if args.step_deg is not None:
+        args.csv = None
+        args.linear = True
     pf = vw.preflight(csv=args.csv, kp=args.kp, kv=args.kv,
                       interp="linear" if args.linear else "cubic",
                       azimuth=args.azimuth, elevation=args.elevation,
-                      distance=args.distance)
+                      distance=args.distance, step_deg=args.step_deg,
+                      step_time=args.step_time, step_duration=args.step_duration)
     if not isinstance(pf, vw.Preflight):
         return int(pf)
     print("\n".join(pf.lines))

@@ -97,7 +97,10 @@ class _Plot:
             c.create_line(xx, y0, xx, y1, fill=LINE)
             if xlabel:
                 c.create_text(xx, y1 + 12, text=str(xp), fill=MUTED, font=SANS_S)
-        for yv in (self.ylo, 0.5 * (self.ylo + self.yhi), self.yhi):
+        # Nine labelled levels expose intermediate values without changing the
+        # plotted data or the axis limits.
+        for i in range(9):
+            yv = self.ylo + (self.yhi - self.ylo) * i / 8.0
             yy = self._py(yv)
             c.create_line(x0, yy, x1, yy, fill=LINE)
             c.create_text(x0 - 6, yy, text=f"{yv:g}", anchor="e", fill=MUTED, font=SANS_S)
@@ -399,7 +402,8 @@ function draw(p){
   for(const t of [0,25,50,75,100]){const X=Math.round(px(p,t))+.5;
     g.beginPath();g.moveTo(X,y0);g.lineTo(X,y1);g.stroke();
     if(p.xlab){g.fillStyle=C.muted;g.textAlign="center";g.fillText(String(t),X,y1+13);} }
-  for(const v of [p.lo,(p.lo+p.hi)/2,p.hi]){const Y=Math.round(py(p,v))+.5;
+  for(let i=0;i<9;i++){const v=p.lo+(p.hi-p.lo)*i/8;
+    const Y=Math.round(py(p,v))+.5;
     g.strokeStyle=C.line;g.beginPath();g.moveTo(x0,Y);g.lineTo(x1,Y);g.stroke();
     g.fillStyle=C.muted;g.textAlign="right";g.fillText(String(v),x0-7,Y);}
   if(p.zero&&p.lo<0&&p.hi>0){g.strokeStyle="#aab0ba";const Y=Math.round(py(p,0))+.5;
