@@ -45,7 +45,8 @@ from oslbench.controller import KD, KP, PDController                      # noqa
 from oslbench.metrics import bench_metrics                                # noqa: E402
 from oslbench.model import load_bench_model                               # noqa: E402
 from oslbench.reference import (SUBJECT, TRIAL, audit_reference,          # noqa: E402
-                                load_reference, resample_reference)
+                                load_reference, resample_reference,
+                                step_reference)
 from oslbench.simulation import BenchSimulation                           # noqa: E402
 
 
@@ -106,6 +107,12 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--csv", default=None, help="AB19 reference CSV")
+    ap.add_argument("--step-deg", type=float, default=None,
+                    help="use a generated 0 -> STEP_DEG position step instead of AB19")
+    ap.add_argument("--step-time", type=float, default=0.2,
+                    help="time of the step in seconds (default: 0.2)")
+    ap.add_argument("--step-duration", type=float, default=1.5,
+                    help="total generated step duration in seconds (default: 1.5)")
     ap.add_argument("--outdir", default=blog.DEFAULT_OUTDIR)
     ap.add_argument("--kp", type=float, default=KP, help="N.m/rad")
     ap.add_argument("--kv", type=float, default=KD, help="N.m.s/rad (= Kd)")
@@ -124,7 +131,10 @@ def main() -> int:
 
     print("=" * 78)
     print(f"BENCH TRACKING EXPERIMENT -- {SUBJECT}")
-    print(f"  reference : {args.csv or 'build/AB19_knee_gait_reference.csv'}")
+    reference_label = (f"generated step to {args.step_deg:g} deg"
+                       if args.step_deg is not None
+                       else args.csv or "build/AB19_knee_gait_reference.csv")
+    print(f"  reference : {reference_label}")
     print(f"  trial     : {TRIAL}")
     print(f"  controller: kp={args.kp:.1f} N.m/rad  kv={args.kv:.3f} N.m.s/rad "
           f"(runtime only)")
@@ -141,7 +151,13 @@ def main() -> int:
     lo_deg, hi_deg = (math.degrees(x) for x in bench.knee_ctrlrange)
 
     # ---- 2. the human reference ---------------------------------------------------
-    ref = load_reference(args.csv)
+    if args.step_deg is not None and args.csv is not None:
+        ap.error("--step-deg and --csv cannot be used together")
+    if args.step_deg is not None and args.interp == "cubic":
+        print("  step reference: switching interpolation to linear at the discontinuity")
+        args.interp = "linear"
+    ref = (step_reference(args.step_deg, args.step_time, args.step_duration)
+           if args.step_deg is not None else load_reference(args.csv))
     audit = audit_reference(ref, lo_deg, hi_deg)
     res = resample_reference(ref, dt, args.cycles, args.interp, audit=audit)
     n = res.n
