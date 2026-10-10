@@ -168,6 +168,31 @@ def load_reference(path: str | None = None) -> GaitReference:
     return GaitReference(raw, len(rows), path)
 
 
+def step_reference(step_deg: float = 60.0, step_time_s: float = 0.2,
+                   duration_s: float = 1.5, samples: int = 151) -> GaitReference:
+    """Build a simple fixed-base step reference without a CSV file.
+
+    The knee holds zero degrees until ``step_time_s`` and then jumps to
+    ``step_deg`` for the remainder of the run.  The returned object has the same
+    shape as the CSV reference, so it can be passed to ``audit_reference`` and
+    ``resample_reference``.
+    """
+    if duration_s <= 0.0 or step_time_s < 0.0 or step_time_s >= duration_s:
+        raise ValueError("require 0 <= step_time_s < duration_s")
+    if samples < 2:
+        raise ValueError("samples must be >= 2")
+    t = np.linspace(0.0, duration_s, int(samples))
+    angle = np.where(t < step_time_s, 0.0, float(step_deg))
+    raw = {
+        "gait_phase_percent": 100.0 * t / duration_s,
+        "time_s": t,
+        "human_knee_angle_deg": angle,
+        "human_knee_moment": np.zeros_like(t),
+        "human_knee_power": np.zeros_like(t),
+    }
+    return GaitReference(raw, len(t), "<generated step reference>")
+
+
 def audit_reference(ref: GaitReference, knee_lo_deg: float, knee_hi_deg: float,
                     verbose: bool = True) -> ReferenceAudit:
     """Check the reference against the bench ROM and against biomechanical plausibility.
