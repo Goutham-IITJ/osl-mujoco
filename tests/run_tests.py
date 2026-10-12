@@ -53,33 +53,73 @@ def main() -> int:
 
     import test_oslbench as T
 
+    # Extra suites, collected into the SAME run so that one command covers the repo.
+    # `test_drivetrain` covers oslbench/drivetrain.py (the paper's equations, signs and
+    # frames); `test_drivetrain_sim` guards the Option-C feedback point, where the
+    # derivative term must read actuator-side velocity rather than joint velocity --
+    # reading joint velocity is the non-collocated law that diverged on real MuJoCo at
+    # t = 0.3485 s.  Both belong in the command that actually gets run, not in files
+    # somebody has to remember.  Import failures are reported as a failed pseudo-test
+    # rather than swallowed: a suite that silently stops being collected is exactly the
+    # thing this is meant to prevent.
+    extra, extra_errors = [], []
+    for mod_name in ("test_drivetrain", "test_drivetrain_sim", "test_step_response",
+                     "test_ankle_current_step"):
+        try:
+            extra.append((mod_name, __import__(mod_name)))
+        except Exception as exc:                                # noqa: BLE001
+            extra_errors.append((mod_name, exc, traceback.format_exc()))
+
     names = [n for n in dir(T) if n.startswith("test_")]
     names.sort(key=lambda n: getattr(T, n).__code__.co_firstlineno)
     if args.k:
         names = [n for n in names if args.k in n]
 
+    # (module, test name) pairs, so a name collision between suites cannot hide a test.
+    selected = [(T, n) for n in names]
+    for mod_name, mod in extra:
+        enames = [n for n in dir(mod) if n.startswith("test_")]
+        enames.sort(key=lambda n: getattr(mod, n).__code__.co_firstlineno)
+        if args.k:
+            enames = [n for n in enames if args.k in n]
+        selected += [(mod, n) for n in enames]
+
     print("=" * 78)
     print("OSL V2 BENCH -- TESTS")
     print(f"  engine   : {'REAL MuJoCo' if not T.USING_STUB else 'tests/stub_mujoco.py'}")
-    print(f"  selected : {len(names)} test(s)" + (f"  (-k {args.k})" if args.k else ""))
+    print(f"  suites   : test_oslbench"
+          + "".join(f" + {m}" for m, _ in extra))
+    print(f"  selected : {len(selected)} test(s)" + (f"  (-k {args.k})" if args.k else ""))
     print("=" * 78)
 
     passed, failed, skipped, t0 = 0, [], [], time.time()
-    for n in names:
-        fn = getattr(T, n)
+    for mod_name, exc, tb in extra_errors:
+        failed.append((f"{mod_name} (import)", exc, tb))
+        print(f"  ERROR {mod_name} could not be imported\n"
+              f"          {type(exc).__name__}: {exc}")
+    for mod, n in selected:
+        fn = getattr(mod, n)
         label = n[5:].replace("_", " ")
+        # Qualify the name for the summary and the -v dump.  Execution was already
+        # collision-proof (selected holds (module, name) pairs), but `failed` used to
+        # store the bare name, so two suites sharing a test name would have produced an
+        # ambiguous failure line -- which is the moment you least want ambiguity.
+        qual = f"{mod.__name__}.{n}"
+        # Each suite defines its own Skip; test_oslbench's is not test_drivetrain's, so
+        # a module's own class must be used or its skips would be reported as ERRORs.
+        skip_exc = getattr(mod, "Skip", T.Skip)
         try:
             fn()
-        except T.Skip as e:
-            skipped.append((n, str(e)))
+        except skip_exc as e:
+            skipped.append((qual, str(e)))
             print(f"  SKIP  {label}\n          {e}")
         except AssertionError as e:
-            failed.append((n, e, traceback.format_exc()))
+            failed.append((qual, e, traceback.format_exc()))
             print(f"  FAIL  {label}")
             for line in str(e).splitlines():
                 print(f"          {line}")
         except Exception as e:                                  # noqa: BLE001
-            failed.append((n, e, traceback.format_exc()))
+            failed.append((qual, e, traceback.format_exc()))
             print(f"  ERROR {label}\n          {type(e).__name__}: {e}")
         else:
             passed += 1
@@ -89,6 +129,15 @@ def main() -> int:
     print("=" * 78)
     print(f"{passed} passed, {len(failed)} failed, {len(skipped)} skipped "
           f"in {dt:.2f} s")
+    # The counts must account for every selected test plus any import error, or a
+    # silently dropped suite would look like a clean run.
+    expected = len(selected) + len(extra_errors)
+    if passed + len(failed) + len(skipped) != expected:
+        print(f"*** ACCOUNTING ERROR: {passed}+{len(failed)}+{len(skipped)} != "
+              f"{expected} selected. Some test was neither run nor reported. ***")
+        return 1
+    if failed:
+        print("failed: " + ", ".join(n for n, _e, _tb in failed))
     if args.verbose and failed:
         for n, _e, tb in failed:
             print("-" * 78 + f"\n{n}\n" + tb, end="")
