@@ -46,13 +46,14 @@ from .controller import KD, KP, PDController, kd_for_damping_ratio
 from .metrics import bench_metrics, sweep_metrics, tracking_metrics
 from .model import BenchModel, load_bench_model
 from .reference import (audit_reference, load_reference, resample_reference,
-                        synthetic_references)
+                        step_reference, synthetic_references)
 from .simulation import BenchSimulation, RunResult, StepState
 
 __all__ = [
     "KP", "KD", "PDController", "kd_for_damping_ratio",
     "BenchModel", "load_bench_model",
-    "load_reference", "audit_reference", "resample_reference", "synthetic_references",
+    "load_reference", "audit_reference", "resample_reference", "step_reference",
+    "synthetic_references",
     "BenchSimulation", "RunResult", "StepState",
     "bench_metrics", "sweep_metrics", "tracking_metrics",
 ]
