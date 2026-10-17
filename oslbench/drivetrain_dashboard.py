@@ -169,12 +169,25 @@ _PAGE = r"""<!DOCTYPE html>
       <div class="lg"><span><i class="sw" style="background:#1f4e8c"></i>&tau;<sub>j</sub> (left)</span>
         <span><i class="sw" style="background:#9a2b11"></i>I<sub>q</sub> (right)</span></div>
     </div>
+    <div id="current-panels" style="display:contents"></div>
   </div>
   <div class="status" id="status"></div>
   <footer id="foot"></footer>
 </main>
 <script>
 const CFG = __CONFIG__, POLL = __POLL__;
+if (CFG.current_controlled) {
+  const controls=document.createElement('div');
+  controls.innerHTML='<button data-key="space">Pause / resume</button> <button data-key="r">Restart</button> <button data-key="escape">Save and exit</button>';
+  controls.querySelectorAll('button').forEach(b=>b.onclick=()=>fetch('/key?k='+b.dataset.key));
+  document.querySelector('header').appendChild(controls);
+  document.querySelector('header').appendChild(document.getElementById('status'));
+  document.querySelector('header').style.cssText='position:sticky;top:0;z-index:2';
+  document.getElementById('current-panels').innerHTML =
+    '<div class="card"><h2>5 Tracking error [deg]</h2><canvas id="c5"></canvas></div>'+
+    '<div class="card"><h2>6 Current request / applied / modelled [A]</h2><canvas id="c6"></canvas><div class="lg">orange: request; blue: applied; green: modelled (may overlap)</div></div>'+
+    '<div class="card"><h2>7 Actuator output torque [Nm]</h2><canvas id="c7"></canvas><div class="lg">orange: estimated electromagnetic; blue: compliant belt, actuator side</div></div>';
+}
 const DPR = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
 document.getElementById("meta").textContent =
   "subject " + CFG.subject + "  ·  " + CFG.trial;
@@ -275,6 +288,11 @@ async function tick(){
     el.innerHTML = (v === null || v === undefined) ? "&mdash;"
       : v.toFixed(n.d) + '<span class="u">' + n.u + "</span>";
   });
+  if (CFG.current_controlled) {
+    const extent=(a,min)=>Math.max(min,...(a||[]).filter(Number.isFinite).map(Math.abs))*1.15;
+    const tq=extent(d.y_tau,5), iq=extent(d.y_iq,1);
+    CFG.tau=[-tq,tq];CFG.iq=[-iq,iq];
+  }
   const x1=fit(document.getElementById("c1")), c1=document.getElementById("c1");
   let A = frame(x1, c1.clientWidth, c1.clientHeight, CFG.ang[0], CFG.ang[1], "deg");
   line(x1, A, CFG.ref.map(p=>p[0]), CFG.ref.map(p=>p[1]), "#9a9aa4");
@@ -310,6 +328,17 @@ async function tick(){
             CFG.iq[0], CFG.iq[1], "A");
   line(x4, A, d.x, d.y_tau, "#1f4e8c");
   line(x4, A, d.x, d.y_iq, "#9a2b11", A.Yr);
+  if (CFG.current_controlled) {
+    for (const [id, channels, unit] of [
+      ['c5',['y_err'],'deg'], ['c6',['y_request','y_applied','y_actual'],'A'],
+      ['c7',['y_em','y_belt_actuator'],'Nm (output shaft)']]) {
+      const c=document.getElementById(id), x=fit(c);
+      const values=channels.flatMap(k=>d[k]||[]).filter(Number.isFinite);
+      const lim=Math.max(0.1,...values.map(Math.abs))*1.1;
+      const ax=frame(x,c.clientWidth,c.clientHeight,-lim,lim,unit);
+      channels.forEach((k,i)=>line(x,ax,d.x,d[k]||[],['#8c4a1f','#1f4e8c','#2c6e49'][i]));
+    }
+  }
 
   const stale = Date.now() - lastAt > 2500;
   const st = document.getElementById("status");
@@ -343,9 +372,11 @@ class DrivetrainWebDashboard:
         self.key_cb = None
         self._keys = []
         self.hits = 0
+        self.current_controlled = bool(meta.get('current_controlled', False))
 
         xs, ys = static
         cfg = dict(
+            current_controlled=self.current_controlled,
             subject=str(meta["subject"]), trial=str(meta["trial"]),
             ref=[[round(float(a), 3), round(float(b), 3)] for a, b in zip(xs, ys)],
             ang=[float(limits["ang"][0]), float(limits["ang"][1])],
@@ -359,6 +390,9 @@ class DrivetrainWebDashboard:
                           .replace("__POLL__", str(int(poll_ms)))
                           .replace("__BANNER__", BANNER)
                           .replace("__DISCLAIMER__", DISCLAIMER)).encode("utf-8")
+        if self.current_controlled:
+            self.html = self.html.replace(BANNER.encode('utf-8'), b'CURRENT-CONTROLLED GAIT - COMPLIANT DRIVETRAIN')
+            self.html = self.html.replace(b'motor current Iq', b'modelled current Iq')
         self._snap = _blank_snapshot()
         self._body = json.dumps(self._snap).encode("utf-8")
 
@@ -471,6 +505,10 @@ class DrivetrainWebDashboard:
             snap[f], b = _thin(s.get(f, ()))
             bad = bad or b
         snap["nonfinite"] = bad
+        if self.current_controlled:
+            for f in ('y_err','y_request','y_applied','y_actual','y_em','y_belt_actuator'):
+                snap[f], b = _thin(s.get(f, ()))
+                snap['nonfinite'] |= b
         self._snap = snap
         self._body = json.dumps(snap).encode("utf-8")
 
