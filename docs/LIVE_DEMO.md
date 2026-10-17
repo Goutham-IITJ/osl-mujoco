@@ -1,3 +1,69 @@
+# Live OSL V2: current-controlled compliant drivetrain
+
+## Canonical current-controlled launch
+
+From the repository root in PowerShell:
+
+```powershell
+.venv\Scripts\python.exe -B experiments\run_current_controlled_gait.py --view --feedback-mode actuator-difference --start-paused --speed 0.25 --zoom 1.2
+```
+
+This is Variant C, with Kp=0.75 A/deg, Kd=0.03 A/(deg/s), Ki=0,
+manual_rotor output-equivalent 0.855 Nm/A, external ratio 50/11, ideal loop,
+simulation-only +/-60-A clip, physics dt=0.5 ms, controller period=1 ms,
+one 1.205-second AB19 cycle and aligned zero-velocity initialization. Camera zoom
+and playback speed change presentation only. Remove `--start-paused` to run immediately.
+
+Choose `--feedback-mode legacy` (or omit the option) for the unchanged default
+derivative-on-error controller. The existing `--derivative-on measurement` is a legacy
+option. Variant C requires `--derivative-on error` and Ki=0 and rejects incompatible
+settings. Without `--view`, the same controller selection runs headless.
+
+The MuJoCo window and local browser dashboard show one simulation execution through
+the shared production iterator, current scheduler, conversion and drivetrain. The knee
+position servo is disconnected; no direct-actuator fallback or preflight gait run occurs.
+`run_live_demo.py` is still the original position-servo demo; `run_live_drivetrain_demo.py`
+is the earlier torque-domain compliant demo. Neither is the canonical current-domain path.
+
+Space pauses/resumes, R saves the current attempt and restarts from aligned initialization,
+and Esc saves/stops/exits. The dashboard also has Pause/resume, Restart and Save and exit
+buttons. Closing MuJoCo saves an intentionally stopped attempt. Closing only the browser
+does not stop the simulation. A complete cycle saves immediately and stays visible at
+COMPLETE; use R to run again or Esc to exit. `--exit-on-complete` closes automatically.
+`--cycles` controls the reference horizon; the canonical setting is one cycle.
+
+The dashboard is served on loopback port 8789 (`--port 0` chooses a free port).
+`--no-browser` prints its URL without opening a browser; `--dashboard none` disables it.
+Plot rendering runs in the browser process; bounded display snapshots are published per
+rendered frame. Offline PNG plots are generated after physics stops, never during stepping.
+Displays include reference/knee/error, requested/applied/modelled currents, separate
+electromagnetic output and belt-transmitted torques, fit-range deflection, mode/gains,
+time/timestep/update rate and ACTIVE/PAUSED/COMPLETE/STOPPED status.
+
+Each launch creates `build/current_controlled_gait/live_<mode>_<timestamp>/` unless a
+new `--outdir` is given. Existing directories are refused. Every attempt gets its own
+`attempt_001`, `attempt_002`, etc., containing trace CSV, metrics, configuration/source
+hashes, five PNG plots, a full-precision trace companion, final dashboard JSON and a
+self-contained offline `dashboard.html`. An empty stopped attempt has metadata/CSV
+but no numerical plots. Interrupted attempts are preserved with their actual recorded
+step count/horizon; a partial-cycle metric is not a complete gait metric. The CSV retains
+the historical pre-reference/post-knee timing convention; see the timestep report for
+physical-time-aligned metrics. No plot is measured hardware telemetry.
+
+Phase 5 evidence: `build/integrated_current_gait_phase5/visible_live_run/attempt_001/`.
+Its complete live trace agrees exactly with saved diagnostic C across all 29 shared
+channels and 2,410 steps. The earlier sandbox startup (`live_run/attempt_001`) was
+stopped with zero physics steps because its native window was not on the user desktop.
+
+The approximate +/-0.055-rad belt band is the fitted-data range, not a hard stop. No
+hardware safety or physical validation claim follows from this demo. Remaining work
+is maintained in [the project roadmap](NEXT_PHASE_PROPOSAL.md).
+
+## Historical position-servo demo
+
+The rest of this document describes the original direct-servo demo only; its limits,
+gains, output behavior and lack of drivetrain physics do not describe the path above.
+
 # Live demo: OSL V2 CAD bench — AB19 human knee trajectory tracking
 
 Run: `.venv\Scripts\python.exe experiments\run_live_demo.py`
