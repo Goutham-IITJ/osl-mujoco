@@ -49,13 +49,13 @@ from . import logging as blog
 from .metrics import bench_metrics, cycle_metrics
 from .model import load_bench_model
 from .reference import (STANCE_END, SUBJECT, TRIAL, audit_reference, load_reference,
-                        resample_reference)
+                        resample_reference, step_reference)
 from .simulation import BenchSimulation
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 FRAME_HZ = 60.0            # render/pacing target.  The physics dt is NEVER changed.
-MAX_PLOT_PTS = 320         # dashboard display decimation only -- every point is real
+MAX_PLOT_PTS = 4000        # keep the 0.5 ms transient visible in the live dashboard
 CYCLE_S = 1.2050           # s, the AB19 cycle length, used as a sanity check on the CSV
 
 # GLFW key codes as delivered by the passive viewer's key_callback
@@ -255,7 +255,8 @@ class Preflight:
 
 
 def preflight(csv=None, kp=None, kv=None, interp="cubic", azimuth=None, elevation=-6.0,
-              distance=None, model_path=None):
+              distance=None, model_path=None, step_deg=None, step_time=0.2,
+              step_duration=1.5):
     """Load, verify, audit, resample and consistency-check -- quietly.
 
     Every check the quantitative experiment runs is run here; only the PRINTING is
@@ -288,18 +289,22 @@ def preflight(csv=None, kp=None, kv=None, interp="cubic", azimuth=None, elevatio
     ok("model", f"{want}   dt {dt * 1e3:.3f} ms   knee authority +/-{lim:.1f} N.m   "
                 f"[{len(bench.warnings)} warn, 0 fail]")
 
-    csv = csv or None
+    if step_deg is not None and csv is not None:
+        return fail("--step-deg and --csv cannot be used together")
     with contextlib.redirect_stdout(buf):
-        ref = load_reference(csv)
+        ref = (step_reference(step_deg, step_time, step_duration)
+               if step_deg is not None else load_reference(csv))
         audit = audit_reference(ref, math.degrees(bench.knee_ctrlrange[0]),
                                 math.degrees(bench.knee_ctrlrange[1]))
         res = resample_reference(ref, dt, 1, interp, audit=audit)
     n = res.n
     span = float(ref.period_s)
-    if abs(span - CYCLE_S) > 5e-3:
+    if step_deg is None and abs(span - CYCLE_S) > 5e-3:
         return fail(f"the reference spans {span:.4f} s, expected the {CYCLE_S:.4f} s "
                     f"AB19 cycle -- this is not the validated reference")
-    ok("input", f"{os.path.relpath(ref.path, ROOT)}   {SUBJECT} {ref.n} rows -> {n} "
+    label = (f"generated step to {step_deg:g} deg" if step_deg is not None
+             else f"{os.path.relpath(ref.path, ROOT)}   {SUBJECT}")
+    ok("input", f"{label} {ref.n} rows -> {n} "
                 f"steps   T {span:.4f} s   knee {float(np.min(ref.angle_deg)):.2f}.."
                 f"{float(np.max(ref.angle_deg)):.2f} deg")
 
