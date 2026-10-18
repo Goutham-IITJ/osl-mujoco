@@ -4,7 +4,7 @@ import copy
 import math
 
 from .contracts import Sample
-from .telemetry_replay import ReplayRecord, CHANNELS
+from .telemetry_schema import ReplayRecord, CHANNELS
 
 
 class TelemetrySource(Protocol):

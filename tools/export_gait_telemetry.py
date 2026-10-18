@@ -10,7 +10,8 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-from oslbench.telemetry_replay import CHANNELS, HEADER, ReplaySource, DatasetError
+from oslbench.telemetry_schema import CHANNELS
+from oslbench.telemetry_replay import HEADER, ReplaySource, DatasetError
 
 # Channel -> original CSV column, pre/post step. Original files remain untouched.
 MAPPING = {

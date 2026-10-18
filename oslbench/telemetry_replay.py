@@ -1,7 +1,5 @@
 """Deterministic, data-only CSV/JSON replay. No physics or command imports."""
-from dataclasses import dataclass
 from pathlib import Path
-from types import MappingProxyType
 import csv
 import hashlib
 import json
@@ -9,17 +7,8 @@ import math
 import re
 
 from .contracts import Sample, RobotState
+from .telemetry_schema import ReplayRecord, CHANNELS  # compatibility re-exports
 
-# Version 1 supports only the state quantities with established contract semantics.
-CHANNELS = MappingProxyType({
-    "knee_angle": ("angle", "rad", "knee_joint"),
-    "knee_velocity": ("angular_velocity", "rad/s", "knee_joint"),
-    "actuator_output_angle": ("angle", "rad", "actuator_output"),
-    "actuator_output_velocity": ("angular_velocity", "rad/s", "actuator_output"),
-    "electromagnetic_output_torque": ("torque", "Nm", "actuator_output"),
-    "belt_joint_torque": ("torque", "Nm", "knee_joint"),
-    "belt_deflection": ("angle", "rad", "knee_joint"),
-})
 REQUIRED_STATE = tuple(CHANNELS)[:4]
 PROVENANCE = ("simulation", "measured", "estimated", "derived", "replayed")
 HEADER = ("sequence", "snapshot_id", "channel", "time_s", "value", "valid")
@@ -55,21 +44,6 @@ def _unique_object(pairs):
         _require(key not in result, "Duplicate JSON key: " + key)
         result[key] = value
     return result
-
-
-@dataclass(frozen=True)
-class ReplayRecord:
-    """Envelope preserves sequence/group/clock, even when a sample is missing."""
-    sequence: int
-    snapshot_id: int
-    channel: str
-    time_s: float
-    clock_id: str
-    sample: Sample | None
-    source: str
-    unit: str
-    frame: str
-    stage: str
 
 
 class ReplaySource:

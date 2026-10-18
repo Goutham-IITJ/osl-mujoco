@@ -1,6 +1,6 @@
 """Receipt-aware presentation for a read-only TelemetrySource."""
 from .telemetry_source import TelemetrySource, local_time, validate_observation
-from .replay_presentation import observation_channels
+from .observation_presentation import observation_channels
 
 
 class TelemetryPresentation:

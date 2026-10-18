@@ -119,3 +119,75 @@ assert 'mujoco' not in sys.modules
 """
     result=subprocess.run([sys.executable,'-B','-c',code],cwd=Path(__file__).resolve().parents[1],text=True,capture_output=True)
     assert result.returncode==0,result.stderr
+
+
+def test_telemetry_source_neutral_schema_compatibility():
+    from dataclasses import FrozenInstanceError
+    import pickle
+    from oslbench import telemetry_schema as schema, telemetry_replay as replay
+    from oslbench import observation_presentation as formatting, replay_presentation as ui
+    assert replay.ReplayRecord is schema.ReplayRecord
+    assert replay.CHANNELS is schema.CHANNELS
+    assert ui.observation_channels is formatting.observation_channels
+    assert ui.MAX_PLOT_PTS == formatting.MAX_PLOT_PTS == 320
+    record = MockTelemetrySource().poll(0.)[0]
+    assert type(record) is schema.ReplayRecord
+    assert pickle.loads(pickle.dumps(record)) == record
+    assert replace(record, sample=None).sample is None
+    try:
+        record.sequence = 10
+    except FrozenInstanceError:
+        pass
+    else:
+        raise AssertionError('Observation envelope became mutable')
+    try:
+        schema.CHANNELS['new'] = ('angle', 'rad', 'knee_joint')
+    except TypeError:
+        pass
+    else:
+        raise AssertionError('Channel registry became mutable')
+
+
+def test_telemetry_source_neutral_imports_and_formatting():
+    code = """
+import sys, importlib.abc
+class Block(importlib.abc.MetaPathFinder):
+ def find_spec(self, fullname, path=None, target=None):
+  if fullname.split('.')[0] in ('mujoco', 'numpy') or fullname in (
+   'oslbench.telemetry_replay', 'oslbench.replay_presentation',
+   'oslbench.drivetrain_dashboard', 'oslbench.controller', 'oslbench.simulation'):
+   raise AssertionError('Forbidden dependency ' + fullname)
+sys.meta_path.insert(0, Block())
+from dataclasses import replace
+from oslbench.telemetry_schema import ReplayRecord, CHANNELS
+from oslbench.observation_presentation import observation_channels
+from oslbench.telemetry_source import MockTelemetrySource
+from oslbench.telemetry_presentation import TelemetryPresentation
+p = TelemetryPresentation(MockTelemetrySource())
+assert all(c['quality'] == 'UNAVAILABLE' for c in p.snapshot()['channels'].values())
+p.update(0.)
+p.update(.5)
+c = p.snapshot()['channels']['knee_angle']
+assert c == dict(unit='rad', frame='knee_joint', stage='post_step',
+ sign=p.metadata['channels']['knee_angle']['sign'], source='synthetic_mock',
+ quality='VALID', value=.2, time_s=100., age_s=.5, held=True,
+ sequence=0, snapshot_id=0, points=[[100., .2]], received_time_s=0., freshness='RECENT')
+p.update(.6)
+assert p.snapshot()['channels']['knee_angle']['freshness'] == 'STALE'
+p.update(.75)
+assert p.snapshot()['channels']['knee_angle']['quality'] == 'MISSING'
+p.update(1.25)
+assert p.snapshot()['channels']['belt_joint_torque']['quality'] == 'INVALID'
+# Exercise the pure formatter's replay-age and decimation branches without replay.
+s = MockTelemetrySource(); r = s.poll(0.)[0]; name = r.channel
+m = {'channels': {name: s.metadata['channels'][name]}}
+rows = [replace(r, sequence=i, time_s=float(i)) for i in range(400)]
+c = observation_channels(m, {name: rows[-1]}, {name: rows}, 400.)[name]
+assert c['age_s'] == 1. and c['held'] and c['time_s'] == 399.
+assert c['points'] == [[float(i*399//319), .2] for i in range(320)]
+assert 'received_time_s' not in c and 'freshness' not in c
+"""
+    result = subprocess.run([sys.executable, '-B', '-c', code],
+                            cwd=Path(__file__).resolve().parents[1],
+                            text=True, capture_output=True)
+    assert result.returncode == 0, result.stderr
