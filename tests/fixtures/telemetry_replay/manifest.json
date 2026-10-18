@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "dataset_id": "synthetic_mixed_time_gap",
+  "source": "simulation",
+  "clock": {
+    "id": "synthetic_elapsed",
+    "unit": "s"
+  },
+  "sequence": "contiguous_zero_based",
+  "channels": {
+    "knee_angle": {
+      "quantity": "angle",
+      "unit": "rad",
+      "frame": "knee_joint",
+      "stage": "post_step",
+      "source": "simulation",
+      "timestamp": "time_s",
+      "sign": "Synthetic positive model coordinate; not a hardware calibration"
+    },
+    "knee_velocity": {
+      "quantity": "angular_velocity",
+      "unit": "rad/s",
+      "frame": "knee_joint",
+      "stage": "post_step",
+      "source": "simulation",
+      "timestamp": "time_s",
+      "sign": "Synthetic positive model coordinate; not a hardware calibration"
+    },
+    "actuator_output_angle": {
+      "quantity": "angle",
+      "unit": "rad",
+      "frame": "actuator_output",
+      "stage": "post_step",
+      "source": "simulation",
+      "timestamp": "time_s",
+      "sign": "Synthetic positive model coordinate; not a hardware calibration"
+    },
+    "actuator_output_velocity": {
+      "quantity": "angular_velocity",
+      "unit": "rad/s",
+      "frame": "actuator_output",
+      "stage": "post_step",
+      "source": "simulation",
+      "timestamp": "time_s",
+      "sign": "Synthetic positive model coordinate; not a hardware calibration"
+    },
+    "electromagnetic_output_torque": {
+      "quantity": "torque",
+      "unit": "Nm",
+      "frame": "actuator_output",
+      "stage": "step_input",
+      "source": "simulation",
+      "timestamp": "time_s",
+      "sign": "Synthetic positive model coordinate; not a hardware calibration"
+    },
+    "belt_joint_torque": {
+      "quantity": "torque",
+      "unit": "Nm",
+      "frame": "knee_joint",
+      "stage": "step_input",
+      "source": "simulation",
+      "timestamp": "time_s",
+      "sign": "Synthetic positive model coordinate; not a hardware calibration"
+    },
+    "belt_deflection": {
+      "quantity": "angle",
+      "unit": "rad",
+      "frame": "knee_joint",
+      "stage": "step_input",
+      "source": "simulation",
+      "timestamp": "time_s",
+      "sign": "Synthetic positive model coordinate; not a hardware calibration"
+    }
+  },
+  "data_file": "samples.csv",
+  "record_count": 9,
+  "data_sha256": "be5a7b3900bde4ac5fb6a87d344330061d328a41541d4036193c0213b4657275",
+  "identity": {
+    "synthetic": true,
+    "purpose": "Mixed times, repeated times, gap, missing and invalid samples"
+  }
+}

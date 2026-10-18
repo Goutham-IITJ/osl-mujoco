@@ -1,0 +1,10 @@
+sequence,snapshot_id,channel,time_s,value,valid
+0,0,belt_deflection,0.0,0.01,1
+1,0,belt_joint_torque,0.0,2.0,1
+2,0,electromagnetic_output_torque,0.0,3.0,1
+3,0,knee_angle,0.0005,0.2,1
+4,0,knee_velocity,0.0005,0.3,1
+5,0,actuator_output_angle,0.0005,0.4,1
+6,0,actuator_output_velocity,0.0005,0.5,1
+7,1,knee_angle,0.003,,0
+8,2,knee_velocity,0.004,1.0,0

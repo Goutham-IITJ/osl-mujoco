@@ -2,11 +2,13 @@
 
 CAD-derived Open-Source Leg V2 simulation for fixed-base knee tracking, compliant-drivetrain research and eventual sim-to-real comparison. The current live application runs current-controlled gait with a native MuJoCo viewer, browser dashboard and saved traces from the same execution.
 
-This is a simulation research platform. Hardware acquisition, IMU processing, recorded hardware-telemetry replay and predictive hardware comparison are future work. AB19 human gait is a reference, not a measurement of this robot.
+This is a simulation research platform. Deterministic file replay is implemented for the seven established state channels; browser replay now displays those recorded observations with explicit timestamps and validity. Hardware acquisition, IMU processing, full-pose replay and predictive hardware comparison are future work. AB19 human gait is a reference, not a measurement of this robot.
 
 ## Start here
 
 - [Live instructions and controls](docs/LIVE_DEMO.md)
+- [Recorded telemetry playback, schema and API](docs/TELEMETRY_REPLAY.md)
+- [Synthetic mock telemetry and read-only source boundary](docs/TELEMETRY_SOURCE.md)
 - [Authoritative control paths](docs/CONTROL_PATHS.md)
 - [Current architecture and proposed boundaries](docs/ARCHITECTURE.md)
 - [Research and evidence index](docs/RESEARCH_INDEX.md)
@@ -52,6 +54,17 @@ Variant C is selected explicitly. Use `--feedback-mode legacy`, or omit feedback
 Canonical settings: 0.855 Nm/A output-equivalent `manual_rotor`, external belt ratio 50/11, ideal current loop, +/-60 A simulation clip, 0.5 ms physics and 1 ms control. These are simulation assumptions, not hardware safety limits. Speed and zoom affect presentation only.
 
 Space pauses/resumes; R saves the attempt and restarts; Esc saves/exits. The browser offers equivalent lifecycle controls. See the [live guide](docs/LIVE_DEMO.md) for outputs and completion behavior.
+
+## Replay saved observations (no physics)
+
+```powershell
+.\.venv\Scripts\python.exe -B experiments\run_telemetry_replay.py --manifest build\phase6d_replay\phase5_dataset\manifest.json --speed 0.25
+```
+
+The browser starts paused. Space plays/pauses, R resets, N steps one timestamp; speed
+buttons change pacing. EOF holds the final display. This is recorded simulation
+telemetry, not hardware data. Each channel retains its source time/validity; no full
+robot pose is invented. See the [replay guide](docs/TELEMETRY_REPLAY.md) for controls.
 
 ## Tests and original oracle
 

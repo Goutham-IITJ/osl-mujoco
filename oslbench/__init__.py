@@ -42,12 +42,32 @@ from __future__ import annotations
 
 __version__ = "1.0.0"
 
-from .controller import KD, KP, PDController, kd_for_damping_ratio
-from .metrics import bench_metrics, sweep_metrics, tracking_metrics
-from .model import BenchModel, load_bench_model
-from .reference import (audit_reference, load_reference, resample_reference,
-                        step_reference, synthetic_references)
-from .simulation import BenchSimulation, RunResult, StepState
+# Keep data-only contracts/replay usable without importing optional physics modules.
+# Historical package-level exports are resolved on first access, unchanged.
+from importlib import import_module
+
+_EXPORTS = {
+    "controller": ("KD", "KP", "PDController", "kd_for_damping_ratio"),
+    "metrics": ("bench_metrics", "sweep_metrics", "tracking_metrics"),
+    "model": ("BenchModel", "load_bench_model"),
+    "reference": ("audit_reference", "load_reference", "resample_reference",
+                  "step_reference", "synthetic_references"),
+    "simulation": ("BenchSimulation", "RunResult", "StepState"),
+}
+
+
+def __getattr__(name):
+    for module, names in _EXPORTS.items():
+        if name in names:
+            value = getattr(import_module("." + module, __name__), name)
+            globals()[name] = value
+            return value
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def __dir__():
+    return sorted(set(globals()) | set(__all__))
+
 
 __all__ = [
     "KP", "KD", "PDController", "kd_for_damping_ratio",

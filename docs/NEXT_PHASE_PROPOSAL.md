@@ -1,4 +1,97 @@
-# Next phase: gains, live sensing, viewer performance, and where the research goes
+# OSL V2 project roadmap
+
+## Authoritative current roadmap — 2026-10-18
+
+This section alone defines the current implementation sequence. The prior roadmap
+update and original research proposal below are preserved as historical context;
+their missing-feature statements and priorities describe earlier states.
+
+1. **Completed: integrated current-controlled live gait and Variant C.** The regular
+   runner selects actuator-difference explicitly; legacy remains the default. The
+   native viewer, browser and records consume one execution. See the [live guide](LIVE_DEMO.md)
+   and [Phase 5 evidence](../build/integrated_current_gait_phase5/PHASE5_REPORT.md).
+2. **Completed: Phase 6B navigation and baseline inventory.** See the [root guide](../README.md),
+   [control paths](CONTROL_PATHS.md), [research index](RESEARCH_INDEX.md) and
+   [working baseline](WORKING_BASELINE.md). No numerical implementation changed.
+3. **Completed: Phase 6C typed state/command compatibility slice.** Immutable samples,
+   state and separate command types now participate in the production current-gait
+   path through a thin adapter. Controller equations, scheduling and conversions are
+   unchanged. See [implemented boundaries](ARCHITECTURE.md) and
+   [verification evidence](../build/phase6c_contracts/REPORT.md).
+4. **Completed: Phase 6D deterministic timestamped replay source.** Versioned CSV/JSON
+   validation, existing typed samples/state, explicit missing data, reset/end behavior
+   and a virtual clock are implemented. Saved Phase 5 evidence was replayed without a
+   new gait simulation; see [replay guide](TELEMETRY_REPLAY.md).
+   **Completed: Phase 6E browser replay integration.** Play/pause/reset, timestamp step,
+   speed and EOF use one replay clock. Per-channel time, age and validity remain visible.
+   Native pose reconstruction is excluded because the dataset lacks complete pose data.
+   See [Phase 6E evidence](../build/phase6e_replay/REPORT.md). No hardware commands.
+   **Completed: Phase 6F-A hardware-independent source groundwork.** A read-only
+   polling/closure protocol, deterministic synthetic mock and receipt-aware browser
+   presentation are tested. See [source guide](TELEMETRY_SOURCE.md). No Raspberry Pi,
+   IMU transport, physical sensor connection or hardware command interface is implemented.
+5. **Next, hardware-dependent: interface/calibration specification, then read-only
+   acquisition and live state mirroring.** Obtain actual
+   device/protocol, timestamp, calibration, encoder/IMU-frame and fault documentation.
+   Measurement display must remain distinct from independently simulated predictions.
+6. **Then: predictive simulation-versus-measurement comparison.** Establish synchronized
+   observations, known inputs and independently evolved state before reporting residuals.
+7. **Later: staged source reorganization**, with compatibility launchers, oracle and
+   current-gait regression checks; measured physical-model refinement; reproducible
+   research comparisons and verified literature/novelty assessment.
+
+Current-loop modeling is an optional, evidence-driven comparison, not a prerequisite
+for contracts or adapters. Retain the earlier motivation to identify bandwidth/delay,
+torque-constant frame, current/voltage/thermal constraints, friction and inertia from
+measurements. FOC architecture assessment depends on what the actual drive exposes;
+the ideal loop is not a switching/electrical model. Do not tune physical limits to a
+human gait curve or invent hardware command semantics.
+
+Preserve the protected model/reference/oracle, all historical outputs, canonical
+0.75/0.03/0 current gains, 0.855 Nm/A output-equivalent interpretation, 50/11 ratio,
+ideal loop, +/-60 A simulation clip, 0.5 ms physics and 1 ms control. These are
+provisional simulation settings, not hardware tuning or safety limits. MyoAssist and
+human-loading integration remain deferred. Human AB19 data does not validate the robot.
+
+## Historical roadmap update and original proposal
+
+The entire pre-Phase-6B roadmap body follows unchanged. Its earlier current-loop-first
+ordering is superseded by the authoritative sequence above; its rationale is retained.
+
+
+## Current status — 2026-10-17
+
+This section is the authoritative current roadmap. The earlier proposal below is
+retained as historical research context; its proposed tuning and model changes are
+not automatic next steps and its statements of missing functionality are dated.
+
+1. **Implemented: integrated current-controlled live gait.** The regular
+   `experiments/run_current_controlled_gait.py` selects `--feedback-mode actuator-difference`
+   (Variant C) explicitly; legacy derivative-on-error remains the default. The
+   MuJoCo viewer, browser dashboard and saved outputs consume one shared execution.
+   Phase 5 live trace matches the diagnostic C trace exactly (29 channels, 2,410 rows).
+   See [live instructions](LIVE_DEMO.md) and the Phase 5 report under
+   `build/integrated_current_gait_phase5/`. Earlier A/B/C and timestep results remain
+   historical evidence, not tasks to repeat. C's 0.25-ms check retained low belt loading.
+2. **Proposed next: current-loop, actuator-limit and drivetrain fidelity.** Identify
+   bandwidth/delay, torque-constant frame, current/voltage/thermal constraints, friction
+   and inertia from defensible evidence. Do not invent hardware limits or tune them
+   against the human gait curve. No new physics model is implemented in Phase 5.
+3. **Proposed: FOC/current-controller architecture assessment.** Determine what belongs
+   inside the drive, what telemetry is exposed, and what fidelity the simulation needs.
+   The ideal current loop is not a simulation of FOC switching or motor electrical dynamics.
+4. **Hardware-dependent: validation with actual step/gait telemetry.** Obtain synchronized
+   reference, joint/actuator angle, current and torque where available, with units,
+   signs, sampling and calibration. Human AB19 kinematics do not validate the robot.
+5. **Deferred: human-gait loading or MyoAssist integration.** Keep `myo_folder` parked.
+   First establish the actuator/drivetrain evidence and fixed-base bench validation.
+
+The present gains are provisionally transferred from an ankle script; the manual-rotor
+torque constant interpretation, ideal loop and +/-60-A simulation clipping are not
+confirmed safe hardware settings. One cycle and numerical regression establish neither
+sustained stability nor sim-to-real validity.
+
+## Historical proposal: gains, live sensing, viewer performance and research direction
 
 ---
 

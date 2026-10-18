@@ -229,6 +229,8 @@ def build(args, mj, is_stub):
         print("\nREFUSING TO RUN: the configured signs give POSITIVE feedback.")
         return None
 
+    from oslbench.contracts import GaitContractAdapter
+
     layer = DrivetrainLayer(params, enabled=True, substeps=1)
     src = make_gait_source(cfg, audit, res["ref_rad"], steps_per_update, layer,
                            getattr(args, 'feedback_mode', 'legacy'))
@@ -237,7 +239,7 @@ def build(args, mj, is_stub):
     # bookkeeping; it is DISCONNECTED below, so its gains never act on the joint. The
     # current-domain law in `src` is the only thing driving the knee.
     pd = PDController.knee(bench, 600.0, 17.253)
-    sim = DrivetrainBenchSimulation(bench, pd, layer=layer, current_source=src,
+    sim = DrivetrainBenchSimulation(bench, pd, layer=layer, current_source=GaitContractAdapter(src, layer),
                                     disconnect_servo=True)
     if sim.servo_connected:
         print("\nREFUSING TO RUN: the knee position servo did not disconnect.")
@@ -270,6 +272,11 @@ def iter_run(ctx, args, on_frame=None):
         s = src.last
         q = float(bench.data.qpos[bench.knee_qpos])
         qd = float(bench.data.qvel[bench.knee_dof])
+        # Older callers may supply a raw source; production build always wraps it.
+        from oslbench.contracts import GaitContractAdapter
+        if isinstance(sim.current_source, GaitContractAdapter):
+            ctx["typed_state"] = sim.current_source.post_step(k, q, qd, L)
+            ctx["typed_currents"] = sim.current_source.currents
         servo = sim.knee_servo_force()
         ref_deg_k = math.degrees(float(ref_rad[k]))
         meas_deg_k = math.degrees(q)
