@@ -106,6 +106,12 @@ class StubData:
         self.qacc = np.zeros(2)
         self.ctrl = np.zeros(2)
         self.qfrc_bias = np.zeros(2)
+        # qfrc_applied: a RAW generalized force, added to the dof force but NOT routed
+        # through any actuator -- so it is not reported in actuator_force and is NOT
+        # subject to actuator_forcerange.  That asymmetry is MuJoCo's, and reproducing
+        # it is the whole reason this array exists here: the drivetrain layer in
+        # oslbench/drivetrain_sim.py injects the belt torque through it.
+        self.qfrc_applied = np.zeros(2)
         self.sensordata = np.zeros(6)
         self.actuator_force = np.zeros(2)
         self.xanchor = np.zeros((4, 3))
@@ -180,7 +186,8 @@ def mj_step(model, data):
                                            MGD_ANKLE, ANKLE_RANGE)):
         q, qd = float(data.qpos[a]), float(data.qvel[a])
         tau = _actuator_torque(model, data, a, q, qd)
-        applied[a] = tau
+        applied[a] = tau                        # actuator_force: the ACTUATOR only
+        tau += float(data.qfrc_applied[a])      # raw dof force, past the clamp
         data.qpos[a], data.qvel[a] = _advance(q, qd, tau, inertia, b, fric, mgd,
                                               rng[0], rng[1])
     data.time += DT
@@ -191,6 +198,7 @@ def mj_resetDataKeyframe(model, data, kid):
     data.qpos[:] = (0.0, ANKLE_KEYFRAME)
     data.qvel[:] = 0.0
     data.ctrl[:] = 0.0
+    data.qfrc_applied[:] = 0.0      # real mj_resetData zeroes the whole mjData buffer
     data.time = 0.0
     _refresh(model, data)
 
