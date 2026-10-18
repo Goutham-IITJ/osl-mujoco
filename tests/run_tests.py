@@ -66,7 +66,7 @@ def main() -> int:
     for mod_name in ("test_drivetrain", "test_drivetrain_sim", "test_step_response",
                      "test_ankle_current_step", "test_joint_current_control",
                      "test_gait_feedback_location_ab", "test_gait_feedback_location_estimator",
-                     "test_current_gait_live", "test_contracts", "test_telemetry_replay", "test_replay_presentation", "test_telemetry_source"):
+                     "test_current_gait_live", "test_contracts", "test_telemetry_replay", "test_replay_presentation", "test_telemetry_source", "test_imu_telemetry"):
         try:
             extra.append((mod_name, __import__(mod_name)))
         except Exception as exc:                                # noqa: BLE001

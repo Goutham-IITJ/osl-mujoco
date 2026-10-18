@@ -1,8 +1,10 @@
 # Read-only telemetry-source foundation (Phase 6F-A)
 
-Implemented groundwork, not hardware integration. No Raspberry Pi connection, network
-protocol, IMU driver, calibration, physical mirror or predictive twin exists here.
-The demo produces hand-authored synthetic observations without running physics.
+This document describes the Phase 6F-A groundwork and its unchanged mock demo.
+Phase 6F-B adds a separate [passive IMU reader and HTTP client](IMU_TELEMETRY.md),
+tested without physical hardware. Calibration, physical mirroring and predictive
+comparison remain pending. The mock still produces hand-authored synthetic
+observations without running physics.
 
 ## Source boundary
 

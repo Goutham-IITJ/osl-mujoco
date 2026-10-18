@@ -1,0 +1,4 @@
+# Pi only. Do not install into the Windows simulation environment.
+# Official HBK package; imports as mscl. Check Python >=3.11, ARM64,
+# and glibc >=2.39 for the published Linux wheel before installation.
+pymscl==68.6.0

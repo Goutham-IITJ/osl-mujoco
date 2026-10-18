@@ -30,7 +30,11 @@ their missing-feature statements and priorities describe earlier states.
    polling/closure protocol, deterministic synthetic mock and receipt-aware browser
    presentation are tested. See [source guide](TELEMETRY_SOURCE.md). No Raspberry Pi,
    IMU transport, physical sensor connection or hardware command interface is implemented.
-5. **Next, hardware-dependent: interface/calibration specification, then read-only
+   **Phase 6F-B software implemented; hardware validation pending.** A passive MSCL
+   filter reader, read-only HTTP service and laptop TelemetrySource use the existing
+   dashboard. Injected-reader tests do not establish Pi/native-library or physical
+   sensor operation. See [deployment and unresolved checks](IMU_TELEMETRY.md).
+5. **Next, hardware-dependent: verify Pi deployment and interface/calibration, then
    acquisition and live state mirroring.** Obtain actual
    device/protocol, timestamp, calibration, encoder/IMU-frame and fault documentation.
    Measurement display must remain distinct from independently simulated predictions.

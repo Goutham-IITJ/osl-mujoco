@@ -4,7 +4,7 @@ import copy
 import math
 
 from .contracts import Sample
-from .telemetry_schema import ReplayRecord, CHANNELS
+from .telemetry_schema import ReplayRecord, CHANNELS, OBSERVATION_CHANNELS
 
 
 class TelemetrySource(Protocol):
@@ -39,9 +39,9 @@ def validate_observation(record, metadata):
         raise ValueError('Observation sequence/group must be nonnegative integers')
     local_time(record.time_s)
     meta = metadata['channels'].get(record.channel)
-    if meta is None or record.channel not in CHANNELS:
+    if meta is None or record.channel not in OBSERVATION_CHANNELS:
         raise ValueError('Undeclared or unsupported channel')
-    if tuple(meta[k] for k in ('quantity','unit','frame')) != CHANNELS[record.channel]:
+    if tuple(meta[k] for k in ('quantity','unit','frame')) != OBSERVATION_CHANNELS[record.channel]:
         raise ValueError('Incompatible channel units/frame')
     if (record.clock_id != metadata['clock']['id'] or metadata['clock']['unit'] != 's' or
         (record.unit,record.frame,record.stage,record.source) != tuple(meta[k] for k in ('unit','frame','stage','source'))):

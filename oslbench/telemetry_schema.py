@@ -15,6 +15,16 @@ CHANNELS = MappingProxyType({
     "belt_deflection": ("angle", "rad", "knee_joint"),
 })
 
+# CHANNELS remains the frozen Phase 6D replay-v1 registry. Only live ingestion
+# uses this additive registry; an IMU is never represented as a knee encoder.
+IMU_CHANNELS = MappingProxyType({
+    **{f"imu_{axis}": ("angle", "rad", "imu_filter_ned")
+       for axis in ("roll", "pitch", "yaw")},
+    **{f"imu_q{i}": ("quaternion_component", "1", "imu_filter_ned")
+       for i in range(4)},
+})
+OBSERVATION_CHANNELS = MappingProxyType({**CHANNELS, **IMU_CHANNELS})
+
 
 @dataclass(frozen=True)
 class ReplayRecord:

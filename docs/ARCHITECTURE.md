@@ -100,4 +100,23 @@ remain unresolved. No complete robot pose is synthesized from the mock observati
 
 Replay/hardware boundaries must detect gaps, out-of-order samples, stale data, clock resets/skew, invalid units/frames and device faults. Hardware thresholds require actual acquisition requirements. Any future command transport must be separate from read-only acquisition, with documented arming, watchdog, stop and limit behavior.
 
-No implemented IMU driver, physical encoder acquisition, serial/CAN actuator transport or hardware-to-MuJoCo bridge was found in the active source audit. Exact devices, protocols, clocks, calibration, signs, current semantics and allowed commands remain unresolved. MyoAssist is parked. See [baseline provenance](WORKING_BASELINE.md).
+The earlier audit found no IMU acquisition implementation. Phase 6F-B now adds a
+passive MSCL filter reader and HTTP ingestion, tested without hardware; see below.
+Physical encoder acquisition, serial/CAN actuator transport and hardware-to-MuJoCo
+bridging remain absent. MyoAssist is parked. See [baseline provenance](WORKING_BASELINE.md).
+
+## Phase 6F-B software boundary (hardware validation pending)
+
+`microstrain_reader.py` uses official decoded MSCL filter fields. `imu_service.py`
+owns a single reader worker, locked latest-channel cache and read-only HTTP endpoints.
+`imu_telemetry.py` validates a separate HTTP schema. `HttpTelemetrySource` performs
+network I/O in a worker and implements the existing nonblocking source protocol;
+`HttpTelemetryPresentation` adds transport diagnostics to the existing browser UI.
+No physics, command transport or second dashboard is introduced.
+
+`telemetry_schema.CHANNELS` stays frozen for replay v1. A separate live registry
+adds seven orientation components. Sample admits an additive, narrowly scoped
+`imu_filter_ned`/`acquisition` case; RobotState and commands retain their original
+constraints. Device timestamps remain separate from Pi and laptop receipt clocks.
+The Pi deployment, MSCL native binding, actual stream, mounting and synchronization
+still require physical checks. See [IMU deployment guide](IMU_TELEMETRY.md).

@@ -25,6 +25,14 @@ class Sample:
     def __post_init__(self):
         finite(self.value)
         finite(self.time_s)
+        # Additive read-only orientation observations; existing robot/command
+        # contracts below still require their original units and frames.
+        if self.frame == "imu_filter_ned" and self.stage == "acquisition":
+            if self.time_s < 0 or self.unit not in ("rad", "1"):
+                raise ValueError("Invalid orientation time or unit")
+            if self.source not in ("measured", "synthetic_mock") or type(self.valid) is not bool:
+                raise ValueError("Explicit orientation provenance and validity required")
+            return
         if self.time_s < 0 or self.unit not in ("rad", "rad/s", "Nm", "A"):
             raise ValueError("Invalid time or unit")
         if self.frame not in FRAMES or self.stage not in ("pre_step", "post_step", "held_command", "step_input"):

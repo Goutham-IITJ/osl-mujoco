@@ -2,13 +2,14 @@
 
 CAD-derived Open-Source Leg V2 simulation for fixed-base knee tracking, compliant-drivetrain research and eventual sim-to-real comparison. The current live application runs current-controlled gait with a native MuJoCo viewer, browser dashboard and saved traces from the same execution.
 
-This is a simulation research platform. Deterministic file replay is implemented for the seven established state channels; browser replay now displays those recorded observations with explicit timestamps and validity. Hardware acquisition, IMU processing, full-pose replay and predictive hardware comparison are future work. AB19 human gait is a reference, not a measurement of this robot.
+This is a simulation research platform. Deterministic file replay is implemented for the seven established state channels; browser replay displays those recorded observations with explicit timestamps and validity. A passive MSCL IMU reader and read-only Pi-to-laptop HTTP pipeline are implemented with hardware-free tests; physical deployment remains unvalidated. IMU-driven simulation, full-pose replay and predictive hardware comparison remain future work. AB19 human gait is a reference, not a measurement of this robot.
 
 ## Start here
 
 - [Live instructions and controls](docs/LIVE_DEMO.md)
 - [Recorded telemetry playback, schema and API](docs/TELEMETRY_REPLAY.md)
 - [Synthetic mock telemetry and read-only source boundary](docs/TELEMETRY_SOURCE.md)
+- [Pi IMU service and laptop client: deployment and limitations](docs/IMU_TELEMETRY.md)
 - [Authoritative control paths](docs/CONTROL_PATHS.md)
 - [Current architecture and proposed boundaries](docs/ARCHITECTURE.md)
 - [Research and evidence index](docs/RESEARCH_INDEX.md)
