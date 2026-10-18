@@ -30,10 +30,10 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from oslbench.controller import PDController, kd_for_damping_ratio
-from oslbench.model import load_bench_model
+from oslbench.control.servo import PDController, kd_for_damping_ratio
+from oslbench.sim.model import load_bench_model
 from oslbench.reference import load_reference, resample_reference
-from oslbench.simulation import BenchSimulation
+from oslbench.sim.servo import BenchSimulation
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT_OUTDIR = os.path.join(ROOT, "build", "armature_pilot")

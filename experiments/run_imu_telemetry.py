@@ -8,8 +8,9 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-from oslbench.http_telemetry_source import HttpTelemetrySource, HttpTelemetryPresentation
-from oslbench.replay_presentation import ReplayWebDashboard
+from oslbench.telemetry.http import HttpTelemetrySource
+from oslbench.presentation.http import HttpTelemetryPresentation
+from oslbench.presentation.replay import ReplayWebDashboard
 
 
 def main():

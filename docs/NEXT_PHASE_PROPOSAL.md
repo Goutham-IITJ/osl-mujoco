@@ -1,5 +1,7 @@
 # OSL V2 project roadmap
 
+Implemented 2026-10-19: `oslbench/control/`, `sim/`, `telemetry/` and `presentation/` now own the four responsibility domains; shared contracts remain at package root and `apps/` composes workflows. Legacy imports and experiment commands remain compatible. The current-gait viewer uses the library runtime directly. See [architecture](ARCHITECTURE.md) for D1 measured-joint mirroring and D2 explicit IMU-estimator handoff. Encoder calibration/transport and a validated IMU estimator remain pending.
+
 ## Authoritative current roadmap — 2026-10-18
 
 This section alone defines the current implementation sequence. The prior roadmap

@@ -44,10 +44,10 @@ start-sampling commands are deliberately not copied.
 
 | Component | Responsibility |
 |---|---|
-| `oslbench/microstrain_reader.py` | Linux-only MSCL passive decoded-field reader; advisory device lock |
-| `oslbench/imu_service.py` | One acquisition thread, locked latest-channel cache, GET-only endpoints |
-| `oslbench/imu_telemetry.py` | Strict versioned JSON validation; separate from replay-v1 |
-| `oslbench/http_telemetry_source.py` | Background HTTP worker implementing existing TelemetrySource; thin presentation subclass |
+| `oslbench/telemetry/microstrain.py` | Linux-only MSCL passive decoded-field reader; advisory device lock |
+| `oslbench/telemetry/imu_service.py` | One acquisition thread, locked latest-channel cache, GET-only endpoints |
+| `oslbench/telemetry/imu_schema.py` | Strict versioned JSON validation; separate from replay-v1 |
+| `oslbench/telemetry/http.py` | Background HTTP worker implementing existing TelemetrySource; thin presentation subclass |
 | `experiments/run_imu_service.py` | Pi process lifecycle |
 | `experiments/run_imu_telemetry.py` | Laptop client plus existing ReplayWebDashboard |
 

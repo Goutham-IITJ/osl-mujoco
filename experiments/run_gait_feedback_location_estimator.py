@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from experiments import run_gait_feedback_location_ab as ab
-from oslbench.feedback_location_diagnostic import ActuatorDifferenceSource
+from oslbench.control.feedback import ActuatorDifferenceSource
 
 OUT = ROOT/'build/gait_feedback_location_estimator_ab'
 C_EXTRA = ('actuator_equivalent_sample_deg', 'actuator_difference_velocity_deg_s',

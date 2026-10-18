@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from experiments import run_current_controlled_gait as gait
-from oslbench.feedback_location_diagnostic import FeedbackLocationSource
+from oslbench.control.feedback import FeedbackLocationSource
 
 OUT = ROOT / 'build/gait_feedback_location_ab'
 OLD = ROOT / 'build/current_controlled_gait/kp0.75_kd0.03_ideal_manual_rotor_cad_aligned'
@@ -84,7 +84,8 @@ def write_csv(path, header, rows):
 
 
 def fingerprints():
-    paths = list((ROOT/'oslbench').glob('*.py')) + list((ROOT/'experiments').glob('*.py'))
+    from oslbench.paths import source_files
+    paths = list(source_files(ROOT))
     paths += list((ROOT/'tests').glob('*.py')) + list((ROOT/'tests/oracle').rglob('*'))
     paths += [ROOT/'models/osl_v2_bench.xml', Path(gait.DEFAULT_REFERENCE_CSV)]
     paths += list((ROOT/'build/current_controlled_gait').rglob('*'))

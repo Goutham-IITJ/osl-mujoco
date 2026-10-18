@@ -49,7 +49,8 @@ def test_current_live_empty_attempt_saves_status_without_steps():
     from experiments import run_current_controlled_gait as gait
     ctx=dict(cfg=SimpleNamespace(current_loop_tau_s=0),src=SimpleNamespace(updates=0),dt=.0005)
     args=SimpleNamespace(feedback_mode='actuator-difference')
-    with tempfile.TemporaryDirectory() as folder, patch.object(gait,'metadata',return_value={}):
+    from oslbench.sim import current_gait as runtime
+    with tempfile.TemporaryDirectory() as folder, patch.object(runtime,'metadata',return_value={}):
         p=save_attempt(folder,1,[],ctx,args,'stopped',NoDashboard())
         md=json.loads((p/'run_metadata.json').read_text())
         assert md['recorded_physics_steps']==0 and md['run_status']=='stopped'

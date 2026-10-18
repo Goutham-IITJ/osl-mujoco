@@ -8,8 +8,8 @@ import time
 ROOT=Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0,str(ROOT))
-from oslbench.telemetry_replay import ReplaySource
-from oslbench.replay_presentation import ReplayPresentation, ReplayWebDashboard, SPEEDS
+from oslbench.telemetry.replay import ReplaySource
+from oslbench.presentation.replay import ReplayPresentation, ReplayWebDashboard, SPEEDS
 
 
 def main():

@@ -39,7 +39,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-MODULE_PATH = os.path.join(ROOT, "oslbench", "drivetrain.py")
+MODULE_PATH = os.path.join(ROOT, "oslbench", "control", "drivetrain.py")
 
 
 def _load_drivetrain():

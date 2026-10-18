@@ -37,7 +37,7 @@ BENCH_XML = os.path.join(ROOT, "models", "osl_v2_bench.xml")
 def _load_drivetrain():
     """Load the module without executing oslbench/__init__.py (which imports numpy).
     sys.modules must be populated BEFORE exec_module -- @dataclass looks itself up there."""
-    path = os.path.join(ROOT, "oslbench", "drivetrain.py")
+    path = os.path.join(ROOT, "oslbench", "control", "drivetrain.py")
     spec = importlib.util.spec_from_file_location("oslbench_drivetrain_standalone", path)
     mod = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = mod

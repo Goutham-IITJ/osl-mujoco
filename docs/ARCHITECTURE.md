@@ -2,13 +2,24 @@
 
 Current reference, 2026-10-18. Implementation order is maintained only in the [roadmap](NEXT_PHASE_PROPOSAL.md); this document describes ownership, not a competing plan.
 
-## Existing execution
+## Implemented ownership (2026-10-19)
 
-`reference.py` loads/audits/resamples the reference. `controller.py` and the current-control modules implement the three [control paths](CONTROL_PATHS.md). `model.py` owns bench model access. `BenchSimulation` steps the direct-servo plant; `DrivetrainBenchSimulation` adds the external actuator/belt state and applied joint torque. `drivetrain.py` contains parameter provenance and equations.
+Four major sections now own the implementation:
 
-The [current gait runner](../experiments/run_current_controlled_gait.py) constructs configuration and the plant, owns `iter_run`, metrics and output functions. Both headless and live execution use that iterator. The [live adapter](../oslbench/current_gait_live.py) currently imports the experiment runner; this dependency should be wrapped and then inverted incrementally, not resolved by copying equations. Shared current primitives currently reside in `ankle_current_control.py`; their location does not make knee settings hardware-confirmed.
+- `oslbench/control/`: A position-servo PD (`servo.py`), B torque PD (`torque.py`), C current PID and gait scheduling (`current.py`, `gait.py`), and drivetrain/compliance equations. The three laws and execution paths remain distinct.
+- `oslbench/sim/`: model access, A `servo.py`, B `compliant.py`, C `ankle.py` and `current_gait.py`, plus the simulation-specific typed adapter in `contracts.py`. Physics stepping belongs here.
+- `oslbench/telemetry/`: deterministic replay, mock sources, MicroStrain acquisition, IMU service and HTTP client. No controller or command-output interface is added to telemetry.
+- `oslbench/presentation/`: dashboards, replay/live observation formatting, viewers, plots and measured-joint mirroring. Telemetry presentation never steps physics. Simulation viewers explicitly orchestrate the existing simulation runtime.
 
-The native viewer displays the same model/data that physics advances. Dashboard snapshots are decimated presentation data; CSV records retain the physics-step data. Lifecycle events are distinct from actuator commands. Rendering speed does not set physics/control periods.
+Shared `contracts.py`, `telemetry_schema.py`, reference loading and logging remain at package root. `apps/` holds current-gait CLI composition and the explicit IMU-reference handoff. Existing experiment launch commands remain available; the current-gait script is a thin entry point. Old module paths alias their canonical implementations, preserving class identity. The legacy HTTP presentation export is lazy; normal transport imports do not load the UI.
+
+`sim/current_gait.py` owns build, iterator, metrics and output functions. Both headless and live execution use that iterator; presentation no longer imports an experiment script. Source hashing recursively includes nested implementation files. Assets, reference data and historical evidence remain in place.
+
+### Distinct hardware workflows
+
+**D1** uses `presentation/mirroring.py` with an explicit, valid measured knee encoder sample in calibrated radians and knee coordinates, plus a separate display model/data. The caller supplies `mujoco.mj_kinematics`; the helper only writes the mapped qpos and updates kinematics. It does not step physics or issue commands. The additive measured knee acquisition stage does not change replay-v1 channels or parsing. Encoder transport and calibration are not implemented; IMU orientation cannot enter this path as knee position.
+
+**D2** uses `apps/imu_reference.py` to validate measured IMU records and call a required estimator/reference generator. It requires an explicit knee-joint PositionCommand result. The estimator owns clock alignment, coherence, calibration and gait inference; no estimator or automatic controller connection is provided. A future application must separately schedule this reference through the selected simulation path. Quaternion-to-knee conversion is deliberately undefined.
 
 ## Implemented Phase 6C contracts
 
@@ -36,17 +47,16 @@ joint torque and joint-frame deflection carry step-input time. Existing CSV colu
 and their historical timing conventions are unchanged. Electromagnetic torque is
 read directly from LayerStep.tau_m in actuator-output Nm, without a ratio conversion.
 
-The original controller classes, MuJoCo simulation, viewer and dashboards remain in
-place. The simulation still consumes a scalar through its historical callable API;
+The original controller classes, MuJoCo simulation, viewer and dashboards retain their behavior in the ownership packages above. The simulation still consumes a scalar through its historical callable API;
 the typed boundary is inside the production gait adapter. Direct iterator callers
 with an unwrapped source remain supported. Position/torque command types are defined
 but not wired into the original servo or torque-domain control paths. The live module
-still imports its experiment runner; the controller still reads actuator feedback
+imports the simulation runtime directly; the controller still reads actuator feedback
 from the existing layer. This is a compatibility slice, not backend independence.
 
 ## Implemented Phase 6D replay and remaining interfaces
 
-[telemetry_replay.py](../oslbench/telemetry_replay.py) loads a versioned CSV/JSON
+[telemetry_replay.py](../oslbench/telemetry/replay.py) loads a versioned CSV/JSON
 observation dataset using the existing Sample/RobotState types. ReplayRecord is an
 envelope for sequence, group and clock identity, including explicit missing samples.
 The core has deterministic iteration, reset, explicit group lookup and a virtual clock;
@@ -73,13 +83,13 @@ continues to reject non-simulation inputs. No hardware command capability is int
 
 ## Implemented Phase 6F-A source foundation
 
-[TelemetrySource](../oslbench/telemetry_source.py) defines read-only metadata/status,
+[TelemetrySource](../oslbench/telemetry/source.py) defines read-only metadata/status,
 nonblocking poll(local_time_s) and close. It reuses the existing ReplayRecord/Sample
 envelope and channel declarations; deterministic replay is not forced into this lifecycle.
 MockTelemetrySource produces finite, explicitly synthetic observations with independent
 source/arrival times, missing/invalid data and a scripted disconnection.
 
-[TelemetryPresentation](../oslbench/telemetry_presentation.py) consumes arrival batches,
+[TelemetryPresentation](../oslbench/presentation/telemetry.py) consumes arrival batches,
 validates declarations and preserves Sample provenance. Shared channel formatting and
 the existing browser page/server show source time and local receipt time separately.
 Receipt-age STALE is an explicit configurable display policy, not synchronized source

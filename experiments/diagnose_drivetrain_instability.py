@@ -92,13 +92,13 @@ USING_STUB = stub_mujoco.is_stub(MJ)
 
 import numpy as np                                                       # noqa: E402
 
-from oslbench import drivetrain as D                                     # noqa: E402
-from oslbench.controller import KD, KP, PDController                      # noqa: E402
-from oslbench.drivetrain import PAPER                                     # noqa: E402
-from oslbench.drivetrain_sim import (DrivetrainBenchSimulation,           # noqa: E402
-                                     DrivetrainLayer, PDCurrentSource,
-                                     belt_potential_energy)
-from oslbench.model import load_bench_model                               # noqa: E402
+from oslbench.control import drivetrain as D                                     # noqa: E402
+from oslbench.control.servo import KD, KP, PDController
+from oslbench.control.drivetrain import PAPER
+from oslbench.sim.compliant import DrivetrainBenchSimulation
+from oslbench.control.compliance import DrivetrainLayer, belt_potential_energy
+from oslbench.control.torque import PDCurrentSource
+from oslbench.sim.model import load_bench_model
 from oslbench.reference import (SUBJECT, TRIAL, audit_reference,          # noqa: E402
                                 load_reference, resample_reference)
 

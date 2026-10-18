@@ -1,5 +1,7 @@
 # Refactor map: what the code did before, and where each piece went
 
+Current implementation update (2026-10-19): the responsibility packages `control`, `sim`, `telemetry` and `presentation` are implemented, with `apps` for composition and root shared contracts. See [implemented ownership and D1/D2 boundaries](ARCHITECTURE.md#implemented-ownership-2026-10-19). Original flat module paths remain compatibility aliases. Historical plans below retain their context; runtime extraction and viewer/experiment dependency inversion are complete. Real encoder mapping and validated IMU estimation remain pending.
+
 This file exists because the bench experiment was originally written as two large
 scripts that each did seven jobs at once. It records the state of the code *before*
 the reorganisation, the dependency and data-flow graph that had to be preserved, and

@@ -1,5 +1,7 @@
 # OSL V2 in MuJoCo
 
+Implemented 2026-10-19: `oslbench/control/`, `sim/`, `telemetry/` and `presentation/` now own the four responsibility domains; shared contracts remain at package root and `apps/` composes workflows. Legacy imports and experiment commands remain compatible. The current-gait viewer uses the library runtime directly. See [architecture](docs/ARCHITECTURE.md) for D1 measured-joint mirroring and D2 explicit IMU-estimator handoff. Encoder calibration/transport and a validated IMU estimator remain pending.
+
 CAD-derived Open-Source Leg V2 simulation for fixed-base knee tracking, compliant-drivetrain research and eventual sim-to-real comparison. The current live application runs current-controlled gait with a native MuJoCo viewer, browser dashboard and saved traces from the same execution.
 
 This is a simulation research platform. Deterministic file replay is implemented for the seven established state channels; browser replay displays those recorded observations with explicit timestamps and validity. A passive MSCL IMU reader and read-only Pi-to-laptop HTTP pipeline are implemented with hardware-free tests; physical deployment remains unvalidated. IMU-driven simulation, full-pose replay and predictive hardware comparison remain future work. AB19 human gait is a reference, not a measurement of this robot.

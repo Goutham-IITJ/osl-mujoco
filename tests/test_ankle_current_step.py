@@ -263,7 +263,7 @@ def test_mapping_1_is_derived_from_geometry_and_never_from_mapping_2():
     script's ENCODER_TO_MOTOR_SIGN) is a CONTROLLER-INTERNAL fact. I had justified the
     first partly via the loop-stability condition, which involves the second -- circular.
     """
-    src = _src(os.path.join(ROOT, "oslbench", "ankle_current_control.py"))
+    src = _src(os.path.join(ROOT, "oslbench", "sim", "ankle.py")) + _src(os.path.join(ROOT, "oslbench", "control", "current.py"))
     # the derivation must cite the geometry it rests on
     for needle in ("0.1665", "0.0756", "(0, 1, 0)", "dz/dtheta",
                    "DORSIFLEXION", "mjcf_q_to_encoder_sign"):
@@ -690,7 +690,7 @@ def test_the_protected_baseline_files_are_untouched_by_this_feature():
     """
     import hashlib
     expectations = {
-        "oslbench/controller.py": ("KD = 17.253", "KP = 600.0"),
+        "oslbench/control/servo.py": ("KD = 17.253", "KP = 600.0"),
         "models/osl_v2_bench.xml": ('name="ankle_pos"', 'forcerange="-168.2 168.2"',
                                     'kp="60.0"'),
     }
@@ -701,7 +701,7 @@ def test_the_protected_baseline_files_are_untouched_by_this_feature():
         for needle in needles:
             assert needle in text, f"{rel} no longer contains {needle!r}"
     # the ankle module must not import or monkey-patch the protected controller's gains
-    with open(os.path.join(ROOT, "oslbench", "ankle_current_control.py"),
+    with open(os.path.join(ROOT, "oslbench", "sim", "ankle.py"),
               encoding="utf-8") as fh:
         src = fh.read()
     for banned in ("controller.KP", "controller.KD", "KP =", "KD =",

@@ -76,18 +76,10 @@ if _WANT_STUB:
     import stub_mujoco as _stub
     _stub.install()
 
-from oslbench.ankle_current_control import (ANKLE_PAPER_CAD_BELT,       # noqa: E402
-                                            CAD_BELT_RATIO, CAD_BELT_TEETH,
-                                            AnkleCurrentSim, ConversionAudit,
-                                            CurrentLimits, CurrentPID,
-                                            EncoderConvention, PIDGains,
-                                            TORQUE_CONSTANT_CHOICES,
-                                            CurrentLoopModel,
-                                            check_sign_consistency,
-                                            derive_mjcf_q_to_encoder_sign,
-                                            torque_constant)
-from oslbench.drivetrain import PAPER                                   # noqa: E402
-from oslbench.model import load_bench_model                             # noqa: E402
+from oslbench.control.current import ANKLE_PAPER_CAD_BELT, CAD_BELT_RATIO, CAD_BELT_TEETH, ConversionAudit, CurrentLimits, CurrentPID, EncoderConvention, PIDGains, TORQUE_CONSTANT_CHOICES, CurrentLoopModel, check_sign_consistency, torque_constant
+from oslbench.sim.ankle import AnkleCurrentSim, derive_mjcf_q_to_encoder_sign
+from oslbench.control.drivetrain import PAPER
+from oslbench.sim.model import load_bench_model
 
 
 # =====================================================================================

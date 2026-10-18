@@ -56,11 +56,11 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from oslbench.controller import KD, KP
-from oslbench.controller import PDController
-from oslbench.model import BENCH_XML, dof_inertia, load_bench_model
+from oslbench.control.servo import KD, KP
+from oslbench.control.servo import PDController
+from oslbench.sim.model import BENCH_XML, dof_inertia, load_bench_model
 from oslbench.reference import load_reference, resample_reference
-from oslbench.simulation import BenchSimulation
+from oslbench.sim.servo import BenchSimulation
 
 try:
     import mujoco

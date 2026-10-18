@@ -73,13 +73,14 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-from oslbench import drivetrain_dashboard as ddash                          # noqa: E402
-from oslbench import viewer as vw                                           # noqa: E402
-from oslbench.controller import KD, KP, PDController                        # noqa: E402
-from oslbench.drivetrain import PAPER                                       # noqa: E402
-from oslbench.drivetrain_sim import (DrivetrainBenchSimulation,             # noqa: E402
-                                     DrivetrainLayer, PDCurrentSource)
-from oslbench.model import load_bench_model                                 # noqa: E402
+from oslbench.presentation import drivetrain_dashboard as ddash                          # noqa: E402
+from oslbench.presentation import viewer as vw                                           # noqa: E402
+from oslbench.control.servo import KD, KP, PDController
+from oslbench.control.drivetrain import PAPER
+from oslbench.sim.compliant import DrivetrainBenchSimulation
+from oslbench.control.compliance import DrivetrainLayer
+from oslbench.control.torque import PDCurrentSource
+from oslbench.sim.model import load_bench_model
 from oslbench.reference import (DEFAULT_REFERENCE_CSV, STANCE_END,          # noqa: E402
                                 SUBJECT, TRIAL, audit_reference,
                                 load_reference, resample_reference)

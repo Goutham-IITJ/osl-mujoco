@@ -499,7 +499,7 @@ def test_the_current_source_and_the_simulation_share_one_layer_instance():
 # THE LIVE DEMO IS PRESENTATION ONLY -- it must never become a second implementation
 # =====================================================================================
 DEMO = os.path.join(ROOT, "experiments", "run_live_drivetrain_demo.py")
-DEMO_DASH = os.path.join(ROOT, "oslbench", "drivetrain_dashboard.py")
+DEMO_DASH = os.path.join(ROOT, "oslbench", "presentation", "drivetrain_dashboard.py")
 
 
 def _src(path):

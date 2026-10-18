@@ -8,7 +8,7 @@ observations without running physics.
 
 ## Source boundary
 
-[TelemetrySource](../oslbench/telemetry_source.py) is a small Python Protocol:
+[TelemetrySource](../oslbench/telemetry/source.py) is a small Python Protocol:
 
 ```python
 @property

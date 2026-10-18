@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from experiments import run_gait_feedback_location_estimator as previous
-from oslbench.feedback_location_diagnostic import ActuatorDifferenceSource
+from oslbench.control.feedback import ActuatorDifferenceSource
 
 ab = previous.ab
 gait = ab.gait

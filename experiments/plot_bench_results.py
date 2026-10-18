@@ -39,7 +39,7 @@ if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
 from oslbench import logging as blog                                       # noqa: E402
-from oslbench.controller import KD, KP                                     # noqa: E402
+from oslbench.control.servo import KD, KP
 from oslbench.plotting import plot_bench_results                           # noqa: E402
 
 

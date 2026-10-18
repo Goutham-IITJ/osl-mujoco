@@ -16,10 +16,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-from oslbench.controller import PDController  # noqa: E402
-from oslbench.model import load_bench_model  # noqa: E402
+from oslbench.control.servo import PDController
+from oslbench.sim.model import load_bench_model
 from oslbench.reference import step_reference  # noqa: E402
-from oslbench.simulation import BenchSimulation  # noqa: E402
+from oslbench.sim.servo import BenchSimulation
 
 DT = 0.0005
 STEP_TIME_S = 0.2

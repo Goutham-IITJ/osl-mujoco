@@ -62,11 +62,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-from oslbench.drivetrain import PAPER                                   # noqa: E402
-from oslbench.drivetrain_sim import (DrivetrainLayer,                   # noqa: E402
-                                     belt_potential_energy,
-                                     frictionless_parameters)
-from oslbench.model import I_BODY_EXPECT                                # noqa: E402
+from oslbench.control.drivetrain import PAPER
+from oslbench.control.compliance import DrivetrainLayer, belt_potential_energy, frictionless_parameters
+from oslbench.sim.model import I_BODY_EXPECT
 
 DT = 5.0e-4                     # models/osl_v2_bench.xml line 5
 T_END = 2.0                     # the directive's 2 seconds

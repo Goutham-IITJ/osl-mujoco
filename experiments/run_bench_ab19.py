@@ -41,13 +41,13 @@ if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
 from oslbench import logging as blog                                      # noqa: E402
-from oslbench.controller import KD, KP, PDController                      # noqa: E402
+from oslbench.control.servo import KD, KP, PDController
 from oslbench.metrics import bench_metrics                                # noqa: E402
-from oslbench.model import load_bench_model                               # noqa: E402
+from oslbench.sim.model import load_bench_model
 from oslbench.reference import (SUBJECT, TRIAL, audit_reference,          # noqa: E402
                                 load_reference, resample_reference,
                                 step_reference)
-from oslbench.simulation import BenchSimulation                           # noqa: E402
+from oslbench.sim.servo import BenchSimulation
 
 
 def report(M, audit, n, cycles, lo_deg, hi_deg, p_csv, p_met):

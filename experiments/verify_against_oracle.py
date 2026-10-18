@@ -50,12 +50,12 @@ if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
 from oslbench import logging as blog                                       # noqa: E402
-from oslbench.controller import KD, KP, PDController                       # noqa: E402
+from oslbench.control.servo import KD, KP, PDController
 from oslbench.metrics import bench_metrics                                 # noqa: E402
-from oslbench.model import load_bench_model                                # noqa: E402
+from oslbench.sim.model import load_bench_model
 from oslbench.reference import (SUBJECT, audit_reference, load_reference,   # noqa: E402
                                 resample_reference)
-from oslbench.simulation import BenchSimulation                            # noqa: E402
+from oslbench.sim.servo import BenchSimulation
 
 ORACLE_DIR = os.path.join(ROOT, "tests", "oracle")
 WORK_DIR = os.path.join(ROOT, "build", "verify_oracle")

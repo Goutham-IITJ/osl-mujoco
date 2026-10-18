@@ -11,13 +11,13 @@ Current implementation inventory, 2026-10-18. Path labels A/B/C below describe f
 .\.venv\Scripts\python.exe -B experiments\run_live_demo.py
 ```
 
-Sources: [controller](../oslbench/controller.py), [simulation](../oslbench/simulation.py). Tests: [bench suite](../tests/test_oslbench.py), [frozen oracle](../tests/oracle/), [oracle verifier](../experiments/verify_against_oracle.py). Evidence: [benchmark](../build/bench_track_ab19/), [gain sweep](../build/gain_sweep/), [validation record](VALIDATION.md).
+Sources: [controller](../oslbench/control/servo.py), [simulation](../oslbench/sim/servo.py). Tests: [bench suite](../tests/test_oslbench.py), [frozen oracle](../tests/oracle/), [oracle verifier](../experiments/verify_against_oracle.py). Evidence: [benchmark](../build/bench_track_ab19/), [gain sweep](../build/gain_sweep/), [validation record](VALIDATION.md).
 
 Status: protected numerical regression reference. Tracking human kinematics is not validation of physical motor/drivetrain dynamics.
 
 ## B. Torque-domain PD through the compliant drivetrain
 
-[PDCurrentSource](../oslbench/drivetrain_sim.py) uses the benchmark torque gains by default. Its position feedback is joint angle; derivative feedback is instantaneous actuator-output velocity divided by external belt ratio `n_t`. The actuator output shaft is after the internal gearbox and before the belt. Torque request is `Kp*(clamped_reference-q_joint)-Kd*(theta_a_dot/n_t)`, converted to layer rotor current by dividing by `n_t*k_t*n_a`.
+[PDCurrentSource](../oslbench/sim/compliant.py) uses the benchmark torque gains by default. Its position feedback is joint angle; derivative feedback is instantaneous actuator-output velocity divided by external belt ratio `n_t`. The actuator output shaft is after the internal gearbox and before the belt. Torque request is `Kp*(clamped_reference-q_joint)-Kd*(theta_a_dot/n_t)`, converted to layer rotor current by dividing by `n_t*k_t*n_a`.
 
 The source is evaluated every physics step before advancing the external actuator/belt layer. Belt deflection is `q_joint-theta_a/n_t`; joint torque reaches MuJoCo through `qfrc_applied`. The knee position servo is disconnected in memory. This source uses `torque_unclamped`: the disconnected servo's force limit is not a drive-current limit, and this path assumes no current clipping. Paper-derived parameters are not calibrated hardware parameters.
 
@@ -32,7 +32,7 @@ Tests: [drivetrain algebra](../tests/test_drivetrain.py), [integration/feedback]
 
 ## C. Current-domain knee gait
 
-[CurrentPID](../oslbench/ankle_current_control.py), [GaitCurrentSource](../oslbench/joint_current_control.py) and [ActuatorDifferenceSource](../oslbench/feedback_location_diagnostic.py) implement the current-domain path. Kp=0.75 A/degree, Kd=0.03 A/(degree/second), Ki=0. These gains came from the reported ankle step-test configuration and remain provisional for the knee.
+[CurrentPID](../oslbench/sim/ankle.py), [GaitCurrentSource](../oslbench/control/gait.py) and [ActuatorDifferenceSource](../oslbench/control/feedback.py) implement the current-domain path. Kp=0.75 A/degree, Kd=0.03 A/(degree/second), Ki=0. These gains came from the reported ankle step-test configuration and remain provisional for the knee.
 
 The knee reference and measurement are MuJoCo coordinates converted to degrees with +1 measurement sign. The motor sign is +1 by simulation wiring; neither establishes a physical encoder convention.
 
@@ -48,7 +48,7 @@ The compliant plant is `DrivetrainBenchSimulation`; the knee position servo is d
 .\.venv\Scripts\python.exe -B experiments\run_current_controlled_gait.py --feedback-mode legacy
 ```
 
-[Live adapter](../oslbench/current_gait_live.py) and [dashboard](../oslbench/drivetrain_dashboard.py) consume the runner's shared execution. Browser buttons control simulation lifecycle only. See [live guide](LIVE_DEMO.md).
+[Live adapter](../oslbench/presentation/current_gait.py) and [dashboard](../oslbench/presentation/drivetrain_dashboard.py) consume the runner's shared execution. Browser buttons control simulation lifecycle only. See [live guide](LIVE_DEMO.md).
 
 Tests: [joint current](../tests/test_joint_current_control.py), [feedback A/B](../tests/test_gait_feedback_location_ab.py), [estimator comparison](../tests/test_gait_feedback_location_estimator.py), [live integration](../tests/test_current_gait_live.py). Evidence: [current gait](../build/current_controlled_gait/), [feedback/estimator report](../build/gait_feedback_location_estimator_ab/FEEDBACK_LOCATION_ESTIMATOR_COMPARISON.md), [convergence report](../build/gait_feedback_location_timestep_convergence/TIMESTEP_CONVERGENCE_REPORT.md), [Phase 5 report](../build/integrated_current_gait_phase5/PHASE5_REPORT.md).
 

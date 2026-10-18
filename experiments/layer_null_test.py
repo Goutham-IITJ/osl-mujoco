@@ -79,15 +79,15 @@ MJ = stub_mujoco.install()
 USING_STUB = stub_mujoco.is_stub(MJ)
 
 from oslbench import logging as blog                                    # noqa: E402
-from oslbench.controller import KD, KP, PDController                    # noqa: E402
-from oslbench.drivetrain import PAPER                                   # noqa: E402
-from oslbench.drivetrain_sim import (DrivetrainBenchSimulation,         # noqa: E402
-                                     DrivetrainLayer)
+from oslbench.control.servo import KD, KP, PDController
+from oslbench.control.drivetrain import PAPER
+from oslbench.sim.compliant import DrivetrainBenchSimulation
+from oslbench.control.compliance import DrivetrainLayer
 from oslbench.metrics import bench_metrics                              # noqa: E402
-from oslbench.model import load_bench_model                             # noqa: E402
+from oslbench.sim.model import load_bench_model
 from oslbench.reference import (SUBJECT, audit_reference,               # noqa: E402
                                 load_reference, resample_reference)
-from oslbench.simulation import BenchSimulation                         # noqa: E402
+from oslbench.sim.servo import BenchSimulation
 
 # Re-used, never re-defined.  See "NOT A SECOND MONOLITHIC SCRIPT" above.
 import verify_against_oracle as V                                       # noqa: E402

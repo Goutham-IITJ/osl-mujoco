@@ -52,16 +52,17 @@ if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
 from oslbench import logging as blog                                      # noqa: E402
-from oslbench.controller import KD, KP, PDController                      # noqa: E402
-from oslbench.drivetrain import PAPER                                     # noqa: E402
-from oslbench.drivetrain_sim import (DrivetrainBenchSimulation,           # noqa: E402
-                                     DrivetrainLayer, PDCurrentSource)
+from oslbench.control.servo import KD, KP, PDController
+from oslbench.control.drivetrain import PAPER
+from oslbench.sim.compliant import DrivetrainBenchSimulation
+from oslbench.control.compliance import DrivetrainLayer
+from oslbench.control.torque import PDCurrentSource
 from oslbench.metrics import (bench_metrics, lag_diagnostic,              # noqa: E402
                               tracking_metrics)
-from oslbench.model import load_bench_model                               # noqa: E402
+from oslbench.sim.model import load_bench_model
 from oslbench.reference import (SUBJECT, TRIAL, audit_reference,          # noqa: E402
                                 load_reference, resample_reference)
-from oslbench.simulation import BenchSimulation                           # noqa: E402
+from oslbench.sim.servo import BenchSimulation
 
 CSV_A = "bench_track_ab19_servo.csv"
 CSV_B = "bench_track_ab19_drivetrain.csv"

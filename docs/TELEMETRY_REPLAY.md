@@ -88,7 +88,7 @@ returns a detached metadata copy preserving signs, provenance and source identit
 From the repository root, with Python on the environment path:
 
 ```python
-from oslbench.telemetry_replay import ReplaySource
+from oslbench.telemetry.replay import ReplaySource
 
 replay = ReplaySource("tests/fixtures/telemetry_replay/manifest.json")
 for record in replay:

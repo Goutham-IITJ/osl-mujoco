@@ -60,14 +60,12 @@ import stub_mujoco                                                       # noqa:
 MJ = stub_mujoco.install()
 USING_STUB = stub_mujoco.is_stub(MJ)
 
-from oslbench import drivetrain as D                                     # noqa: E402
-from oslbench.controller import KD, KP, PDController                     # noqa: E402
-from oslbench.drivetrain import PAPER                                    # noqa: E402
-from oslbench.drivetrain_sim import (ConstantCurrent,       # noqa: E402
-                                     DrivetrainBenchSimulation,
-                                     DrivetrainLayer, StepCurrent,
-                                     frictionless_parameters)
-from oslbench.model import load_bench_model                              # noqa: E402
+from oslbench.control import drivetrain as D                                     # noqa: E402
+from oslbench.control.servo import KD, KP, PDController
+from oslbench.control.drivetrain import PAPER
+from oslbench.control.compliance import ConstantCurrent, DrivetrainLayer, StepCurrent, frictionless_parameters
+from oslbench.sim.compliant import DrivetrainBenchSimulation
+from oslbench.sim.model import load_bench_model
 
 P = PAPER
 WORK_DIR = os.path.join(ROOT, "build", "layer_dynamic_test")

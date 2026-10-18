@@ -9,8 +9,8 @@ import threading
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-from oslbench.microstrain_reader import MsclReader
-from oslbench.imu_service import Acquisition, make_server, check_bind
+from oslbench.telemetry.microstrain import MsclReader
+from oslbench.telemetry.imu_service import Acquisition, make_server, check_bind
 
 
 def main():

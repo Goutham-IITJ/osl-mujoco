@@ -1,13 +1,15 @@
 # Code map
 
+Current implementation update (2026-10-19): the responsibility packages `control`, `sim`, `telemetry` and `presentation` are implemented, with `apps` for composition and root shared contracts. See [implemented ownership and D1/D2 boundaries](ARCHITECTURE.md#implemented-ownership-2026-10-19). Original flat module paths remain compatibility aliases. Historical plans below retain their context; runtime extraction and viewer/experiment dependency inversion are complete. Real encoder mapping and validated IMU estimation remain pending.
+
 One line per file. Open this first.
 
 ## The controller is here
 
-**`oslbench/controller.py`** — and the control law is three lines of it:
+**`oslbench/control/servo.py`** — and the control law is three lines of it:
 
 ```python
-# oslbench/controller.py:95
+# oslbench/control/servo.py:95
 def torque_unclamped(self, q_ref: float, q: float, qdot: float) -> float:
     """The torque the law asks for, before the actuator limit (N.m)."""
     error = self.command(q_ref) - q                 # rad
@@ -16,13 +18,13 @@ def torque_unclamped(self, q_ref: float, q: float, qdot: float) -> float:
 
 | What | Where |
 | --- | --- |
-| `KP = 600.0` N·m/rad | `oslbench/controller.py:45` |
-| `KD = 17.253` N·m·s/rad | `oslbench/controller.py:46` |
-| where KD comes from (ζ = 0.7 rule) | `oslbench/controller.py:56` `kd_for_damping_ratio` |
-| **the control equation** | `oslbench/controller.py:95` `torque_unclamped` |
-| saturation 1 — reference clipped into ROM | `oslbench/controller.py:90` `command` |
-| saturation 2 — torque clamped to `forcerange` | `oslbench/controller.py:100` `torque` |
-| how those gains get into MuJoCo | `oslbench/controller.py:116` `write_to_model` |
+| `KP = 600.0` N·m/rad | `oslbench/control/servo.py:45` |
+| `KD = 17.253` N·m·s/rad | `oslbench/control/servo.py:46` |
+| where KD comes from (ζ = 0.7 rule) | `oslbench/control/servo.py:56` `kd_for_damping_ratio` |
+| **the control equation** | `oslbench/control/servo.py:95` `torque_unclamped` |
+| saturation 1 — reference clipped into ROM | `oslbench/control/servo.py:90` `command` |
+| saturation 2 — torque clamped to `forcerange` | `oslbench/control/servo.py:100` `torque` |
+| how those gains get into MuJoCo | `oslbench/control/servo.py:116` `write_to_model` |
 
 `write_to_model` is the only place the gains touch the physics engine. It writes four
 numbers into the *compiled* model in memory — `models/osl_v2_bench.xml` is never opened
@@ -32,15 +34,15 @@ for writing, and `forcerange` and `ctrlrange` are deliberately left alone.
 
 | File | Job |
 | --- | --- |
-| `oslbench/model.py` | MuJoCo model — load `models/osl_v2_bench.xml`, resolve joint/actuator/sensor IDs, verify the structure, measure the plant (inertia, gravity moment, damping, friction). No control. |
-| `oslbench/controller.py` | **PD control** — gains, the equation, both saturations, and installing them into MuJoCo. No stepping, no file I/O. |
+| `oslbench/sim/model.py` | MuJoCo model — load `models/osl_v2_bench.xml`, resolve joint/actuator/sensor IDs, verify the structure, measure the plant (inertia, gravity moment, damping, friction). No control. |
+| `oslbench/control/servo.py` | **PD control** — gains, the equation, both saturations, and installing them into MuJoCo. No stepping, no file I/O. |
 | `oslbench/reference.py` | human gait reference — load the AB19 CSV, validate columns and gait phase, audit it, cubic-spline resample onto the 0.5 ms grid. No MuJoCo. |
-| `oslbench/simulation.py` | physics loop — reset/seed, then one `step()` that goes reference → controller → `data.ctrl` → `mj_step` → measurements. No plotting, no metrics. |
+| `oslbench/sim/servo.py` | physics loop — reset/seed, then one `step()` that goes reference → controller → `data.ctrl` → `mj_step` → measurements. No plotting, no metrics. |
 | `oslbench/logging.py` | recorded signals — the per-step table (21 columns) and the CSV writers/reader. Knows nothing about physics. |
 | `oslbench/metrics.py` | numerical metrics — RMS/MAE/peak error, peak torque, % authority, saturation %, peak velocity, power, the servo-lag diagnostic. No plotting. |
 | `oslbench/plotting.py` | offline figures — the six-panel results figure, drawn from a logged CSV. Never runs MuJoCo. |
-| `oslbench/viewer.py` | live demo — camera, the passive-viewer loop, `--record`, and the consistency proof. Visualisation only; the joint moves solely because `simulation.step()` moved it. |
-| `oslbench/dashboard.py` | live demo, second window — browser / tkinter / terminal readout. A consumer of published state: no model, no controller, no plant. |
+| `oslbench/presentation/viewer.py` | live demo — camera, the passive-viewer loop, `--record`, and the consistency proof. Visualisation only; the joint moves solely because `simulation.step()` moved it. |
+| `oslbench/presentation/servo_dashboard.py` | live demo, second window — browser / tkinter / terminal readout. A consumer of published state: no model, no controller, no plant. |
 
 ## What you run
 

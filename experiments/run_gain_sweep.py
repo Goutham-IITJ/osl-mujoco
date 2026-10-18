@@ -43,11 +43,11 @@ if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
 from oslbench import logging as blog                                      # noqa: E402
-from oslbench.controller import PDController, ZETA_DEFAULT, kd_for_damping_ratio  # noqa: E402,E501
+from oslbench.control.servo import PDController, ZETA_DEFAULT, kd_for_damping_ratio
 from oslbench.metrics import SWEEP_METRIC_KEYS, step_shape, sweep_metrics  # noqa: E402
-from oslbench.model import load_bench_model                               # noqa: E402
+from oslbench.sim.model import load_bench_model
 from oslbench.reference import synthetic_references                       # noqa: E402
-from oslbench.simulation import BenchSimulation                           # noqa: E402
+from oslbench.sim.servo import BenchSimulation
 
 KP_DEFAULT = [60.0, 200.0, 600.0, 2000.0]
 

@@ -48,9 +48,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-from oslbench import dashboard as dash                                     # noqa: E402
-from oslbench import viewer as vw                                          # noqa: E402
-from oslbench.controller import KD, KP                                     # noqa: E402
+from oslbench.presentation import servo_dashboard as dash                                     # noqa: E402
+from oslbench.presentation import viewer as vw                                          # noqa: E402
+from oslbench.control.servo import KD, KP
 from oslbench.reference import (DEFAULT_REFERENCE_CSV, STANCE_END,         # noqa: E402
                                 SUBJECT, TRIAL)
 

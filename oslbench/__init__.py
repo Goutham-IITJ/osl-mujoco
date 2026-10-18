@@ -47,12 +47,12 @@ __version__ = "1.0.0"
 from importlib import import_module
 
 _EXPORTS = {
-    "controller": ("KD", "KP", "PDController", "kd_for_damping_ratio"),
+    "control.servo": ("KD", "KP", "PDController", "kd_for_damping_ratio"),
     "metrics": ("bench_metrics", "sweep_metrics", "tracking_metrics"),
-    "model": ("BenchModel", "load_bench_model"),
+    "sim.model": ("BenchModel", "load_bench_model"),
     "reference": ("audit_reference", "load_reference", "resample_reference",
                   "step_reference", "synthetic_references"),
-    "simulation": ("BenchSimulation", "RunResult", "StepState"),
+    "sim.servo": ("BenchSimulation", "RunResult", "StepState"),
 }
 
 

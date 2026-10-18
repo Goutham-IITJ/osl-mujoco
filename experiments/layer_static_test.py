@@ -46,11 +46,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-from oslbench import drivetrain as D                                    # noqa: E402
-from oslbench.drivetrain import PAPER                                   # noqa: E402
-from oslbench.drivetrain_sim import (DrivetrainLayer,                   # noqa: E402
-                                     belt_potential_energy,
-                                     frictionless_parameters)
+from oslbench.control import drivetrain as D                                    # noqa: E402
+from oslbench.control.drivetrain import PAPER
+from oslbench.control.compliance import DrivetrainLayer, belt_potential_energy, frictionless_parameters
 
 DT = 5.0e-4                     # the bench timestep, models/osl_v2_bench.xml line 5
 ORACLE_PEAK_TAU = 16.004120587370423        # tests/oracle/bench_track_ab19_metrics.csv
@@ -288,9 +286,9 @@ def section_4_mujoco_wiring():
         return False
 
     import mujoco
-    from oslbench.model import load_bench_model
-    from oslbench.controller import KD, KP, PDController
-    from oslbench.drivetrain_sim import DrivetrainBenchSimulation
+    from oslbench.sim.model import load_bench_model
+    from oslbench.control.servo import KD, KP, PDController
+    from oslbench.sim.compliant import DrivetrainBenchSimulation
 
     bench = load_bench_model(verbose=False)
     if bench.failures:
