@@ -312,3 +312,31 @@ if __name__ == "__main__":
         passed += 1
         print(f"ok {t.__name__}")
     print(f"\n{passed} passed")
+
+
+def test_gait_current_loop_selection_hold_and_modelled_torque():
+    """C must hold commands while lag evolves and reaches the plant each step."""
+    from experiments.run_gait_current_loop_sensitivity import arguments
+    from oslbench.sim import current_gait as gait
+    import mujoco
+    for tau in (0., 2.):
+        args = arguments(tau)
+        ctx = gait.build(args, mujoco, False)
+        assert ctx['cfg'].current_loop_tau_s == tau*.001
+        assert ctx['src'].mode == 'C'
+        ctx['n'] = 12
+        rows = np.asarray(gait.run(ctx, args))
+        col = lambda name: rows[:,gait.CSV_HEADER.index(name)]
+        command, actual = col('current_applied_A'), col('current_actual_modelled_A')
+        assert np.array_equal(command[::2],command[1::2])
+        assert ctx['src'].updates == 6 and ctx['src'].loop.steps == 12
+        assert col('pid_derivative_used')[0] == 0
+        expected = command if tau == 0 else command+(np.r_[0.,actual[:-1]]-command)*math.exp(-.0005/.002)
+        assert np.allclose(actual,expected,rtol=1e-12,atol=1e-12)
+        assert np.allclose(col('estimated_actuator_output_torque_Nm'),actual*.855,rtol=1e-12,atol=1e-12)
+        if tau:
+            assert np.any(actual[1::2] != actual[::2])
+        else:
+            assert np.array_equal(command,actual)
+        ctx['src'].reset()
+        assert ctx['src'].loop.i_actual == 0 and ctx['src'].loop.steps == 0
