@@ -42,9 +42,9 @@ their missing-feature statements and priorities describe earlier states.
    Measurement display must remain distinct from independently simulated predictions.
 6. **Then: predictive simulation-versus-measurement comparison.** Establish synchronized
    observations, known inputs and independently evolved state before reporting residuals.
-7. **Later: staged source reorganization**, with compatibility launchers, oracle and
-   current-gait regression checks; measured physical-model refinement; reproducible
-   research comparisons and verified literature/novelty assessment.
+7. **Completed: source ownership separation**, with experiment launchers
+   retained and root module redirectors retired (see architecture). **Later:** measured physical-model refinement,
+   reproducible research comparisons and verified literature/novelty assessment.
 
 Current-loop modeling is an optional, evidence-driven comparison, not a prerequisite
 for contracts or adapters. Retain the earlier motivation to identify bandwidth/delay,
