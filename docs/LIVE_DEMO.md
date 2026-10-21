@@ -97,7 +97,7 @@ trajectory accumulating over it, the tracking error against its zero line, and t
 actuator torque, each with a marker at the current phase.
 
 Before the window opens, the demo runs the quantitative experiment in-process — the same
-`oslbench.simulation.BenchSimulation` that `experiments/run_bench_ab19.py` uses — and
+`oslbench.sim.servo.BenchSimulation` that `experiments/run_bench_ab19.py` uses — and
 replays the identical span through the one shared `step()` function, and it refuses to
 start unless the two agree to within 1e-12 on angle, velocity, torque and command. It also
 verifies that the loaded model really is `models/osl_v2_bench.xml` with the authored 0.5 ms
@@ -107,8 +107,8 @@ check the program performs, not an assertion in a slide.
 
 There is only one implementation of the control law and one implementation of the stepping
 loop in this repository, so "the same code" is structural rather than enforced: the live
-demo and the benchmark both call `oslbench.controller.PDController` and
-`oslbench.simulation.BenchSimulation.step`, and there is nowhere else for either of them
+demo and the benchmark both call `oslbench.control.servo.PDController` and
+`oslbench.sim.servo.BenchSimulation.step`, and there is nowhere else for either of them
 to get a different answer. `docs/CODE_MAP.md` points at both files.
 
 The measured result, which the demo prints again at the end of every cycle, is an RMS
@@ -170,17 +170,17 @@ every backend it skips and why; `web`, `tk` and `terminal` pin one of them; `non
 the second window off. `--port` moves the page off 8787 (0 picks any free port, and an
 already-occupied port falls back to a free one automatically), and `--no-browser` starts
 the server but does not open a browser, printing the URL instead. `--dash-geometry` only
-affects the tkinter backend. Running `.venv\Scripts\python.exe -m oslbench.dashboard`
+affects the tkinter backend. Running `.venv\Scripts\python.exe -m oslbench.presentation.servo_dashboard`
 opens the dashboard alone on synthetic data, with no MuJoCo and no model, which is the
 quickest way to confirm the second window works on a given machine.
 
 ## Files
 
 `experiments/run_live_demo.py` is the entry point — argument parsing and four calls, no
-physics of its own. `oslbench/viewer.py` holds the camera derivation, the viewer loop, the
-consistency proof and the `--record` path; `oslbench/dashboard.py` draws the second window
+physics of its own. `oslbench/presentation/viewer.py` holds the camera derivation, the viewer loop, the
+consistency proof and the `--record` path; `oslbench/presentation/servo_dashboard.py` draws the second window
 and contains no physics, no plant and no controller. The controller and the stepping loop
-are `oslbench/controller.py` and `oslbench/simulation.py`, shared with the quantitative
+are `oslbench/control/servo.py` and `oslbench/sim/servo.py`, shared with the quantitative
 benchmark.
 
 None of these modifies the model, the controller, the reference CSV, the quantitative
