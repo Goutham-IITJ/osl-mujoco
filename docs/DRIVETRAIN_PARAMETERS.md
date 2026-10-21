@@ -1,6 +1,6 @@
 # OSL V2 Drivetrain Parameters — provenance, frames, and confidence
 
-**Scope.** This file is the authority on *where every number in `oslbench/drivetrain.py`
+**Scope.** This file is the authority on *where every number in `oslbench/control/drivetrain.py`
 came from* and *which shaft it lives on*. It is not a summary of the model; for that,
 read the module docstring. It is not a set of measurements of our hardware either — we
 have no OSL V2 actuator on a dynamometer, and nothing below is a measurement we made.
@@ -86,7 +86,7 @@ They differ by 1.4 %, and squared (for inertia and damping) by 2.9 %. The choice
 using our 4.5455 with their parameters mixes two builds. Using 4.61 with our CAD
 geometry mixes them the other way. Neither is obviously right, the difference is small
 enough that no present conclusion turns on it, and pretending the question is settled
-would be worse than carrying it. `oslbench/drivetrain.py` defaults to the paper's 4.61
+would be worse than carrying it. `oslbench/control/drivetrain.py` defaults to the paper's 4.61
 and exposes `CAD_BELT_RATIO` plus `with_belt_ratio()` so that any swap is explicit at
 the call site.
 
@@ -249,7 +249,7 @@ and wrong in a load-dependent way.
 
 | File | Role |
 |---|---|
-| `oslbench/drivetrain.py` | the equations, MuJoCo-free and numpy-free |
+| `oslbench/control/drivetrain.py` | the equations, MuJoCo-free and numpy-free |
 | `tests/test_drivetrain.py` | the unit tests, runnable in a bare interpreter |
 | `experiments/check_drivetrain_model.py` | numerical sanity checks + the three-way comparison |
 | `docs/DRIVETRAIN_INTEGRATION_OPTIONS.md` | the four MuJoCo-integration options, scored; the belt-mode frequency table; the recommendation |
