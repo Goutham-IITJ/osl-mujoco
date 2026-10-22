@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-check_drivetrain_model.py -- numerical sanity checks for oslbench/drivetrain.py.
+check_drivetrain_model.py -- numerical sanity checks for oslbench/control/drivetrain.py.
 
 WHAT THIS SCRIPT IS
     A printed walk through the paper's drivetrain equations at labelled operating
@@ -60,7 +60,7 @@ FIG3_MAX_DEFL = 0.055                 # PAPER: right edge of Fig. 3's abscissa
 PAPER_PEAK_TAU = 160.0                # PAPER, Sec. II: "160 Nm for 10 seconds"
 TEST_JOINT_VEL = 2.0                  # ASSUMED test value [rad/s] -- a plausible knee
 #                                       rate in swing; nothing depends on the exact number
-I_BODY = 0.251998                     # CAD-DERIVED, from oslbench/model.py:I_BODY_EXPECT
+I_BODY = 0.251998                     # CAD-DERIVED, from oslbench/sim/model.py:I_BODY_EXPECT
 #                                       (knee-distal inertia about the knee axis)
 
 PASS: list[str] = []
@@ -315,7 +315,7 @@ def section_three_way() -> None:
 # ==================================================================================
 def main() -> int:
     print(__doc__.strip().splitlines()[0])
-    print(f"module: oslbench/drivetrain.py    python {sys.version.split()[0]}    "
+    print(f"module: oslbench/control/drivetrain.py    python {sys.version.split()[0]}    "
           f"numpy loaded: {'numpy' in sys.modules}    mujoco loaded: "
           f"{'mujoco' in sys.modules}")
 
@@ -330,7 +330,7 @@ def main() -> int:
         for name in FAIL:
             print(f"    FAILED: {name}")
     print()
-    print("  What this run establishes:  the equations in oslbench/drivetrain.py reproduce")
+    print("  What this run establishes:  the equations in oslbench/control/drivetrain.py reproduce")
     print("  Best et al.'s stated values and are internally consistent in sign, frame and")
     print("  algebra.  What it does NOT establish:  that the OSL V2 in our lab behaves")
     print("  this way.  That would need hardware we have not instrumented.")

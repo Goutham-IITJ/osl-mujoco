@@ -15,8 +15,8 @@ WHY THIS SCRIPT EXISTS
     measurement.  This script measures it on the real engine.
 
 WHAT IT IS ALLOWED TO TOUCH -- NOTHING
-    No production file is modified.  `oslbench/controller.py`, `oslbench/drivetrain.py`,
-    `oslbench/drivetrain_sim.py`, `models/osl_v2_bench.xml`, `tests/oracle/*` and the
+    No production file is modified.  `oslbench/control/servo.py`, `oslbench/control/drivetrain.py`,
+    `oslbench/sim/compliant.py`, `models/osl_v2_bench.xml`, `tests/oracle/*` and the
     AB19 reference CSV are all read-only here.  Kp stays 600 and Kd stays 17.253 in
     production; the values swept below live only in local `PDController` objects created
     inside this file.  The two feedback variants in TEST C are DIAGNOSTIC-ONLY and are
@@ -57,7 +57,7 @@ HOW A RUN IS STOPPED BEFORE IT OVERFLOWS
 
     Separately, |theta_s| > 0.055 rad is FLAGGED but not fatal: that is the edge of the
     range Best et al. actually fitted the belt over (docs/DRIVETRAIN_PARAMETERS.md, and
-    oslbench/drivetrain.py:585-586).  Past it the belt law is extrapolation of their
+    oslbench/control/drivetrain.py:585-586).  Past it the belt law is extrapolation of their
     regression, so the first crossing time is recorded for every run.
 
 NOTHING HERE IS A HARDWARE RESULT
@@ -160,7 +160,7 @@ class DiagCurrentSource:
     """`PDCurrentSource` with ONE argument swapped, and nothing else changed.
 
     Variant "J"  -- derivative feedback on the JOINT velocity theta_j_dot.
-                    This is what `oslbench.drivetrain_sim.PDCurrentSource` does today.
+                    This is what `oslbench.sim.compliant.PDCurrentSource` does today.
                     Section 0 below asserts the two agree to the last bit, so TEST C is
                     comparing production behaviour against an alternative and not
                     against a reimplementation of itself.
@@ -1281,7 +1281,7 @@ def main() -> int:
                    "left_fit_at_s": "{:.4f}"})
     md.append("")
     md.append(f"`-1` in the *left fit at* column means it never left. The fit edge is "
-              f"|theta_s| = {FIT_EDGE_RAD} rad (`oslbench/drivetrain.py` lines 585-586). "
+              f"|theta_s| = {FIT_EDGE_RAD} rad (`oslbench/control/drivetrain.py` lines 585-586). "
               f"Any torque printed beyond it is extrapolation of the paper's regression, "
               f"so the LATE part of a diverging run carries no quantitative weight -- "
               f"only the approach to divergence does.")
