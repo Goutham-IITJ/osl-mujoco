@@ -11,7 +11,7 @@ WHAT IT DOES, in the order it does it:
       6  draw the offline figures (skipped automatically if matplotlib is absent)
 
     Every one of those lines is one call into oslbench/.  The control law lives in
-    oslbench/controller.py; the loop lives in oslbench/simulation.py.  Nothing is
+    oslbench/control/servo.py; the loop lives in oslbench/sim/servo.py.  Nothing is
     implemented in this file.
 
 WHAT THE EXPERIMENT IS

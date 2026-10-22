@@ -509,7 +509,7 @@ def main() -> int:
               "N.m", note="Case B must be exactly 0"))
     print("\n  Case B's saturation percentage is deliberately BLANK rather than 0: the")
     print("  +-142.2 N.m forcerange belongs to the actuator that has been disconnected,")
-    print("  it cannot clamp qfrc_applied, and oslbench/drivetrain.py documents NO drive")
+    print("  it cannot clamp qfrc_applied, and oslbench/control/drivetrain.py documents NO drive")
     print("  current limit from the paper. There is nothing to saturate against, so")
     print("  reporting 0 % would assert a limit the model does not have. Peak |I_q| is")
     print(f"  reported instead. For scale only, {bench_b.force_limit:.1f} N.m at "
