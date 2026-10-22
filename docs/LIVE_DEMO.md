@@ -5,19 +5,40 @@
 From the repository root in PowerShell:
 
 ```powershell
-.venv\Scripts\python.exe -B experiments\run_current_controlled_gait.py --view --feedback-mode actuator-difference --start-paused --speed 0.25 --zoom 1.2
+.venv\Scripts\python.exe -B experiments\run_current_controlled_gait.py --controller knee --view --start-paused --speed 0.25 --zoom 1.2
 ```
 
-This is Variant C, with Kp=0.75 A/deg, Kd=0.03 A/(deg/s), Ki=0,
-manual_rotor output-equivalent 0.855 Nm/A, external ratio 50/11, ideal loop,
-simulation-only +/-60-A clip, physics dt=0.5 ms, controller period=1 ms,
+This selects the supplied knee gains: Kp=1.5 A/deg, Ki=0.15 A/(deg.s),
+Kd=0.06 A/(deg/s), integral limit 50 degree-seconds, and Variant C
+(knee P/I; sampled actuator-angle derivative feedback). The provisional
+`script` constant is 0.5701 Nm/A at actuator output, external ratio 50/11, ideal loop,
+simulation-only +/-60-A clip, physics dt=0.5 ms, controller period=5 ms (200 Hz),
 one 1.205-second AB19 cycle and aligned zero-velocity initialization. Camera zoom
 and playback speed change presentation only. Remove `--start-paused` to run immediately.
 
-Choose `--feedback-mode legacy` (or omit the option) for the unchanged default
-derivative-on-error controller. The existing `--derivative-on measurement` is a legacy
-option. Variant C requires `--derivative-on error` and Ki=0 and rejects incompatible
-settings. Without `--view`, the same controller selection runs headless.
+`--controller ankle` preserves the historical ankle-derived settings: 0.75/0/0.03,
+1,000 Hz, 0.855 Nm/A and legacy error differentiation. It remains the default when
+`--controller` is omitted. Add `--feedback-mode actuator-difference` to reproduce
+historical C. Both profiles run the KNEE model and `human_knee_angle_deg` AB19 channel;
+selection changes tuning, not the joint or reference. The physical-ankle step launcher
+is unchanged. Named settings live in `oslbench/control/gait.py` as
+`ANKLE_CONTROLLER_CONFIG` and `KNEE_CONTROLLER_CONFIG`; `KNEE_GAIT_CONFIG` remains a
+historical compatibility alias for the old ankle-derived knee run.
+
+Explicit `--kp`, `--ki`, `--kd`, `--control-hz`, `--kt`, `--feedback-mode` and
+`--integral-limit-deg-s` override the selected profile and are recorded in metadata.
+Variant C requires `--derivative-on error` but now supports nonzero Ki through the
+shared PID. Without `--view`, the same selection runs headless. An explicit existing
+`--outdir` is refused; automatic output names get a fresh suffix when needed.
+
+```powershell
+# New knee profile, headless
+.venv\Scripts\python.exe -B experiments\run_current_controlled_gait.py --controller knee
+# Preserved ankle-derived baseline on the knee model
+.venv\Scripts\python.exe -B experiments\run_current_controlled_gait.py --controller ankle
+# Preserved ankle-derived Variant C
+.venv\Scripts\python.exe -B experiments\run_current_controlled_gait.py --controller ankle --feedback-mode actuator-difference
+```
 
 The MuJoCo window and local browser dashboard show one simulation execution through
 the shared production iterator, current scheduler, conversion and drivetrain. The knee
@@ -58,6 +79,44 @@ stopped with zero physics steps because its native window was not on the user de
 The approximate +/-0.055-rad belt band is the fitted-data range, not a hard stop. No
 hardware safety or physical validation claim follows from this demo. Remaining work
 is maintained in [the project roadmap](NEXT_PHASE_PROPOSAL.md).
+
+## Knee-profile verification
+
+New evidence is under `build/knee_controller_selection/`; historical results were not
+overwritten. Six controlled runs reproduced the earlier isolated comparison exactly
+across all 29 channels. The native MuJoCo viewer and browser dashboard completed a
+selected knee run through the same iterator, displaying Ki=0.15, 200 Hz and profile=knee.
+Its saved full-precision trace matches the headless knee run exactly.
+
+| Configuration (all C except first row) | RMS deg | Peak error deg | Best-fit lag ms | Peak joint-side belt / knee drive Nm | Peak requested / applied A |
+|---|---:|---:|---:|---:|---:|
+| Old ankle gains, legacy A, 1 kHz, 0.855 | 4.469 | 9.479 | 22.5 | 140.265 | 12.487 / 12.487 |
+| Old ankle gains, 1 kHz, 0.855 | 4.524 | 9.234 | 22.0 | 18.507 | 7.745 / 7.745 |
+| Knee gains + integral limit only, 1 kHz, 0.855 | 2.186 | 4.685 | 10.0 | 18.653 | 8.557 / 8.557 |
+| Knee gains, 200 Hz, 0.855 | 2.215 | 4.794 | 9.5 | 19.266 | 8.976 / 8.976 |
+| Selected knee profile: knee gains, 200 Hz, 0.5701 | 3.394 | 7.055 | 15.5 | 19.042 | 12.372 / 12.372 |
+| Old ankle gains, matched 200 Hz, 0.5701 | 6.846 | 13.465 | 35.5 | 19.472 | 11.161 / 11.161 |
+
+No case clips current. Belt torque at the joint is the applied knee drive torque,
+not net joint torque including passive/constraint forces. The selected knee profile's
+actuator-side belt peak is 4.189 Nm; knee servo contribution is zero. Peak deflection
+is 0.016884 rad, within the approximate 0.055-rad fit range, with no joint-ROM violations.
+Lag is the historical overlap-RMS best-fit delay, and errors preserve the legacy
+pre-reference/post-angle timing convention. All cases use one 1.205 s cycle at 0.5 ms
+physics timestep with unchanged model/reference and ideal current response.
+
+Changing gains at fixed rate/KT improves C substantially; reducing rate changes the
+result slightly, while the lower KT increases error/current. Comparing profiles alone
+would combine all three changes. At matched 200 Hz/0.5701, knee gains reduce RMS by
+about 50%. This is not multicycle stability or hardware validation. The 0.5701 value
+is labelled output-shaft in Preetam's supplied script but only used there for logging;
+its actual shaft/current convention, actuator variant and calibration remain unresolved.
+It is applied once through `ConversionAudit`, not multiplied by the planetary ratio again.
+
+Validation: 268 full-suite tests passed, including four new selection/integral/runtime/
+output-preservation tests; 17 feedback tests and 22 targeted joint tests passed.
+See `build/knee_controller_selection/comparison.json`, `full_tests.log`, and
+`live_knee/attempt_001/` for metrics, source/configuration provenance and saved dashboard.
 
 ## Historical position-servo demo
 

@@ -32,14 +32,14 @@ Tests: [drivetrain algebra](../tests/test_drivetrain.py), [integration/feedback]
 
 ## C. Current-domain knee gait
 
-[CurrentPID](../oslbench/sim/ankle.py), [GaitCurrentSource](../oslbench/control/gait.py) and [ActuatorDifferenceSource](../oslbench/control/feedback.py) implement the current-domain path. Kp=0.75 A/degree, Kd=0.03 A/(degree/second), Ki=0. These gains came from the reported ankle step-test configuration and remain provisional for the knee.
+[CurrentPID](../oslbench/control/current.py), [GaitCurrentSource](../oslbench/control/gait.py) and [ActuatorDifferenceSource](../oslbench/control/feedback.py) implement the shared current-domain path. `--controller ankle` preserves ankle-derived Kp=0.75 A/degree, Ki=0, Kd=0.03 A/(degree/second), 1 kHz, legacy feedback and output KT=0.855. It remains the default. `--controller knee` selects supplied Kp=1.5, Ki=0.15, Kd=0.06 in the same units, integral limit 50 degree-seconds, 200 Hz, Variant C and provisional output KT=0.5701. The named configurations live in `oslbench/control/gait.py`; selection changes tuning on the knee gait model, not the simulated joint. The existing physical-ankle step pipeline is unchanged.
 
 The knee reference and measurement are MuJoCo coordinates converted to degrees with +1 measurement sign. The motor sign is +1 by simulation wiring; neither establishes a physical encoder convention.
 
 - `legacy` (default): sampled error derivative; a measurement-derivative option also exists.
-- `actuator-difference` (Variant C): sampled reference derivative minus the finite difference of actuator-output angle referred through `n_t` to knee-equivalent degrees. Requires Ki=0 and derivative-on=error; retains first-update derivative suppression and reset semantics.
+- `actuator-difference` (Variant C): sampled reference derivative minus the finite difference of actuator-output angle referred through `n_t` to knee-equivalent degrees. Requires derivative-on=error; supports knee-side P/I with nonzero Ki and retains first-update derivative suppression and reset semantics.
 
-Controller updates occur every 1 ms, with held commands between updates. The current-loop model advances every 0.5 ms physics step. Canonical settings use the ideal loop, 0.855 Nm/A output-equivalent `manual_rotor`, CAD belt ratio 50/11 and +/-60 A simulation clipping. `ConversionAudit` maps modelled current into the layer's rotor-current convention with gearing applied once. Requested, clipped/applied, modelled actual and layer-equivalent currents are distinct signals, not hardware measurements.
+Controller updates occur every 1 ms (ankle profile) or 5 ms (knee profile), with held commands between updates; `--control-hz` explicitly overrides this. The current-loop model advances every unchanged 0.5 ms physics step. Both profiles use the ideal loop, CAD belt ratio 50/11 and +/-60 A simulation clipping. `ConversionAudit` maps modelled current into the layer's rotor-current convention with gearing applied once. Requested, clipped/applied, modelled actual and layer-equivalent currents are distinct signals, not hardware measurements. See [launch commands and controlled comparison](LIVE_DEMO.md#knee-profile-verification).
 
 The compliant plant is `DrivetrainBenchSimulation`; the knee position servo is disconnected. A base-class `PDController` remains for bookkeeping and does not drive this knee.
 
