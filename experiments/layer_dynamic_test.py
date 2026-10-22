@@ -282,7 +282,7 @@ def section_1_wiring(bench):
     print("\n    WHAT forcerange NOW DOES, AND DOES NOT, BOUND")
     print(f"    qfrc_applied is a raw generalized force, so the authored")
     print(f"    +-{bench.knee_forcerange[1]:.1f} N.m does NOT clamp the belt torque.")
-    print(f"    Authority must be judged on the current side.  oslbench/drivetrain.py")
+    print(f"    Authority must be judged on the current side.  oslbench/control/drivetrain.py")
     print(f"    documents NO drive current limit from the paper, so none is imposed")
     print(f"    (ASSUMED).  For scale only: {bench.knee_forcerange[1]:.1f} N.m / "
           f"k_t_joint = {bench.knee_forcerange[1] / (P.n_t * P.k_t * P.n_a):.4f} A.")
@@ -653,7 +653,7 @@ def section_4_belt_mode(bench):
         if params is not P:
             print("    A TEST FIXTURE, not a claim about the hardware.  It removes the")
             print("    ACTUATOR's dissipation only, via the existing")
-            print("    oslbench.drivetrain_sim.frictionless_parameters helper.  The")
+            print("    oslbench.sim.compliant.frictionless_parameters helper.  The")
             print(f"    knee's own frictionloss = {FRICTIONLOSS} N.m deliberately STAYS.")
             print("    I considered zeroing the knee's dof_frictionloss at runtime too")
             print("    and rejected it: that would have removed the only dry friction")

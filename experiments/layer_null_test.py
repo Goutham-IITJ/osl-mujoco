@@ -70,7 +70,7 @@ for _p in (ROOT, os.path.join(ROOT, "tests"), os.path.join(ROOT, "experiments"))
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-# The stub must be installed BEFORE oslbench is imported, because oslbench.simulation
+# The stub must be installed BEFORE oslbench is imported, because oslbench.sim.servo
 # binds `mujoco` at module import time.  install() returns the REAL module when it is
 # importable, so inside .venv this line is a no-op and the real engine is used.
 import stub_mujoco                                                      # noqa: E402
@@ -161,7 +161,7 @@ def run_once(bench, res, factory, tag: str, watch_applied: bool = False):
 
     `factory(bench, controller)` builds the simulation, so the ONLY difference between
     the runs compared below is the class being constructed.  Gains come from
-    oslbench.controller and are not touched: KP = %s, KD = %s.
+    oslbench.control.servo and are not touched: KP = %s, KD = %s.
     """
     log = blog.BenchLog(bench.force_limit)
     sim = factory(bench, PDController.knee(bench, KP, KD))

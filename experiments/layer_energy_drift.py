@@ -196,7 +196,7 @@ def main() -> int:
     print(__doc__.split("Run:")[0].rstrip())
     print("=" * 78)
     print(f"\nSYSTEM   joint inertia I_body = {I_BODY} kg.m^2 (CAD-DERIVED, "
-          f"oslbench/model.py)")
+          f"oslbench/sim/model.py)")
     print(f"         actuator inertia J_a = {PAPER.J_a} kg.m^2 (MEASURED by Best "
           f"et al., at the ACTUATOR OUTPUT)")
     print(f"         belt  p1 = {PAPER.p1} N.m/rad, p2 = {PAPER.p2} N.m/rad^2, "
