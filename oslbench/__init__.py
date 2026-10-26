@@ -3,20 +3,20 @@ oslbench -- the OSL V2 bench experiment, as reusable modules.
 
 THE CODE MAP (one line each; docs/CODE_MAP.md is the same map, for the meeting)
 
-    controller.py   THE PD CONTROL LAW.  tau = Kp*(q_ref - q) - Kd*qdot, Kp = 600,
+    control/servo.py   THE PD CONTROL LAW.  tau = Kp*(q_ref - q) - Kd*qdot, Kp = 600,
                     Kd = 17.253, plus the ROM clip and the forcerange clamp.  Start here.
     reference.py    the human gait reference: load the AB19 CSV, audit it, resample it
                     onto the 0.5 ms simulation grid.  No MuJoCo.
-    model.py        load models/osl_v2_bench.xml, resolve ids, verify the compiled model
+    sim/model.py        load models/osl_v2_bench.xml, resolve ids, verify the compiled model
                     is the validated bench, measure the plant inertia.  No control law.
-    simulation.py   the physics loop: reference -> controller -> ctrl -> mj_step ->
+    sim/servo.py   the physics loop: reference -> controller -> ctrl -> mj_step ->
                     measurements.  ONE implementation, shared by every entry point.
     logging.py      the recorded signals: one row per step, then the CSV writers.
     metrics.py      RMS/peak/MAE error, peak torque, % authority, saturation, the lag
                     diagnostic.  Numbers only.
     plotting.py     the offline six-panel figure, drawn FROM the logged CSV.
-    viewer.py       the live MuJoCo window and the video recorder.  Visualisation only.
-    dashboard.py    the browser dashboard.  No physics at all -- it is handed state.
+    presentation/viewer.py       the live MuJoCo window and the video recorder.  Visualisation only.
+    presentation/servo_dashboard.py    the browser dashboard.  No physics at all -- it is handed state.
 
 ENTRY POINTS (thin scripts; each one is a short script you can read in a minute)
 
