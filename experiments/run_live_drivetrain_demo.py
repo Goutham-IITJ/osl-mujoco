@@ -14,14 +14,14 @@ WHAT IS NEW HERE, EXHAUSTIVELY
     A camera, a frame rate, wall-clock pacing, keyboard control, and drawing.  That is
     the whole list.  There is NO second physics or control implementation in this file:
 
-      * the control law is `oslbench.drivetrain_sim.PDCurrentSource` -- the same object
+      * the control law is `oslbench.sim.compliant.PDCurrentSource` -- the same object
         the quantitative run uses.  The PD equation is NOT restated here; grep this file
         for `kp` and you will find it passed, never multiplied.
-      * the plant is `oslbench.drivetrain_sim.DrivetrainBenchSimulation.step()` -- the
+      * the plant is `oslbench.sim.compliant.DrivetrainBenchSimulation.step()` -- the
         same call, with the same `DrivetrainLayer` carrying Best et al.'s equations.
       * the servo-disconnect is the same `disconnect_servo=True` mechanism, and its
         result is verified before the window opens rather than assumed.
-      * the gains are imported from `oslbench.controller` (KP, KD).  This file cannot
+      * the gains are imported from `oslbench.control.servo` (KP, KD).  This file cannot
         change them and `--kp`/`--kv` are deliberately NOT offered.
       * the reference is the same resampled AB19 cycle.
 
@@ -30,7 +30,7 @@ WHAT IS NEW HERE, EXHAUSTIVELY
     authored 0.5 ms at every playback rate.
 
 WHAT THE SECOND WINDOW IS AND IS NOT
-    A CONSUMER of state.  `oslbench/drivetrain_dashboard.py` holds no model, takes no
+    A CONSUMER of state.  `oslbench/presentation/drivetrain_dashboard.py` holds no model, takes no
     timestep and computes no torque or current; it is handed the numbers the step just
     produced and draws them, in the browser's process.  It cannot write a command.  Close
     it and the physics is identical.

@@ -110,9 +110,9 @@ PREDICTED = dict(i_eff=0.4609, omega_n=36.08, zeta=0.5575,
 PROTECTED = (
     os.path.join("models", "osl_v2_bench.xml"),
     os.path.join("tools", "build_mjcf.py"),
-    os.path.join("oslbench", "model.py"),
-    os.path.join("oslbench", "controller.py"),
-    os.path.join("oslbench", "simulation.py"),
+    os.path.join("oslbench", "sim", "model.py"),
+    os.path.join("oslbench", "control", "servo.py"),
+    os.path.join("oslbench", "sim", "servo.py"),
     os.path.join("tests", "oracle", "bench_track_ab19.csv"),
     os.path.join("tests", "oracle", "bench_track_ab19_metrics.csv"),
 )

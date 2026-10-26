@@ -6,14 +6,14 @@ WHAT IT IS
     The same experiment as run_bench_ab19.py, shown while it happens: a MuJoCo window
     with the CAD device moving, and a second window plotting the signals as they are
     measured.  Nothing here is a re-implementation.  It calls the same
-    oslbench.simulation.BenchSimulation.step() the quantitative run calls, with the same
-    oslbench.controller.PDController and the same resampled AB19 reference.
+    oslbench.sim.servo.BenchSimulation.step() the quantitative run calls, with the same
+    oslbench.control.servo.PDController and the same resampled AB19 reference.
 
 WHAT THE SECOND WINDOW IS AND IS NOT
-    It is a CONSUMER of state.  oslbench/dashboard.py holds no model, takes no timestep
+    It is a CONSUMER of state.  oslbench/presentation/servo_dashboard.py holds no model, takes no timestep
     and computes no torque; it is handed the values the step just returned and draws
     them.  It cannot write a command.  If you closed it, the physics would be identical.
-    (The tests assert this: dashboard.py imports neither mujoco nor oslbench.simulation.)
+    (The tests assert this: dashboard.py imports neither mujoco nor oslbench.sim.servo.)
 
 WHAT IS ADDED, RELATIVE TO THE QUANTITATIVE RUN
     A camera, a frame rate, wall-clock pacing, keyboard control, and drawing.  That is

@@ -66,7 +66,7 @@ if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
 # ---- the backend has to be settled BEFORE the oslbench imports below -----------------
-# `oslbench/model.py` does `try: import mujoco / except ImportError: mujoco = None` at
+# `oslbench/sim/model.py` does `try: import mujoco / except ImportError: mujoco = None` at
 # ITS import time and keeps that binding. So installing a stub after importing it is too
 # late -- the module has already decided mujoco is absent. argparse has not run yet at
 # this point, hence the deliberate argv peek. It reads one flag and nothing else.
