@@ -2,6 +2,12 @@
 
 **Review date: 26 October 2026.** This report continues last week's gait-tracking report. We separated the knee and ankle tuning, compared the knee gains in simulation, and prepared a live encoder-data connection for the physical step test.
 
+**Later implementation update on 26 October:** the independent streamed-target
+MuJoCo connection and the two shared-session dashboards have now been implemented
+and tested locally with a synthetic sender. See [the integrated demo](LIVE_KNEE_COMPARISON.md).
+The sections and diagram below describe the earlier weekly checkpoint, where this
+connection was still the next stage. Physical hardware validation remains pending.
+
 **Main result:** at matched simulation settings, the supplied knee gains reduced RMS tracking error by about **50%**. The telemetry software has passed local tests, but the physical connection and independent hardware–simulation comparison are still pending.
 
 ## 1. Introduce the knee controller while preserving the baseline
