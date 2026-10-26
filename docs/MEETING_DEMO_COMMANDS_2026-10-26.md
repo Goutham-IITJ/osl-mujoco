@@ -1,5 +1,10 @@
 # Meeting demo commands
 
+**Integrated two-dashboard demo is now available:** see
+[live hardware and independent MuJoCo comparison](LIVE_KNEE_COMPARISON.md).
+Use it to show both overlaid knee angles and simulation torque/current/belt plots.
+The older mock tools below remain separate diagnostics.
+
 Run these in PowerShell from the repository root. Stop each demo with Ctrl+C or
 close its viewer before moving on. Use new output folders to preserve old results.
 
