@@ -17,23 +17,27 @@ def view(ctx, args):
 
 
 
-def main() -> int:
+def parse_args(argv=None):
     ap = argparse.ArgumentParser(description=f"{BANNER}. {DISCLAIMER}")
     ap.add_argument("--csv", default=DEFAULT_REFERENCE_CSV)
-    ap.add_argument("--kp", type=float, default=0.75, help="A/deg (ankle-script value)")
-    ap.add_argument("--ki", type=float, default=0.0, help="A/(deg.s)")
-    ap.add_argument("--kd", type=float, default=0.03, help="A/(deg/s)")
+    ap.add_argument('--controller', choices=('ankle', 'knee'), default='ankle',
+                    help='Tuning profile on the KNEE gait model; default preserves ankle-derived baseline')
+    ap.add_argument("--kp", type=float, default=None, help="A/deg; override selected profile")
+    ap.add_argument("--ki", type=float, default=None, help="A/(deg.s); override selected profile")
+    ap.add_argument("--kd", type=float, default=None, help="A/(deg/s); override selected profile")
+    ap.add_argument('--control-hz', type=float, default=None)
+    ap.add_argument('--integral-limit-deg-s', type=float, default=None)
     ap.add_argument("--current-loop", choices=("ideal", "first_order"), default="ideal",
                     help="'ideal' (default) isolates the outer loop and drivetrain")
     ap.add_argument("--current-loop-tau-ms", type=float, default=0.0)
     ap.add_argument("--current-clip", type=float, default=60.0,
                     help="SIMULATION-ONLY current clip in A. Not a safety limit.")
     ap.add_argument("--kt", choices=sorted(TORQUE_CONSTANT_CHOICES),
-                    default="manual_rotor")
+                    default=None)
     ap.add_argument("--belt", choices=("cad", "paper"), default="cad")
     ap.add_argument("--derivative-on", choices=("error", "measurement"), default="error")
-    ap.add_argument("--feedback-mode", choices=("legacy", "actuator-difference"), default="legacy",
-                    help="actuator-difference selects verified Variant C (requires Ki=0 and derivative-on=error)")
+    ap.add_argument("--feedback-mode", choices=("legacy", "actuator-difference"), default=None,
+                    help="Override profile; C uses knee P/I and actuator differences for D; requires derivative-on=error")
     ap.add_argument("--dashboard", choices=("web", "none"), default="web")
     ap.add_argument("--port", type=int, default=8789)
     ap.add_argument("--no-browser", action="store_true")
@@ -44,7 +48,7 @@ def main() -> int:
     ap.add_argument("--backend", choices=("mujoco", "stub"), default="mujoco")
     ap.add_argument("--outdir", default=None)
     ap.add_argument("--tag", default=None, help="override the auto output tag")
-    ap.add_argument("--view", action="store_true", help="live MuJoCo viewer (no files)")
+    ap.add_argument("--view", action="store_true", help="live MuJoCo viewer with saved run outputs")
     ap.add_argument("--speed", type=float, default=0.5, choices=(0.25, 0.5, 1.0))
     ap.add_argument("--max-cycles", type=int, default=0)
     ap.add_argument("--zoom", type=float, default=0.45)
@@ -53,7 +57,15 @@ def main() -> int:
     ap.add_argument("--distance", type=float, default=None)
     ap.add_argument("--no-plot", action="store_true")
     ap.add_argument("--verbose", action="store_true")
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
+    resolve_controller_settings(args)
+    return args
+
+
+def main() -> int:
+    args = parse_args()
+    if args.outdir and os.path.exists(args.outdir):
+        raise FileExistsError('Refusing to overwrite existing output directory: '+args.outdir)
 
     tau = args.current_loop_tau_ms
     if not math.isfinite(tau) or tau < 0.0:
@@ -90,7 +102,8 @@ def main() -> int:
           f"{ctx['ref'].angle_deg[0]:.4f} deg -> {ctx['n']} steps")
     for line in ctx["cfg"].describe():
         print(f"  cfg       {line}")
-    print(f"  schedule  {CONTROL_HZ:g} Hz controller / {1 / ctx['dt']:g} Hz physics "
+    print(f"  profile   {args.controller}")
+    print(f"  schedule  {1/(ctx['steps_per_update']*ctx['dt']):g} Hz controller / {1 / ctx['dt']:g} Hz physics "
           f"-> {ctx['steps_per_update']} step(s) per update, command held")
     print(f"  init      {args.init}")
     print(f"  k_t       {ctx['audit'].k_t_output_Nm_per_A:.6f} N.m/A at the ACTUATOR "
@@ -111,7 +124,7 @@ def main() -> int:
     m.update({f"meta_{k}": v for k, v in md.items()})
 
     tag = args.tag or (
-        f"kp{args.kp:g}_kd{args.kd:g}_{loop_mode}"
+        f"{args.controller}_kp{args.kp:g}_ki{args.ki:g}_kd{args.kd:g}_{args.control_hz:g}Hz_{loop_mode}"
         + (f"_tau{tau:g}ms" if loop_mode != "ideal" else "")
         + f"_{args.kt}_{args.belt}_{args.init}"
         + ("_C" if args.feedback_mode == "actuator-difference" else "") + ("_STUB" if is_stub else ""))
@@ -168,8 +181,8 @@ def main() -> int:
     print("\n  HOW TO READ THIS")
     print("  This is a CURRENT-domain controller. run_bench_ab19.py is a TORQUE-domain")
     print("  position servo at 600 N.m/rad. Comparing their RMS errors compares two")
-    print("  control PATHWAYS, not two tunings. The gains here came from the ANKLE")
-    print("  step-test script and are NOT hardware-confirmed for the knee.")
+    print("  control PATHWAYS, not two tunings. Selected gain provenance:")
+    print(f"  {ctx['cfg'].gain_source}")
     print(f"  {DISCLAIMER}")
     if is_stub:
         print("  *** STUB -- NOT MUJOCO. Re-run in .venv for a simulation result. ***")
