@@ -63,7 +63,7 @@ class _Opt:
 
 
 class StubModel:
-    """The same arrays oslbench.model reads, filled with the AUTHORED values."""
+    """The same arrays oslbench.sim.model reads, filled with the AUTHORED values."""
 
     def __init__(self, path=""):
         self.path = path
@@ -110,7 +110,7 @@ class StubData:
         # through any actuator -- so it is not reported in actuator_force and is NOT
         # subject to actuator_forcerange.  That asymmetry is MuJoCo's, and reproducing
         # it is the whole reason this array exists here: the drivetrain layer in
-        # oslbench/drivetrain_sim.py injects the belt torque through it.
+        # oslbench/sim/compliant.py injects the belt torque through it.
         self.qfrc_applied = np.zeros(2)
         self.sensordata = np.zeros(6)
         self.actuator_force = np.zeros(2)

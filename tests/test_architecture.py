@@ -6,12 +6,42 @@ from types import SimpleNamespace
 from oslbench.contracts import Sample, PositionCommand
 
 
-def test_architecture_compatibility_identity():
-    for old, new in (("controller", "control.servo"), ("drivetrain", "control.drivetrain"),
-                     ("simulation", "sim.servo"), ("telemetry_source", "telemetry.source"),
-                     ("telemetry_replay", "telemetry.replay"),
-                     ("replay_presentation", "presentation.replay")):
-        assert importlib.import_module("oslbench." + old) is importlib.import_module("oslbench." + new)
+def test_architecture_canonical_modules_and_retired_paths():
+    pairs = (
+        ("ankle_current_control", "sim.ankle"),
+        ("controller", "control.servo"),
+        ("current_gait_live", "presentation.current_gait"),
+        ("dashboard", "presentation.servo_dashboard"),
+        ("drivetrain", "control.drivetrain"),
+        ("drivetrain_dashboard", "presentation.drivetrain_dashboard"),
+        ("drivetrain_sim", "sim.compliant"),
+        ("feedback_location_diagnostic", "control.feedback"),
+        ("http_telemetry_source", "telemetry.http"),
+        ("imu_service", "telemetry.imu_service"),
+        ("imu_telemetry", "telemetry.imu_schema"),
+        ("joint_current_control", "control.gait"),
+        ("microstrain_reader", "telemetry.microstrain"),
+        ("model", "sim.model"),
+        ("observation_presentation", "presentation.observations"),
+        ("replay_presentation", "presentation.replay"),
+        ("simulation", "sim.servo"),
+        ("telemetry_presentation", "presentation.telemetry"),
+        ("telemetry_replay", "telemetry.replay"),
+        ("telemetry_source", "telemetry.source"),
+        ("viewer", "presentation.viewer"),
+    )
+    from pathlib import Path
+    package = Path(__file__).resolve().parents[1] / "oslbench"
+    for old, new in pairs:
+        canonical = importlib.import_module("oslbench." + new)
+        assert canonical.__name__ == "oslbench." + new
+        assert not (package / (old + ".py")).exists()
+        assert importlib.util.find_spec("oslbench." + old) is None
+    assert not (package / "_compat.py").exists()
+    from typing import get_type_hints
+    from oslbench.control.torque import PDCurrentSource
+    from oslbench.control.compliance import DrivetrainLayer
+    assert get_type_hints(PDCurrentSource.__init__)["layer"] is DrivetrainLayer
 
 
 def test_architecture_data_and_control_import_isolation():
@@ -26,7 +56,6 @@ assert not any(n == 'mujoco' or n.startswith(('mujoco.', 'oslbench.sim.', 'oslbe
 
 def test_architecture_provenance_includes_nested_sources():
     from oslbench.paths import source_files, ROOT
-    from pathlib import Path
     names = {p.relative_to(ROOT).as_posix() for p in source_files()}
     assert {"oslbench/control/current.py", "oslbench/sim/current_gait.py",
             "oslbench/presentation/current_gait.py"} <= names

@@ -57,7 +57,7 @@ try:
 except Exception:                                               # noqa: BLE001
     pass
 
-from oslbench.ankle_current_control import (ANKLE_PAPER_CAD_BELT,       # noqa: E402
+from oslbench.sim.ankle import (ANKLE_PAPER_CAD_BELT,       # noqa: E402
                                             CAD_BELT_RATIO, CAD_BELT_TEETH,
                                             AnkleCurrentSim, ConversionAudit,
                                             CurrentLimits, CurrentPID,
@@ -68,8 +68,8 @@ from oslbench.ankle_current_control import (ANKLE_PAPER_CAD_BELT,       # noqa: 
                                             check_sign_consistency,
                                             derive_mjcf_q_to_encoder_sign,
                                             torque_constant)
-from oslbench.drivetrain import PAPER                                   # noqa: E402
-from oslbench.drivetrain_sim import DrivetrainLayer                     # noqa: E402
+from oslbench.control.drivetrain import PAPER                                   # noqa: E402
+from oslbench.sim.compliant import DrivetrainLayer                     # noqa: E402
 
 KP, KI, KD = 0.75, 0.0, 0.03
 CLIP = 60.0
@@ -96,7 +96,7 @@ def _src(path):
 
 
 def _bench():
-    from oslbench.model import load_bench_model
+    from oslbench.sim.model import load_bench_model
     b = load_bench_model(verbose=False)
     if b.failures:
         raise Skip(f"model preflight failed: {b.failures}")
@@ -784,7 +784,7 @@ def test_the_four_torque_frames_are_separately_named():
 def test_the_six_to_nine_lead_is_labelled_as_a_hypothesis_not_a_finding():
     """0.5701/0.095 ~ 6 is a lead. Nothing may call it confirmed."""
     src = ""
-    for rel in ("oslbench/ankle_current_control.py",
+    for rel in ("oslbench/sim/ankle.py",
                 "docs/PHYSICAL_ANKLE_CONTROL_ALIGNMENT.md"):
         with open(os.path.join(ROOT, rel), encoding="utf-8") as fh:
             src += fh.read()
@@ -1127,7 +1127,7 @@ def main(argv=None) -> int:
     if pattern:
         names = [n for n in names if pattern in n]
 
-    print("ankle current-step tests -- oslbench/ankle_current_control.py")
+    print("ankle current-step tests -- oslbench/sim/ankle.py")
     print(f"python {sys.version.split()[0]}   SIMULATION ONLY, no hardware claim")
     print("-" * 78)
     failed, skipped = [], []
