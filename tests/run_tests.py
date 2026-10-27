@@ -54,7 +54,7 @@ def main() -> int:
     import test_oslbench as T
 
     # Extra suites, collected into the SAME run so that one command covers the repo.
-    # `test_drivetrain` covers oslbench/drivetrain.py (the paper's equations, signs and
+    # `test_drivetrain` covers oslbench/control/drivetrain.py (the paper's equations, signs and
     # frames); `test_drivetrain_sim` guards the Option-C feedback point, where the
     # derivative term must read actuator-side velocity rather than joint velocity --
     # reading joint velocity is the non-collocated law that diverged on real MuJoCo at
