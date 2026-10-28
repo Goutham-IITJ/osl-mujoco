@@ -1,7 +1,5 @@
 """Path B: torque-domain PD and its own rotor-current conversion."""
 from __future__ import annotations
-import math
-from . import drivetrain as D
 from .drivetrain import PAPER, DrivetrainParameters
 from .servo import PDController
 from .compliance import DrivetrainLayer
@@ -10,7 +8,7 @@ from .compliance import DrivetrainLayer
 class PDCurrentSource:
     """Turn the EXISTING joint-space PD law into a CURRENT command.  No new control law.
 
-    The law is `oslbench.controller.PDController.torque_unclamped`, used verbatim and
+    The law is `oslbench.control.servo.PDController.torque_unclamped`, used verbatim and
     with its gains untouched.  The only new line of arithmetic is the division that
     converts the requested JOINT torque into the motor current that would produce it
     through the transmission:
@@ -80,7 +78,7 @@ class PDCurrentSource:
     WHY THE REQUEST IS NOT CLAMPED HERE
         `torque_unclamped` is used, not `torque`, because the +-142.2 N.m forcerange is
         a property of the MuJoCo position actuator that has just been disconnected, and
-        `oslbench/drivetrain.py` documents NO drive current limit from the paper.
+        `oslbench/control/drivetrain.py` documents NO drive current limit from the paper.
         Inventing one would be inventing physics.  Peak |I_q| is logged instead, so the
         reader can see what the drive was asked for.  ASSUMED: no current limit.
 

@@ -1,5 +1,5 @@
 """
-oslbench.controller -- THE CONTROLLER.  This is the whole control law, in one file.
+oslbench.control.servo -- THE CONTROLLER.  This is the whole control law, in one file.
 
     error = q_ref - q
     tau   = Kp * error - Kd * qdot          clamped to +/- 142.2 N.m at the knee
