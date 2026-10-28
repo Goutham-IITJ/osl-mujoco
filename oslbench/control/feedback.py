@@ -1,7 +1,7 @@
-"""Isolated derivative-location diagnostic; production classes are unchanged.
+"""Shared derivative-location variants for diagnostics and production gait.
 
 A delegates its command verbatim to CurrentPID. B replaces only its derivative
-term, after running that same PID for the proportional term and history. The
+term, after running that same PID for the knee-side P/I terms and history. The
 reference derivative is the control-sample backward difference, NOT the spline
 velocity channel. B uses instantaneous pre-step actuator-output velocity.
 """
@@ -21,10 +21,11 @@ def referred_velocity(theta_a_dot, belt_ratio, measurement_sign):
 
 
 class FeedbackLocationPID:
-    def __init__(self, gains, limits, mode):
-        if mode not in ('A', 'B') or gains.ki_A_per_deg_s != 0:
-            raise ValueError('Diagnostic requires A/B mode and Ki=0')
-        self.base = CurrentPID(gains, limits, derivative_on='error')
+    def __init__(self, gains, limits, mode, integral_limit_deg_s=None):
+        if mode not in ('A', 'B'):
+            raise ValueError('Diagnostic requires A/B mode')
+        self.base = CurrentPID(gains, limits, derivative_on='error',
+                               integral_limit_deg_s=integral_limit_deg_s)
         self.mode = mode
         self.reset()
 
@@ -77,7 +78,7 @@ class FeedbackLocationSource(GaitCurrentSource):
         self.layer = layer
         self.mode = mode
         super().__init__(cfg, audit, ref_rad, steps_per_update)
-        self.pid = FeedbackLocationPID(cfg.gains, cfg.limits, mode)
+        self.pid = FeedbackLocationPID(cfg.gains, cfg.limits, mode, cfg.integral_limit_deg_s)
         self.reset()
 
     def __call__(self, k, theta_j, theta_j_dot):
@@ -106,8 +107,8 @@ class ActuatorDifferencePID(FeedbackLocationPID):
     A/B classes are unmodified. The inherited B calculation preserves reference
     differencing, suppression, signs and clipping. Only its feedback input differs.
     """
-    def __init__(self, gains, limits):
-        super().__init__(gains, limits, 'B')
+    def __init__(self, gains, limits, integral_limit_deg_s=None):
+        super().__init__(gains, limits, 'B', integral_limit_deg_s)
 
     def reset(self):
         super().reset()
@@ -136,7 +137,7 @@ class ActuatorDifferenceSource(FeedbackLocationSource):
     def __init__(self, cfg, audit, ref_rad, steps_per_update, layer):
         super().__init__(cfg, audit, ref_rad, steps_per_update, layer, 'B')
         self.mode = 'C'
-        self.pid = ActuatorDifferencePID(cfg.gains, cfg.limits)
+        self.pid = ActuatorDifferencePID(cfg.gains, cfg.limits, cfg.integral_limit_deg_s)
         self.reset()
 
     def __call__(self, k, theta_j, theta_j_dot):

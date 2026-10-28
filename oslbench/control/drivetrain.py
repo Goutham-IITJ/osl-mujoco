@@ -1,5 +1,5 @@
 """
-oslbench.drivetrain -- the OSL V2 actuator + belt-transmission model of Best et al. 2025,
+oslbench.control.drivetrain -- the OSL V2 actuator + belt-transmission model of Best et al. 2025,
 as a standalone dynamics module.  NO MuJoCo, NO numpy, NO file I/O, NO plotting.
 
 SOURCE.  Every equation and every number in this file comes from:
@@ -21,8 +21,8 @@ SOURCE.  Every equation and every number in this file comes from:
 WHAT THIS MODULE IS FOR
     To encode those equations cleanly, make every parameter traceable, and be
     unit-testable, BEFORE any of it is integrated into the MuJoCo bench.  It is
-    deliberately not wired into models/osl_v2_bench.xml, oslbench/model.py,
-    oslbench/simulation.py or oslbench/controller.py.  Nothing in the validated
+    deliberately not wired into models/osl_v2_bench.xml, oslbench/sim/model.py,
+    oslbench/sim/servo.py or oslbench/control/servo.py.  Nothing in the validated
     benchmark imports this file.
 
 WHAT THIS MODULE IS NOT
@@ -182,8 +182,8 @@ DEPENDENCIES -- AND ONE HONEST CAVEAT ABOUT HOW YOU IMPORT IT
     MuJoCo, no numpy.  But `oslbench/__init__.py` eagerly imports the bench modules,
     which do pull in numpy, so
 
-        from oslbench.drivetrain import PAPER          # drags in numpy via the package
-        import oslbench.drivetrain                     # same
+        from oslbench.control.drivetrain import PAPER          # drags in numpy via the package
+        import oslbench.control.drivetrain                     # same
 
     To load it with genuinely nothing installed -- which is how the drivetrain tests
     run -- bypass the package:
