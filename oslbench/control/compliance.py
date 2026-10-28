@@ -155,7 +155,7 @@ class DrivetrainLayer:
     def belt(self, theta_j: float) -> BeltState:
         """Evaluate the belt at the CURRENT (theta_j, theta_a).  No state changes.
 
-        Every number here comes from `oslbench/drivetrain.py`; nothing is re-derived.
+        Every number here comes from `oslbench/control/drivetrain.py`; nothing is re-derived.
         """
         p = self.p
         theta_s = D.belt_deflection(float(theta_j), self.theta_a, p)   # paper (3)
