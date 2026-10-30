@@ -54,19 +54,34 @@ ax.text(8,.55,'Feedback returns to the PID above. The original knee position ser
         ha='center',color='#d0d6df',fontsize=12)
 save(fig,'01_control_flow')
 
-fig, ax = canvas('Code architecture: shared algorithms, distinct responsibilities',
-    'Modular implementation exists; a one-line swap to physical motor control is not implemented.')
-box(ax,3,7.25,10,1.1,'Entry points / application composition\nexperiments/run_current_controlled_gait.py -> apps/current_gait.py\napps/live_knee_comparison.py -> receiver + simulation + presentation')
-for x in (2.3,8,13.7): arrow(ax,(8,7.15),(x,6.35))
-box(ax,.3,4.4,4.1,1.85,'CONTROL\ncontrol/current.py: shared PID\ncontrol/gait.py: knee / ankle profiles\ncontrol/feedback.py: signal selection\nDrivetrain equations + compliance')
-box(ax,5.6,4.4,4.8,1.85,'SIMULATION\nsim/model.py: load bench model\nsim/current_gait.py: shared build / run\nsim/live_knee.py: source-time stepping\nsim/contracts.py: typed adapter')
-box(ax,11.6,4.4,4.1,1.85,'ACQUISITION / TRANSPORT\nhardware/: existing physical PID\n+ knee_telemetry.py publisher\ntelemetry/knee.py: laptop receiver\nSeparate replay / mock / IMU modules')
-arrow(ax,(4.5,5.3),(5.5,5.3)); arrow(ax,(11.5,5.3),(10.5,5.3))
-box(ax,1,1.6,6.6,1.4,'PRESENTATION\nNative MuJoCo viewer + browser pages\npresentation/current_gait.py or live_knee.py\nDisplay updates do not define physics timestep')
-box(ax,8.6,1.6,6.4,1.4,'CONTRACTS AND EVIDENCE\ncontracts.py: state / units / command types\nmodels/ + source URDF + tools/\ntests/ and per-run build/ CSV / JSON records')
-arrow(ax,(8,4.3),(4.3,3.1)); arrow(ax,(8,4.3),(11.8,3.1))
-ax.text(8,.6,'Simulation uses the shared plant. Hardware keeps its existing controller and driver; Wi-Fi is read-only.',
-        ha='center',color='#d0d6df',fontsize=12)
+fig, ax = canvas('OSL software architecture',
+    'A responsibility map: what each module owns and where it runs')
+
+def panel(x, y, w, h, title, detail, path, color=BLUE):
+    ax.add_patch(FancyBboxPatch((x,y),w,h,boxstyle='round,pad=0.02,rounding_size=.12',
+                              facecolor=color,edgecolor=EDGE,linewidth=1.2))
+    ax.text(x+.22,y+h-.33,title,color='#e2f1ff',fontsize=15,weight='bold',va='top')
+    ax.text(x+.22,y+h-.83,detail,color=TEXT,fontsize=11.5,va='top',linespacing=1.6)
+    ax.text(x+.22,y+.25,path,color='#82accc',fontsize=10,va='bottom',family='monospace')
+
+ax.add_patch(FancyBboxPatch((.25,1.05),11.25,7.5,boxstyle='round,pad=.05,rounding_size=.16',
+                          facecolor='#10212e',edgecolor='#3d617b',linewidth=1.5))
+ax.text(.55,8.22,'LAPTOP  /  oslbench',color=TEXT,fontsize=12,weight='bold')
+panel(.55,6.4,10.65,1.48,'01  APPLICATIONS','Select a run: offline gait simulation or live hardware comparison','apps/  +  experiments/')
+ax.text(.65,6.05,'02  REUSABLE MODULES',color='#9cb3c5',fontsize=10,weight='bold')
+panel(.55,3.65,3.35,2.2,'Control & dynamics','Shared PID\nKnee / ankle settings\nActuator + belt equations','control/')
+panel(4.2,3.65,3.35,2.2,'Simulation','Model loading\nPhysics stepping\nIndependent knee state','sim/')
+panel(7.85,3.65,3.35,2.2,'Telemetry','Receive + validate\nLive hardware samples\nReplay / mock sources','telemetry/')
+panel(.55,1.4,10.65,1.82,'03  PRESENTATION','MuJoCo viewer  |  Angle comparison  |  Simulation diagnostics\nApplication records CSV / JSON alongside the display','presentation/')
+panel(12.25,3.65,3.5,4.23,'HARDWARE HOST','Existing knee controller\n        +\nMotor / encoder access\n        +\nTelemetry publisher','hardware/','#153445')
+arrow(ax,(12.15,4.65),(11.3,4.65))
+ax.text(11.73,5.2,'Wi-Fi',color=TEXT,ha='center',fontsize=10)
+ax.text(11.73,4.15,'read-only',color='#b3c3ce',ha='center',fontsize=8)
+ax.text(12.35,2.95,'Physical control stays\non the hardware host.',color=TEXT,fontsize=12,linespacing=1.6)
+ax.text(.55,.65,'SHARED FOUNDATION',color='#9cb3c5',fontsize=10,weight='bold')
+ax.text(3.35,.65,'State / units / commands    |    Model assets    |    Regression tests',color=TEXT,fontsize=12)
+ax.text(8,.12,'Layers group responsibilities; they are not a time sequence. Hardware command-backend swapping remains future work.',
+        ha='center',color='#b3c3ce',fontsize=10)
 save(fig,'02_code_architecture')
 
 fig, ax = canvas('Live comparison: one target, two independent responses',

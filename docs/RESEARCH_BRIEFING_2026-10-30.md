@@ -58,6 +58,8 @@ Within the current-domain path, **feedback A** uses knee differences, **feedback
 
 ![Code ownership](assets/research_briefing/02_code_architecture.png)
 
+Read this as a responsibility map: applications select and coordinate the run; reusable control, simulation and telemetry modules do the work; presentation shows the results. The outer boundary identifies the laptop, while the physical controller remains on its own host. The single arrow represents read-only telemetry arriving at the laptop. The separate control-flow diagram explains execution order; detailed filenames are listed in the code tour below.
+
 The supplied three-page `Downloads/structure doc.pdf` proposes `RobotInterface.read_sensors()` and `send_commands()`, implemented by `MujocoSimulationRobot` and `PhysicalRobot`, with an unchanged controller loop selecting either backend. It is a conceptual design, not an implementation already present here.
 
 | Proposal | Current implementation | Remaining difference |
