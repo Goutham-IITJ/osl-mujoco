@@ -26,14 +26,14 @@ Optional lowest-RMS historical C configuration (a simulation candidate, not hard
 
 ## 2. Prove the integrated pipeline locally first
 
-Terminal A: synthetic publisher; no physical device access.
+Start the **laptop receiver first** using Terminal B below. Model/viewer preparation happens before connection. Wait for `READY` in that terminal, then run this publisher in Terminal A within 30 seconds. The publisher does not access physical devices.
 
 ```powershell
 Remove-Item Env:OSL_TELEMETRY_TOKEN -ErrorAction SilentlyContinue
 .venv\Scripts\python.exe -B hardware\knee_telemetry.py --seconds 180
 ```
 
-Terminal B, promptly:
+Terminal B (run this first):
 
 ```powershell
 Remove-Item Env:OSL_TELEMETRY_TOKEN -ErrorAction SilentlyContinue
@@ -74,14 +74,14 @@ Stop the synthetic sender and laptop run before using the physical controller on
 
 Have the hardware operator use the established bench setup, limits and stop procedure. Confirm the supplied edited script matches the controller they normally use. Preserve the original file and hardware CSV. Do not run the hardware script on the laptop.
 
-Start the laptop first (same shared token still set):
+Start the laptop first (same shared token still set), and wait for `READY` after model/viewer preparation:
 
 ```powershell
 $runStamp = Get-Date -Format 'yyyyMMdd_HHmmss_fff'
 .venv\Scripts\python.exe -B -m oslbench.apps.live_knee_comparison --host 192.168.1.50 --seconds 60 --view --outdir "build\hardware_step_$runStamp"
 ```
 
-Within the laptop's 30-second connection window, the hardware operator runs:
+Within the 30-second connection window **after READY**, the hardware operator runs:
 
 ```sh
 export OSL_TELEMETRY_TOKEN='replace-with-the-shared-random-token'

@@ -42,6 +42,22 @@ refused. Use millisecond timestamps if launching multiple runs in one second.
 
 ## Demonstrate without hardware
 
+Startup update (30 October): run the laptop command in terminal B first. It prepares
+the model and native viewer before receiving data. Once it prints `READY`, start
+the synthetic publisher in terminal A within 30 seconds. Previously viewer startup
+blocked processing after reception began and could exhaust the 4,000-sample queue.
+The bounded queue, source sample checks and physics timestep remain unchanged.
+The native viewer now refreshes at most 10 Hz and yields its refresh while source
+lag exceeds the catch-up threshold. This skips display refreshes only, not source
+samples, controller updates, CSV rows or physics steps. Per-stage wall times are
+recorded in `summary.json` under `processing_wall_seconds`.
+
+Local validation on 30 October with the real viewer and both dashboard endpoints
+polled for a 60-second run processed 120,450 physics steps and 12,046 comparison
+samples. Final source lag was 85 ms, with 17 buffered samples remaining at the
+duration cutoff; the bounded queue did not overflow. This tests synthetic local
+operation, not the physical hardware or browser rendering performance.
+
 In terminal A, from the repository root:
 
 ```powershell
@@ -49,11 +65,11 @@ Remove-Item Env:OSL_TELEMETRY_TOKEN -ErrorAction SilentlyContinue
 .venv\Scripts\python.exe -B hardware\knee_telemetry.py --seconds 180
 ```
 
-In terminal B, promptly:
+In terminal B (start first, then wait for READY):
 
 ```powershell
 Remove-Item Env:OSL_TELEMETRY_TOKEN -ErrorAction SilentlyContinue
-$runStamp = Get-Date -Format 'yyyyMMdd_HHmmss'
+$runStamp = Get-Date -Format 'yyyyMMdd_HHmmss_fff'
 .venv\Scripts\python.exe -B -m oslbench.apps.live_knee_comparison --seconds 120 --view --outdir "build\live_comparison_$runStamp"
 ```
 
@@ -65,11 +81,12 @@ the comparison machinery, not physical accuracy. Ctrl+C stops and saves.
 
 Set the identical `OSL_TELEMETRY_TOKEN` in both terminals. Start the laptop
 command below first; start the already supplied hardware step controller within
-30 seconds. Replace the example IP with the hardware computer's Wi-Fi IP.
+30 seconds after `READY` appears (model/viewer preparation comes first).
+Replace the example IP with the hardware computer's Wi-Fi IP.
 
 ```powershell
 $env:OSL_TELEMETRY_TOKEN = 'your-shared-token'
-$runStamp = Get-Date -Format 'yyyyMMdd_HHmmss'
+$runStamp = Get-Date -Format 'yyyyMMdd_HHmmss_fff'
 .venv\Scripts\python.exe -B -m oslbench.apps.live_knee_comparison --host 192.168.1.50 --seconds 60 --view --outdir "build\live_comparison_$runStamp"
 ```
 

@@ -25,9 +25,22 @@ def main(argv=None):
     args=parser.parse_args(argv)
     if not math.isfinite(args.seconds) or args.seconds<=0 or not math.isfinite(args.buffer_ms) or not 0<=args.buffer_ms<=2000:
         parser.error('seconds must be positive; buffer-ms must be between 0 and 2000')
-    if args.outdir.exists(): raise FileExistsError(args.outdir)
-    print('Waiting for hardware server (30 seconds)...',flush=True)
-    receiver=connect_receiver(args.host,args.port,os.environ.get('OSL_TELEMETRY_TOKEN'))
+    if args.outdir.exists():
+        parser.error(f'Output folder already exists: {args.outdir}. Generate a fresh $runStamp; existing recordings are preserved.')
+    print('Preparing MuJoCo model before acquisition...',flush=True)
+    prepared=LiveKnee.prepare()
+    viewer=None
+    try:
+        if args.view:
+            print('Preparing viewer before acquisition; wait for READY before starting the sender...',flush=True)
+            import mujoco.viewer
+            viewer=mujoco.viewer.launch_passive(prepared[1]['bench'].model,prepared[1]['bench'].data)
+            viewer.sync()
+        print('READY — waiting for hardware server (30 seconds). Start the sender now.',flush=True)
+        receiver=connect_receiver(args.host,args.port,os.environ.get('OSL_TELEMETRY_TOKEN'))
+    except BaseException:
+        if viewer: viewer.close()
+        raise
     args.outdir.mkdir(parents=True)
     presentation=Presentation(receiver.metadata)
     presentation.output_dir=str(args.outdir.resolve())
@@ -50,8 +63,9 @@ def main(argv=None):
             if item[0]=='fatal': return
             stop.wait(.05)
     thread=threading.Thread(target=worker,daemon=True);thread.start()
-    dashboards=[];viewer=None;runtime=None;pending=deque();status='WAITING';failed=False
+    dashboards=[];runtime=None;pending=deque();status='WAITING';failed=False
     start=time.monotonic();last_publish=0.;last_view=0.;last_sample_receipt=None;latest_source=None
+    timing=dict(simulation_s=0.,viewer_sync_s=0.,dashboard_publish_s=0.)
     step_writer=None;pair_writer=None
     with (args.outdir/'hardware_batches.jsonl').open('x',encoding='utf-8') as raw, \
          (args.outdir/'simulation.csv').open('x',newline='') as steps, \
@@ -92,14 +106,13 @@ def main(argv=None):
                     if not pending or pending[0][0]>time.monotonic(): break
                     _,row=pending.popleft()
                     if runtime is None:
-                        runtime=LiveKnee(receiver.metadata,row,write_step)
+                        runtime=LiveKnee(receiver.metadata,row,write_step,prepared=prepared)
                         metadata.update(model=runtime.ctx['ident'],initial_sequence=row['sequence'],
                                         omitted_initial_samples=row['sequence'])
                         (args.outdir/'metadata.json').write_text(json.dumps(metadata,indent=2),encoding='utf-8')
-                        if args.view:
-                            import mujoco.viewer
-                            viewer=mujoco.viewer.launch_passive(runtime.bench.model,runtime.bench.data)
+                    tick=time.monotonic()
                     result=runtime.accept(row)
+                    timing['simulation_s']+=time.monotonic()-tick
                     if pair_writer is None:
                         pair_writer=csv.DictWriter(pairs,fieldnames=list(result));pair_writer.writeheader()
                     pair_writer.writerow(result);presentation.add(result)
@@ -110,12 +123,18 @@ def main(argv=None):
                 display_status='CATCHING UP' if lag>max(.5,args.buffer_ms/1000+.2) else status
                 presentation.status=display_status+f' | buffered samples: {len(pending)} | source lag: {lag:.3f} s'
                 if now-last_publish>=.2:
+                    tick=time.monotonic()
                     snap=presentation.snapshot()
                     for dash in dashboards: dash.update(snap)
                     raw.flush();steps.flush();pairs.flush();last_publish=now
-                if viewer and now-last_view>=1/30:
+                    timing['dashboard_publish_s']+=time.monotonic()-tick
+                # Rendering the detailed CAD model must not consume the catch-up budget.
+                # Keep every physics/sample step; skip only visual refreshes while behind.
+                if viewer and now-last_view>=.1 and lag<=max(.5,args.buffer_ms/1000+.2):
                     if not viewer.is_running(): break
+                    tick=time.monotonic()
                     viewer.sync();last_view=now
+                    timing['viewer_sync_s']+=time.monotonic()-tick
                 time.sleep(.001)
         except KeyboardInterrupt: status='STOPPED by user'
         except Exception as exc:
@@ -127,6 +146,7 @@ def main(argv=None):
             summary['physics_steps']=runtime.k if runtime else 0
             summary['unprocessed_batches']=inbox.qsize()
             summary['run_ended']=True
+            summary['processing_wall_seconds']=timing
             summary['source_lag_s']=max(0.,latest_source-runtime.previous['time_s']) if runtime and runtime.previous and latest_source else None
             (args.outdir/'summary.json').write_text(json.dumps(summary,indent=2),encoding='utf-8')
             for dash in dashboards: dash.close()
