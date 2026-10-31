@@ -3,7 +3,7 @@
 ankle_current_control.py -- the PHYSICAL ankle controller's architecture, in simulation.
 
 WHAT THIS MODULE IS FOR
-    The original bench (`oslbench/controller.py` + `oslbench/simulation.py`) drives a
+    The original bench (`oslbench/control/servo.py` + `oslbench/sim/servo.py`) drives a
     MuJoCo POSITION actuator with a joint-torque-domain PD law in radians.  The physical
     ankle rig does something structurally different: an outer Python loop reads an
     external encoder in DEGREES, computes a CURRENT in amps, and hands that to the
@@ -18,10 +18,10 @@ WHAT THIS MODULE IS FOR
 
 WHAT IT REUSES AND WHAT IT ADDS
     REUSED, not reimplemented:
-      * `oslbench.drivetrain.DrivetrainParameters` and its documented frame conventions
-      * `oslbench.drivetrain_sim.DrivetrainLayer` -- Best et al.'s actuator-shaft and
+      * `oslbench.control.drivetrain.DrivetrainParameters` and its documented frame conventions
+      * `oslbench.sim.compliant.DrivetrainLayer` -- Best et al.'s actuator-shaft and
         belt equations, verbatim.  The belt equations are NOT copied into this file.
-      * `oslbench.controller.PDController(0, 0).write_to_model` -- the existing
+      * `oslbench.control.servo.PDController(0, 0).write_to_model` -- the existing
         servo-disconnect trick, pointed at the ANKLE actuator instead of the knee.
     ADDED, because no equivalent exists:
       * the encoder convention boundary (degrees <-> radians, and the sign)
@@ -43,7 +43,7 @@ THE THING THIS MODULE EXISTS TO MAKE EXPLICIT
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, field
 
 from oslbench.control.drivetrain import PAPER, DrivetrainParameters
 
@@ -365,12 +365,15 @@ class CurrentPID:
     """
 
     def __init__(self, gains: PIDGains = PIDGains(), limits: CurrentLimits = CurrentLimits(),
-                 derivative_on: str = "error"):
+                 derivative_on: str = "error", integral_limit_deg_s: float | None = None):
         if derivative_on not in ("error", "measurement"):
             raise ValueError("derivative_on must be 'error' or 'measurement'")
         self.gains = gains
         self.limits = limits
         self.derivative_on = derivative_on
+        if integral_limit_deg_s is not None and (not math.isfinite(integral_limit_deg_s) or integral_limit_deg_s < 0):
+            raise ValueError('Integral limit must be finite and nonnegative')
+        self.integral_limit_deg_s = integral_limit_deg_s
         self.reset()
 
     def reset(self) -> None:
@@ -396,7 +399,10 @@ class CurrentPID:
         # the clamp and the output clip agree. With Ki = 0 this stays exactly 0.0.
         if g.ki_A_per_deg_s != 0.0:
             self.integral_deg_s += err * float(dt)
+            # None preserves the historical limit; knee tuning supplies 50 deg.s.
             lim = self.limits.sim_clip_A / abs(g.ki_A_per_deg_s)
+            if self.integral_limit_deg_s is not None:
+                lim = self.integral_limit_deg_s
             self.integral_deg_s = max(-lim, min(lim, self.integral_deg_s))
         i = g.ki_A_per_deg_s * self.integral_deg_s
 
