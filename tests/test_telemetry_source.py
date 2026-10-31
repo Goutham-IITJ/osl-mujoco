@@ -6,9 +6,9 @@ import subprocess
 import sys
 from urllib.request import urlopen
 
-from oslbench.telemetry_source import MockTelemetrySource,validate_observation
-from oslbench.telemetry_presentation import TelemetryPresentation
-from oslbench.replay_presentation import ReplayWebDashboard
+from oslbench.telemetry.source import MockTelemetrySource,validate_observation
+from oslbench.presentation.telemetry import TelemetryPresentation
+from oslbench.presentation.replay import ReplayWebDashboard
 
 
 def reject(call):
@@ -97,16 +97,16 @@ def test_telemetry_source_replay_unchanged_and_no_physics_import():
 import sys,importlib.abc
 class Block(importlib.abc.MetaPathFinder):
  def find_spec(self,fullname,path=None,target=None):
-  if fullname.split('.')[0] in ('mujoco','numpy') or fullname in ('oslbench.controller','oslbench.simulation','oslbench.drivetrain_sim','oslbench.ankle_current_control','oslbench.joint_current_control'):
+  if fullname.split('.')[0] in ('mujoco','numpy') or fullname in ('oslbench.control.servo','oslbench.sim.servo','oslbench.sim.compliant','oslbench.sim.ankle','oslbench.control.gait'):
    raise AssertionError('Forbidden dependency '+fullname)
 sys.meta_path.insert(0,Block())
 import oslbench.contracts as c
 def forbidden(*a,**k):raise AssertionError('Command creation')
 c.CurrentCommand=c.PositionCommand=c.TorqueCommand=forbidden
-from oslbench.telemetry_source import MockTelemetrySource
-from oslbench.telemetry_presentation import TelemetryPresentation
-from oslbench.replay_presentation import ReplayPresentation,ReplayWebDashboard
-from oslbench.telemetry_replay import ReplaySource
+from oslbench.telemetry.source import MockTelemetrySource
+from oslbench.presentation.telemetry import TelemetryPresentation
+from oslbench.presentation.replay import ReplayPresentation,ReplayWebDashboard
+from oslbench.telemetry.replay import ReplaySource
 p=TelemetryPresentation(MockTelemetrySource());d=ReplayWebDashboard(p,port=0,open_browser=False)
 try:
  for t in (0.,.25,.75,1.,1.25,1.5,3.):p.update(t);d.update(p.snapshot())
@@ -124,8 +124,9 @@ assert 'mujoco' not in sys.modules
 def test_telemetry_source_neutral_schema_compatibility():
     from dataclasses import FrozenInstanceError
     import pickle
-    from oslbench import telemetry_schema as schema, telemetry_replay as replay
-    from oslbench import observation_presentation as formatting, replay_presentation as ui
+    from oslbench import telemetry_schema as schema
+    from oslbench.telemetry import replay
+    from oslbench.presentation import observations as formatting, replay as ui
     assert replay.ReplayRecord is schema.ReplayRecord
     assert replay.CHANNELS is schema.CHANNELS
     assert ui.observation_channels is formatting.observation_channels
@@ -154,15 +155,15 @@ import sys, importlib.abc
 class Block(importlib.abc.MetaPathFinder):
  def find_spec(self, fullname, path=None, target=None):
   if fullname.split('.')[0] in ('mujoco', 'numpy') or fullname in (
-   'oslbench.telemetry_replay', 'oslbench.replay_presentation',
-   'oslbench.drivetrain_dashboard', 'oslbench.controller', 'oslbench.simulation'):
+   'oslbench.telemetry.replay', 'oslbench.presentation.replay',
+   'oslbench.presentation.drivetrain_dashboard', 'oslbench.control.servo', 'oslbench.sim.servo'):
    raise AssertionError('Forbidden dependency ' + fullname)
 sys.meta_path.insert(0, Block())
 from dataclasses import replace
 from oslbench.telemetry_schema import ReplayRecord, CHANNELS
-from oslbench.observation_presentation import observation_channels
-from oslbench.telemetry_source import MockTelemetrySource
-from oslbench.telemetry_presentation import TelemetryPresentation
+from oslbench.presentation.observations import observation_channels
+from oslbench.telemetry.source import MockTelemetrySource
+from oslbench.presentation.telemetry import TelemetryPresentation
 p = TelemetryPresentation(MockTelemetrySource())
 assert all(c['quality'] == 'UNAVAILABLE' for c in p.snapshot()['channels'].values())
 p.update(0.)

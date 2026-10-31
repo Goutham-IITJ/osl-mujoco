@@ -8,7 +8,7 @@ import subprocess
 import sys
 import tempfile
 
-from oslbench.telemetry_replay import ReplaySource, DatasetError, HEADER
+from oslbench.telemetry.replay import ReplaySource, DatasetError, HEADER
 from oslbench.contracts import Sample, RobotState
 
 FIXTURE = Path(__file__).parent/'fixtures/telemetry_replay/manifest.json'
@@ -148,12 +148,12 @@ class Block(importlib.abc.MetaPathFinder):
         if fullname.split('.')[0] in ('mujoco','numpy'):
             raise AssertionError('Forbidden replay dependency: '+fullname)
 sys.meta_path.insert(0,Block())
-from oslbench.telemetry_replay import ReplaySource
+from oslbench.telemetry.replay import ReplaySource
 from oslbench.contracts import Sample
 r=ReplaySource(sys.argv[1])
 assert all(e.sample is None or isinstance(e.sample,Sample) for e in r)
-assert 'oslbench.simulation' not in sys.modules
-assert 'oslbench.controller' not in sys.modules
+assert 'oslbench.sim.servo' not in sys.modules
+assert 'oslbench.control.servo' not in sys.modules
 assert 'mujoco' not in sys.modules
 """
     result=subprocess.run([sys.executable,'-B','-c',code,str(FIXTURE.resolve())],cwd=FIXTURE.parents[3],capture_output=True,text=True)
