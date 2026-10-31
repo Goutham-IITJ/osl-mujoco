@@ -3,7 +3,7 @@
 joint_current_control.py -- per-joint current-domain control, shared by knee and ankle.
 
 WHY THIS MODULE EXISTS
-    `oslbench/ankle_current_control.py` implements the physical ankle rig's architecture
+    `oslbench/sim/ankle.py` implements the physical ankle rig's architecture
     and is, correctly, full of ankle facts: the Vari-Flex foot geometry, the encoder's
     reported plantarflexion polarity, the ankle's own ROM.  The knee needs the SAME
     software -- degree-domain PD, amps out, first-order current loop, Option-C belt --
@@ -32,23 +32,61 @@ THE ONE THING MOST LIKELY TO BE GOT WRONG
              The motor sign is then fixed by requiring negative feedback in the model,
              which is a SIMULATION WIRING choice and is recorded as one.
 
-    None of the knee's signs is a claim about physical knee hardware.  The supplied
-    controller script is an ANKLE step-test script; no knee controller configuration has
-    been seen by this project.
+    Model-frame signs remain simulation wiring. Named ankle-derived and supplied-knee
+    controller profiles below select tuning, not the physical joint or encoder frame.
 """
 
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from oslbench.control.current import ConversionAudit, CurrentLimits, CurrentLoopModel, CurrentPID, PIDGains
 
 __all__ = ["JointCurrentConfig", "KNEE_GAIT_CONFIG", "GaitCurrentSource",
-           "GAIN_SOURCE_NOTE"]
+           "GAIN_SOURCE_NOTE", "ANKLE_CONTROLLER_CONFIG", "KNEE_CONTROLLER_CONFIG",
+           "resolve_controller_settings"]
 
 GAIN_SOURCE_NOTE = ("ankle step-test script; provisionally transferred to knee; "
                     "not hardware-confirmed for knee")
+
+
+@dataclass(frozen=True)
+class ControllerSettings:
+    """Tuning profiles for the common knee gait runner, not joint/encoder mappings."""
+    kp: float
+    ki: float
+    kd: float
+    control_hz: float
+    kt: str
+    feedback_mode: str
+    integral_limit_deg_s: float | None
+    provenance: str
+
+
+ANKLE_CONTROLLER_CONFIG = ControllerSettings(.75, 0., .03, 1000., 'manual_rotor',
+    'legacy', None, GAIN_SOURCE_NOTE)
+KNEE_CONTROLLER_CONFIG = ControllerSettings(1.5, .15, .06, 200., 'script',
+    'actuator-difference', 50., 'Preetam supplied knee PID gains/integral limit/rate; '
+    'C derivative is a simulation adaptation; output KT=0.5701 is provisional')
+
+
+def resolve_controller_settings(args):
+    """Explicit caller overrides win; omitted fields come from the selected profile."""
+    name = getattr(args, 'controller', 'ankle')
+    if name not in ('ankle', 'knee'):
+        raise ValueError('Controller must be ankle or knee')
+    profile = ANKLE_CONTROLLER_CONFIG if name == 'ankle' else KNEE_CONTROLLER_CONFIG
+    args.controller = name
+    for key in ('kp', 'ki', 'kd', 'control_hz', 'kt', 'feedback_mode', 'integral_limit_deg_s'):
+        if getattr(args, key, None) is None:
+            setattr(args, key, getattr(profile, key))
+    if not math.isfinite(args.control_hz) or args.control_hz <= 0:
+        raise ValueError('Controller rate must be finite and positive')
+    for key in ('kp', 'ki', 'kd'):
+        if not math.isfinite(getattr(args, key)):
+            raise ValueError('Gains must be finite')
+    return profile
 
 
 def make_gait_source(cfg, audit, ref_rad, steps_per_update, layer, mode='legacy'):
@@ -81,6 +119,7 @@ class JointCurrentConfig:
     derivative_on: str = "error"
     current_loop_tau_s: float = 0.0
     notes: str = ""
+    integral_limit_deg_s: float | None = None
 
     def __post_init__(self):
         if self.measurement_sign not in (-1, 1):
@@ -111,6 +150,7 @@ class JointCurrentConfig:
             f"Ki               {g.ki_A_per_deg_s:g} A/(deg.s)",
             f"Kd               {g.kd_A_per_deg_per_s:g} A/(deg/s)",
             f"gain_source      {self.gain_source}",
+            f"integral limit   {self.integral_limit_deg_s} degree-seconds (None: legacy current-derived limit)",
             f"measurement      {self.measurement_frame}",
             f"measurement_sign {self.measurement_sign:+d}",
             f"motor_sign       {g.encoder_to_motor_sign:+d}",
@@ -123,9 +163,8 @@ class JointCurrentConfig:
         ]
 
 
-# The knee configuration for the AB19 gait run.  Every entry carries its provenance,
-# and two of them are explicitly NOT hardware facts.
-KNEE_GAIT_CONFIG = JointCurrentConfig(
+# Historical ankle-derived tuning applied to the knee model. Preserve old imports.
+ANKLE_DERIVED_GAIT_CONFIG = JointCurrentConfig(
     joint="knee",
     # Kp/Kd are the ANKLE script's values, used here because Goutham asked for an
     # exploratory gait run at those numbers.  They are not knee gains.
@@ -143,20 +182,20 @@ KNEE_GAIT_CONFIG = JointCurrentConfig(
                  "+tau_m -> theta_s < 0 -> +tau_j -> knee flexes (+qpos). A SIMULATION "
                  "WIRING fact, NOT a transfer of the ankle's -1 and NOT a claim about "
                  "physical knee hardware."),
-    notes=("No physical knee controller configuration has been seen by this project. "
-           "The supplied script is an ankle step-test controller."),
+    notes="Historical ankle-derived knee gait configuration; preserved for comparison.",
 )
+KNEE_GAIT_CONFIG = ANKLE_DERIVED_GAIT_CONFIG  # Compatibility: never silently retune old callers.
 
 
 class GaitCurrentSource:
-    """Adapter: degree-domain PD at 1 kHz -> current loop at dt -> rotor amps for the layer.
+    """Adapter: degree-domain PID at configured rate -> current loop -> layer amps.
 
     `DrivetrainBenchSimulation` calls `current_source(k, theta_j, theta_j_dot)` once per
     PHYSICS step and hands the result straight to `DrivetrainLayer.advance` as rotor
     amps.  So this object owns three responsibilities and nothing else:
 
       1. run the PD law only every `steps_per_update` physics steps, HOLDING its output
-         in between -- that is what makes the 1 kHz controller a 1 kHz controller;
+         in between -- the source schedule determines the controller rate;
       2. advance `CurrentLoopModel` EVERY physics step, so a lagged current keeps
          responding between controller updates;
       3. rescale the modelled ACTUAL current into the layer's rotor-amp convention
@@ -174,7 +213,8 @@ class GaitCurrentSource:
         self.audit = audit
         self.ref = ref_rad
         self.steps_per_update = int(steps_per_update)
-        self.pid = CurrentPID(cfg.gains, cfg.limits, derivative_on=cfg.derivative_on)
+        self.pid = CurrentPID(cfg.gains, cfg.limits, derivative_on=cfg.derivative_on,
+                              integral_limit_deg_s=cfg.integral_limit_deg_s)
         self.loop = CurrentLoopModel(cfg.current_loop_tau_s)
         self.dt = None                           # set on the first call, from the model
         self.reset()
@@ -198,7 +238,7 @@ class GaitCurrentSource:
             raise RuntimeError("GaitCurrentSource.dt was never set; the experiment must "
                                "set it from the compiled model's timestep before running")
         idx = k if k >= 0 else 0
-        # ---- 1. the outer loop, at 1 kHz, holding in between -----------------------
+        # ---- 1. the outer loop, at the selected rate, holding in between -----------
         if idx % self.steps_per_update == 0:
             ref_deg = cfg.to_controller_deg(float(self.ref[min(idx, len(self.ref) - 1)]))
             meas_deg = cfg.to_controller_deg(theta_j)
