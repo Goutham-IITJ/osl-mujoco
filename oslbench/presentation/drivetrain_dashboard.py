@@ -15,16 +15,16 @@ WHAT THIS FILE IS
       * it cannot write a command.  Delete this file and the physics is identical.
 
     `tests/test_drivetrain_sim.py` asserts the first half of that structurally: this
-    module imports neither `mujoco` nor `oslbench.simulation`, so it *cannot* step a
+    module imports neither `mujoco` nor `oslbench.sim.servo`, so it *cannot* step a
     plant even by accident.
 
-WHY IT IS NOT oslbench/dashboard.py
+WHY IT IS NOT oslbench/presentation/servo_dashboard.py
     That one exists, is tested, and drives the SERVO demo (`experiments/run_live_demo.py`)
     with three fixed plots sized by an `ang`/`err`/`tau` limits dict.  Option C has
     eleven signals and four different plots, two of which (theta_j against theta_a/n_t,
     and the deflection band) have no counterpart there.  Widening the existing class
     would have put the working servo demo at risk for a presentation feature, so this is
-    a separate file and `oslbench/dashboard.py` is untouched.
+    a separate file and `oslbench/presentation/servo_dashboard.py` is untouched.
 
 THE ONE JUDGEMENT CALL IN HERE
     Plot 2 draws theta_j and theta_a/n_t on the SAME axis.  Everywhere else in this
