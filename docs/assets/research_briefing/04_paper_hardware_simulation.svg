@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="1144.8pt" height="784.8pt" viewBox="0 0 1144.8 784.8" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-11-02T08:55:53.979569</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.9, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 784.8 
+L 1144.8 784.8 
+L 1144.8 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 73.768 190.812 
+L 443.032 190.812 
+Q 450.568 190.812 450.568 183.108 
+L 450.568 113.772 
+Q 450.568 106.068 443.032 106.068 
+L 73.768 106.068 
+Q 66.232 106.068 66.232 113.772 
+L 66.232 183.108 
+Q 66.232 190.812 73.768 190.812 
+z
+" clip-path="url(#p005fa64a00)" style="fill: #e6f4ef; stroke: #56758b; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 73.768 306.372 
+L 443.032 306.372 
+Q 450.568 306.372 450.568 298.668 
+L 450.568 232.542 
+Q 450.568 224.838 443.032 224.838 
+L 73.768 224.838 
+Q 66.232 224.838 66.232 232.542 
+L 66.232 298.668 
+Q 66.232 306.372 73.768 306.372 
+z
+" clip-path="url(#p005fa64a00)" style="fill: #e6f4ef; stroke: #56758b; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 73.768 421.932 
+L 443.032 421.932 
+Q 450.568 421.932 450.568 414.228 
+L 450.568 348.102 
+Q 450.568 340.398 443.032 340.398 
+L 73.768 340.398 
+Q 66.232 340.398 66.232 348.102 
+L 66.232 414.228 
+Q 66.232 421.932 73.768 421.932 
+z
+" clip-path="url(#p005fa64a00)" style="fill: #e6f4ef; stroke: #56758b; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 73.768 537.492 
+L 443.032 537.492 
+Q 450.568 537.492 450.568 529.788 
+L 450.568 463.662 
+Q 450.568 455.958 443.032 455.958 
+L 73.768 455.958 
+Q 66.232 455.958 66.232 463.662 
+L 66.232 529.788 
+Q 66.232 537.492 73.768 537.492 
+z
+" clip-path="url(#p005fa64a00)" style="fill: #e6f4ef; stroke: #56758b; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 638.968 190.812 
+L 1008.232 190.812 
+Q 1015.768 190.812 1015.768 183.108 
+L 1015.768 113.772 
+Q 1015.768 106.068 1008.232 106.068 
+L 638.968 106.068 
+Q 631.432 106.068 631.432 113.772 
+L 631.432 183.108 
+Q 631.432 190.812 638.968 190.812 
+z
+" clip-path="url(#p005fa64a00)" style="fill: #e9f2fa; stroke: #56758b; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 638.968 306.372 
+L 1008.232 306.372 
+Q 1015.768 306.372 1015.768 298.668 
+L 1015.768 232.542 
+Q 1015.768 224.838 1008.232 224.838 
+L 638.968 224.838 
+Q 631.432 224.838 631.432 232.542 
+L 631.432 298.668 
+Q 631.432 306.372 638.968 306.372 
+z
+" clip-path="url(#p005fa64a00)" style="fill: #e9f2fa; stroke: #56758b; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 638.968 421.932 
+L 1008.232 421.932 
+Q 1015.768 421.932 1015.768 414.228 
+L 1015.768 348.102 
+Q 1015.768 340.398 1008.232 340.398 
+L 638.968 340.398 
+Q 631.432 340.398 631.432 348.102 
+L 631.432 414.228 
+Q 631.432 421.932 638.968 421.932 
+z
+" clip-path="url(#p005fa64a00)" style="fill: #e9f2fa; stroke: #56758b; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 638.968 537.492 
+L 1008.232 537.492 
+Q 1015.768 537.492 1015.768 529.788 
+L 1015.768 463.662 
+Q 1015.768 455.958 1008.232 455.958 
+L 638.968 455.958 
+Q 631.432 455.958 631.432 463.662 
+L 631.432 529.788 
+Q 631.432 537.492 638.968 537.492 
+z
+" clip-path="url(#p005fa64a00)" style="fill: #e9f2fa; stroke: #56758b; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 142.848 688.362 
+L 1001.952 688.362 
+Q 1009.488 688.362 1009.488 680.658 
+L 1009.488 604.902 
+Q 1009.488 597.198 1001.952 597.198 
+L 142.848 597.198 
+Q 135.312 597.198 135.312 604.902 
+L 135.312 680.658 
+Q 135.312 688.362 142.848 688.362 
+z
+" clip-path="url(#p005fa64a00)" style="fill: #f1f3f5; stroke: #56758b; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 70 495.12 
+L 29.18 495.12 
+" clip-path="url(#p005fa64a00)" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 29.18 495.12 
+L 29.18 265.926 
+" clip-path="url(#p005fa64a00)" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_3">
+    <path d="M 446.8 495.12 
+L 478.2 495.12 
+" clip-path="url(#p005fa64a00)" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_4">
+    <path d="M 478.2 495.12 
+L 478.2 168.984 
+" clip-path="url(#p005fa64a00)" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_5">
+    <path d="M 1012 495.12 
+L 1052.82 495.12 
+" clip-path="url(#p005fa64a00)" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_6">
+    <path d="M 1052.82 495.12 
+L 1052.82 265.284 
+" clip-path="url(#p005fa64a00)" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_7">
+    <path d="M 1012 148.44 
+L 1112.48 148.44 
+" clip-path="url(#p005fa64a00)" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_8">
+    <path d="M 1112.48 148.44 
+L 1112.48 642.78 
+" clip-path="url(#p005fa64a00)" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 20px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #173047" x="572.4" y="29.67" transform="rotate(-0 572.4 29.67)">OSL hardware–simulation comparison architecture</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #166757" x="258.4" y="69.474" transform="rotate(-0 258.4 69.474)">Hardware host / Raspberry Pi</text>
+   </g>
+   <g id="text_3">
+    <text style="font-weight: 700; font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #254c87" x="792.2" y="69.474" transform="rotate(-0 792.2 69.474)">Simulation computer</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #173047" x="258.4" y="137.066775" transform="rotate(-0 258.4 137.066775)">Telemetry HTTP server</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(170.953125 160.489484)">Bounded in-memory sample buffer</text>
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(177.975781 172.447141)">knee_telemetry.py; no database</text>
+   </g>
+   <g id="text_6">
+    <text style="font-weight: 700; font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #173047" x="258.4" y="254.841675" transform="rotate(-0 258.4 254.841675)">Reference generator + physical knee PID</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(144.34375 277.151547)">Target and encoder error → current command</text>
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(186.264844 289.109203)">Nominal control rate: 200 Hz</text>
+   </g>
+   <g id="text_8">
+    <text style="font-weight: 700; font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #173047" x="258.4" y="370.401675" transform="rotate(-0 258.4 370.401675)">Motor driver + physical drivetrain</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(188.096875 392.711547)">Current command over CAN</text>
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(192.6875 404.669203)">Motor / transmission / belt</text>
+   </g>
+   <g id="text_10">
+    <text style="font-weight: 700; font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #173047" x="258.4" y="485.961675" transform="rotate(-0 258.4 485.961675)">Physical knee + joint encoder</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(168.29375 508.271547)">Actual knee angle via AS5048B / I²C</text>
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(172.0875 520.229203)">Tested setup: isolated knee fixture</text>
+   </g>
+   <g id="text_12">
+    <text style="font-weight: 700; font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #173047" x="823.6" y="137.11365" transform="rotate(-0 823.6 137.11365)">Receiver + source-time buffer</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(719.028906 160.628547)">HTTP polling → sequence / validity checks</text>
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(718.028906 172.586203)">Save raw data; default live buffer: 100 ms</text>
+   </g>
+   <g id="text_14">
+    <text style="font-weight: 700; font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #173047" x="823.6" y="254.88855" transform="rotate(-0 823.6 254.88855)">Independent simulation PID</text>
+   </g>
+   <g id="text_15">
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(728.186719 277.151547)">Same target; own simulated feedback</text>
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(738.208594 289.109203)">200 Hz; C or knee-error derivative</text>
+   </g>
+   <g id="text_16">
+    <text style="font-weight: 700; font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #173047" x="823.6" y="370.44855" transform="rotate(-0 823.6 370.44855)">Current conversion + drivetrain model</text>
+   </g>
+   <g id="text_17">
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(728.411719 392.711547)">Current → actuator dynamics / friction</text>
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(758.514063 404.669203)">Elastic belt → knee torque</text>
+   </g>
+   <g id="text_18">
+    <text style="font-weight: 700; font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #173047" x="823.6" y="485.961675" transform="rotate(-0 823.6 485.961675)">MuJoCo rigid-body plant</text>
+   </g>
+   <g id="text_19">
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(741.578906 508.271547)">Physics timestep: 0.5 ms (2 kHz)</text>
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(727.801563 520.229203)">Full-leg or separate knee-only adapter</text>
+   </g>
+   <g id="patch_11">
+    <path d="M 258.4 304.519393 
+Q 258.4 323.383186 258.4 340.793536 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+    <path d="M 260.4 336.793536 
+L 258.4 340.793536 
+L 256.4 336.793536 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 258.4 420.079393 
+Q 258.4 438.943186 258.4 456.353536 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+    <path d="M 260.4 452.353536 
+L 258.4 456.353536 
+L 256.4 452.353536 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 823.6 304.519393 
+Q 823.6 323.383186 823.6 340.793536 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+    <path d="M 825.6 336.793536 
+L 823.6 340.793536 
+L 821.6 336.793536 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+   </g>
+   <g id="patch_14">
+    <path d="M 823.6 420.079393 
+Q 823.6 438.943186 823.6 456.353536 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+    <path d="M 825.6 452.353536 
+L 823.6 456.353536 
+L 821.6 452.353536 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+   </g>
+   <g id="patch_15">
+    <path d="M 258.4 226.690607 
+Q 258.4 207.826814 258.4 190.416464 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+    <path d="M 256.4 194.416464 
+L 258.4 190.416464 
+L 260.4 194.416464 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+   </g>
+   <g id="text_20">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #173047" x="266.564" y="208.146" transform="rotate(-0 266.564 208.146)">Sample publish</text>
+   </g>
+   <g id="patch_16">
+    <path d="M 448.797955 148.44 
+Q 540.999217 148.44 631.747034 148.44 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+    <path d="M 627.747034 146.44 
+L 631.747034 148.44 
+L 627.747034 150.44 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+   </g>
+   <g id="text_21">
+    <text style="font-size: 11px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #173047" x="541" y="117.624" transform="rotate(-0 541 117.624)">Wi-Fi / IP</text>
+   </g>
+   <g id="text_22">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(502.369609 168.535969)">HTTP / TCP :8794</text>
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(495.131641 178.614)">JSON batches; token</text>
+   </g>
+   <g id="patch_17">
+    <path d="M 823.6 188.959393 
+Q 823.6 207.823186 823.6 225.233536 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+    <path d="M 825.6 221.233536 
+L 823.6 225.233536 
+L 821.6 221.233536 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+   </g>
+   <g id="text_23">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #173047" x="831.136" y="208.146" transform="rotate(-0 831.136 208.146)">Target + source time</text>
+   </g>
+   <g id="patch_18">
+    <path d="M 31.178147 265.926 
+Q 49.586776 265.926 66.541961 265.926 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+    <path d="M 62.541961 263.926 
+L 66.541961 265.926 
+L 62.541961 267.926 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+   </g>
+   <g id="text_24">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(20.359438 426.482109) rotate(-90)">Encoder feedback</text>
+   </g>
+   <g id="patch_19">
+    <path d="M 476.203003 168.984 
+Q 462.501103 168.984 450.252647 168.984 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+    <path d="M 454.252647 170.984 
+L 450.252647 168.984 
+L 454.252647 166.984 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+   </g>
+   <g id="text_25">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(490.103438 404.187422) rotate(-90)">Measured angle / validity</text>
+   </g>
+   <g id="patch_20">
+    <path d="M 1050.821853 265.284 
+Q 1032.413224 265.284 1015.458039 265.284 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+    <path d="M 1019.458039 267.284 
+L 1015.458039 265.284 
+L 1019.458039 263.284 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+   </g>
+   <g id="text_26">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(1067.863438 421.193203) rotate(-90)">Simulated feedback</text>
+   </g>
+   <g id="text_27">
+    <text style="font-weight: 700; font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #173047" x="572.4" y="630.186975" transform="rotate(-0 572.4 630.186975)">Time-aligned comparison, plots and saved records</text>
+   </g>
+   <g id="text_28">
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(352.6875 656.252547)">Hardware angle + simulated angle + target; tracking errors and RMS / peak differences</text>
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(411.467188 668.210203)">Simulation currents, torques, belt deflection; CSV / JSON records</text>
+   </g>
+   <g id="patch_21">
+    <path d="M 823.6 535.643703 
+Q 823.6 567.346835 823.6 597.596522 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+    <path d="M 825.6 593.596522 
+L 823.6 597.596522 
+L 821.6 593.596522 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+   </g>
+   <g id="patch_22">
+    <path d="M 1110.482811 642.78 
+Q 1059.100502 642.78 1009.171636 642.78 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+    <path d="M 1013.171636 644.78 
+L 1009.171636 642.78 
+L 1013.171636 640.78 
+" style="fill: none; stroke: #496579; stroke-width: 1.3; stroke-linecap: round"/>
+   </g>
+   <g id="text_29">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; fill: #173047" transform="translate(1102.403438 289.413047) rotate(-90)">Recorded hardware samples</text>
+   </g>
+   <g id="text_30">
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #173047" x="572.4" y="716.61" transform="rotate(-0 572.4 716.61)">Timing: source timestamps drive multiple fixed physics steps per sample (~10 at 200 Hz); no Pi–simulation handshake.</text>
+   </g>
+   <g id="text_31">
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #173047" x="572.4" y="741.648" transform="rotate(-0 572.4 741.648)">Replay: saved samples replace the network input. Model calibration is a separate offline activity.</text>
+   </g>
+   <g id="text_32">
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #173047" x="572.4" y="766.686" transform="rotate(-0 572.4 766.686)">Measured encoder angles initialize the simulation once and provide comparison data; subsequent control uses simulated state.</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p005fa64a00">
+   <rect x="7.2" y="7.2" width="1130.4" height="770.4"/>
+  </clipPath>
+ </defs>
+</svg>
