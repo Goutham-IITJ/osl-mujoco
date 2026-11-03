@@ -1,0 +1,143 @@
+{
+  "inventory_date": "2026-11-02",
+  "original_path": "C:\\Users\\Goutham A.S\\Downloads\\All_Step_Results.zip",
+  "archive": "All_Step_Results.zip",
+  "sha256": "4474af8cf5d31d5e990d3f6a7dc9aebc76f15d2d475d7eea5f4fbcd12de38f2c",
+  "bytes": 3137260,
+  "provenance": "User reported receipt from Preetam in project chat on 2 November 2026; byte-identical local copy, no data transformed.",
+  "status": "Inspected only; multi-amplitude replay not performed by this audit.",
+  "caveats": [
+    "No 20-degree CSV",
+    "CSV torque/current columns do not establish measured torque/current",
+    "Physical mounting/controller/version must be confirmed per recording",
+    "Do not assume the 15-degree CSV is the 30 October live trial"
+  ],
+  "csv_files": [
+    {
+      "member": "All_Step_Results/step_ankle_10_single_run/step_response_data.csv",
+      "sha256": "146a113a0462fbf785ca441f81af78bef11e48b92972495cbc728dcddc13fba8",
+      "rows": 199,
+      "columns": [
+        "time_s",
+        "dt_s",
+        "reference_deg",
+        "actual_deg",
+        "error_deg",
+        "p_term_A",
+        "i_term_A",
+        "d_term_A",
+        "current_cmd_A",
+        "current_clamped",
+        "tau_equivalent_Nm",
+        "torque_Nm"
+      ],
+      "first_time_s": "0.005052330001490191",
+      "last_time_s": "0.9950511290007853"
+    },
+    {
+      "member": "All_Step_Results/step_ankle_15_single_run/step_response_data.csv",
+      "sha256": "3bfc3cfbfa340acca4f4c6df0f3ce22fea6d87917a361cf86d2741e5995998a2",
+      "rows": 199,
+      "columns": [
+        "time_s",
+        "dt_s",
+        "reference_deg",
+        "actual_deg",
+        "error_deg",
+        "p_term_A",
+        "i_term_A",
+        "d_term_A",
+        "current_cmd_A",
+        "current_clamped",
+        "tau_equivalent_Nm",
+        "torque_Nm"
+      ],
+      "first_time_s": "0.005050461000791984",
+      "last_time_s": "0.9950479510007426"
+    },
+    {
+      "member": "All_Step_Results/step_ankle_5_single_run/step_response_data.csv",
+      "sha256": "cadc42dace87a010d71d5cb014687e8e7ad3a1785955704467291d5e4d4a50ec",
+      "rows": 199,
+      "columns": [
+        "time_s",
+        "dt_s",
+        "reference_deg",
+        "actual_deg",
+        "error_deg",
+        "p_term_A",
+        "i_term_A",
+        "d_term_A",
+        "current_cmd_A",
+        "current_clamped",
+        "tau_equivalent_Nm",
+        "torque_Nm"
+      ],
+      "first_time_s": "0.0050494580009399215",
+      "last_time_s": "0.995049208000637"
+    },
+    {
+      "member": "All_Step_Results/step_test_knee_10_single_run/step_response_data.csv",
+      "sha256": "5547e613cf2099abab8950eb59acd1718b0d0ee235c7f4483952e272b4532776",
+      "rows": 199,
+      "columns": [
+        "time_s",
+        "dt_s",
+        "reference_deg",
+        "actual_deg",
+        "error_deg",
+        "p_term_A",
+        "i_term_A",
+        "d_term_A",
+        "current_cmd_A",
+        "current_clamped",
+        "tau_equivalent_Nm",
+        "torque_Nm"
+      ],
+      "first_time_s": "0.005061723000835627",
+      "last_time_s": "0.9950518859986914"
+    },
+    {
+      "member": "All_Step_Results/step_test_knee_15_single_run/step_response_data.csv",
+      "sha256": "c7c5e25a6416854213d0f2520d4ea7b17fa0092051a89088fca24e3ba714218e",
+      "rows": 199,
+      "columns": [
+        "time_s",
+        "dt_s",
+        "reference_deg",
+        "actual_deg",
+        "error_deg",
+        "p_term_A",
+        "i_term_A",
+        "d_term_A",
+        "current_cmd_A",
+        "current_clamped",
+        "tau_equivalent_Nm",
+        "torque_Nm"
+      ],
+      "first_time_s": "0.005050148000009358",
+      "last_time_s": "0.9950506530003622"
+    },
+    {
+      "member": "All_Step_Results/step_test_knee_5_single_run/step_response_data.csv",
+      "sha256": "730440a4c454b7c0f2a82b8c8c10f6a7ad25088e026b0f05fa208a6769d50139",
+      "rows": 199,
+      "columns": [
+        "time_s",
+        "dt_s",
+        "reference_deg",
+        "actual_deg",
+        "error_deg",
+        "p_term_A",
+        "i_term_A",
+        "d_term_A",
+        "current_cmd_A",
+        "current_clamped",
+        "tau_equivalent_Nm",
+        "torque_Nm"
+      ],
+      "first_time_s": "0.005052216001786292",
+      "last_time_s": "0.9950511660026677"
+    }
+  ]
+}
