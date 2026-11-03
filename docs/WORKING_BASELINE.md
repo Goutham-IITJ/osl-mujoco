@@ -1,5 +1,9 @@
 # Working baseline and provenance
 
+This is the **18 October snapshot**. For current continuation use
+[PROJECT_HANDOVER.md](PROJECT_HANDOVER.md) and the separately captured
+[2 November continuity inventory](baselines/continuity_20261102.json).
+
 The [Phase 6B inventory](baselines/phase6b_20261018.json) captures the workspace on
 2026-10-18. It is not a committed revision, dependency lockfile or new simulation.
 The branch was `main`, HEAD `f3b1dfeba7fbc89680cc4ec4031ed213c34252b8`.
