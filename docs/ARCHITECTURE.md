@@ -1,5 +1,11 @@
 # Architecture: implemented behavior and proposed boundaries
 
+**2 November update:** current priorities and the newer knee comparison path are
+in [PROJECT_HANDOVER.md](PROJECT_HANDOVER.md) and [LIVE_KNEE_COMPARISON.md](LIVE_KNEE_COMPARISON.md).
+The predictive knee path now has encoder transport and a recorded physical test;
+that does not implement the D1 mirroring integration or D2 IMU estimator below.
+The older roadmap is historical, not the current implementation queue.
+
 Current reference, 2026-10-18. Implementation order is maintained only in the [roadmap](NEXT_PHASE_PROPOSAL.md); this document describes ownership, not a competing plan.
 
 ## Implemented ownership (2026-10-19)
