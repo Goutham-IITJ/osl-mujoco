@@ -1,0 +1,1343 @@
+{
+  "date": "2026-11-02",
+  "scope": "Snapshot after continuity documentation edits; not a clean commit, not a backup, not exhaustive workspace inventory. Excludes itself, environments, most older build outputs and CAD assembly assets.",
+  "head": "4f9eb68c904d20f3e70460fd1e3bf3c9161f40a4",
+  "branch": "main",
+  "git_status": "M .gitignore\n M README.md\n M docs/ARCHITECTURE.md\n M docs/CONTROL_PATHS.md\n M docs/LIVE_KNEE_COMPARISON.md\n M docs/NEXT_PHASE_PROPOSAL.md\n M docs/RESEARCH_INDEX.md\n M docs/WORKING_BASELINE.md\n M hardware/README.md\n D oslbench/drivetrain_sim.py\n D oslbench/imu_service.py\n D oslbench/imu_telemetry.py\n D oslbench/joint_current_control.py\n D oslbench/microstrain_reader.py\n D oslbench/model.py\n D oslbench/observation_presentation.py\n M oslbench/paths.py\n M oslbench/presentation/current_gait.py\n M oslbench/presentation/replay.py\n M oslbench/presentation/servo_dashboard.py\n M oslbench/presentation/viewer.py\n D oslbench/replay_presentation.py\n M oslbench/sim/compliant.py\n M oslbench/sim/current_gait.py\n M oslbench/sim/model.py\n M oslbench/sim/servo.py\n D oslbench/simulation.py\n M tests/test_contracts.py\n M tests/test_current_gait_live.py\n M tests/test_drivetrain.py\n M tests/test_drivetrain_sim.py\n M tests/test_gait_feedback_location_ab.py\n M tests/test_gait_feedback_location_estimator.py\n M tests/test_imu_telemetry.py\n M tests/test_joint_current_control.py\n M tests/test_oslbench.py\n M tests/test_replay_presentation.py\n?? AGENTS.md\n?? data/\n?? docs/DOCUMENTATION_AUDIT_2026-11-02.md\n?? docs/PAPER_ARCHITECTURE_REPLY_2026-11-02.md\n?? docs/PROJECT_HANDOVER.md\n?? models/osl_v2_knee_fixture.json\n?? models/osl_v2_knee_fixture.xml\n?? oslbench/presentation/live_knee.html\n?? oslbench/presentation/live_knee.py\n?? oslbench/sim/knee_fixture.py\n?? oslbench/sim/live_knee.py\n?? oslbench/telemetry/knee.py\n?? tests/test_knee_fixture.py\n?? tests/test_knee_live_connection.py\n?? tests/test_live_knee_comparison.py\n?? tools/build_knee_fixture.py",
+  "critical_local_paths": [
+    "build/hardware_step_20261030_134549_560",
+    "build/knee_fixture_replay_20261031_results",
+    "build/knee_derivative_audit_20261031",
+    "build/knee_fixture_sensitivity_20261031",
+    "build/AB19_knee_gait_reference.csv",
+    "tests/oracle",
+    "data/hardware/2026-11-02"
+  ],
+  "files": [
+    {
+      "path": ".gitignore",
+      "bytes": 869,
+      "sha256": "24de0314c063dd488a691a7fa6500c63ce33dbe42acb35b8539dc6f1445917f4"
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 1700,
+      "sha256": "cfa4726076c65184c76b193d19f42fe3559017641969029e4500ed4253592912"
+    },
+    {
+      "path": "BENCH_GAIT_TRACKING_DESIGN.md",
+      "bytes": 36615,
+      "sha256": "d46760847ff48493bb47df7684cc8b0f47c999c6a6f4984290e62a28f9264b9b"
+    },
+    {
+      "path": "BENCH_TUNING_AND_DATASET.md",
+      "bytes": 22468,
+      "sha256": "33090875e6c160bc60c9ff32ba82a6c5d44e5c56b56e3eaf1d379c6ffb81993d"
+    },
+    {
+      "path": "build/AB19_knee_gait_reference.csv",
+      "bytes": 6576,
+      "sha256": "83fed583b80c61c5bcd7978f2f2dd0870fe3c1efa25db68dbe9606b20da8a00d"
+    },
+    {
+      "path": "build/hardware_step_20261030_134549_560/comparison.csv",
+      "bytes": 31598,
+      "sha256": "402d804950a9bae3660097e2e43a622381fe3dd0f88743dab936989d963e4db2"
+    },
+    {
+      "path": "build/hardware_step_20261030_134549_560/hardware_batches.jsonl",
+      "bytes": 77884,
+      "sha256": "9ed86fd7b670911e36d3fa6bc66190c7e1f40b661a0f5c8dee8eb5e3257a6cf3"
+    },
+    {
+      "path": "build/hardware_step_20261030_134549_560/metadata.json",
+      "bytes": 1837,
+      "sha256": "0a6d4fc22ff604bf2cbc24c6119637a80389c27b91c4c3bc17363b6708581603"
+    },
+    {
+      "path": "build/hardware_step_20261030_134549_560/simulation.csv",
+      "bytes": 890662,
+      "sha256": "f2abcbe0ecbe1824c97e488bae6efb65b1ff8f1c814d2d3b5256c7627a86e1ae"
+    },
+    {
+      "path": "build/hardware_step_20261030_134549_560/summary.json",
+      "bytes": 222697,
+      "sha256": "21b446f11c5f696fce858b7fabaeb5e1d88f379b58bab98164310da1443fe817"
+    },
+    {
+      "path": "build/knee_derivative_audit_20261031/check_pid_and_inertia.py",
+      "bytes": 1929,
+      "sha256": "8a04f4a6547981e3ed74c18cf23dc25af813aa86425d1646e32bb40574ff8de3"
+    },
+    {
+      "path": "build/knee_derivative_audit_20261031/comparison.png",
+      "bytes": 270032,
+      "sha256": "6898bedc9ecbeec68e0911d044654ad3e141221d2eeb7c2bc62364a60b573a9d"
+    },
+    {
+      "path": "build/knee_derivative_audit_20261031/full-leg/comparison.csv",
+      "bytes": 31215,
+      "sha256": "22dd9f1b0b2d53c30821ff96d0df1f6190e15fd592a9ed8cde4a37f2e24e6c81"
+    },
+    {
+      "path": "build/knee_derivative_audit_20261031/full-leg/metadata.json",
+      "bytes": 3706,
+      "sha256": "e7079b706f30fa7a862f0e1456d4d6a9ce4725f0f194b62e885ed18e88867250"
+    },
+    {
+      "path": "build/knee_derivative_audit_20261031/full-leg/simulation.csv",
+      "bytes": 838852,
+      "sha256": "73958de7612c60dbc136d34d195d4d130e94a97324f85dcca9375496eab0e0dc"
+    },
+    {
+      "path": "build/knee_derivative_audit_20261031/knee-fixture/comparison.csv",
+      "bytes": 31699,
+      "sha256": "c249f001e7fdb72c7e9448a298c67d02a886d1f40b2e15e826eee6a581b15c3c"
+    },
+    {
+      "path": "build/knee_derivative_audit_20261031/knee-fixture/metadata.json",
+      "bytes": 3713,
+      "sha256": "107703ff66b0cdfd9fbeb5bdd4fcee18fc76862e08b0ab66092616a53784809b"
+    },
+    {
+      "path": "build/knee_derivative_audit_20261031/knee-fixture/simulation.csv",
+      "bytes": 914948,
+      "sha256": "f3cd9517361242a2a54ec4d8627a4544cc2206425c4e96da94b4b619b6261efe"
+    },
+    {
+      "path": "build/knee_derivative_audit_20261031/parameter_audit.json",
+      "bytes": 561,
+      "sha256": "3820c88103051b24d1eeab89188fb4261f9dfe56e66dd76c01ea22c25d41da34"
+    },
+    {
+      "path": "build/knee_derivative_audit_20261031/summary.json",
+      "bytes": 1720,
+      "sha256": "cc882b493304106333389201d1d1026a8f3213d2f78896c1a843ad613bca8754"
+    },
+    {
+      "path": "build/knee_fixture_replay_20261031_results/comparison.png",
+      "bytes": 132767,
+      "sha256": "fd9d745a1373a115d7bdeef3da10fb294ddb0bb0fc1af1af470de173b55a1d1c"
+    },
+    {
+      "path": "build/knee_fixture_replay_20261031_results/full-leg/comparison.csv",
+      "bytes": 31598,
+      "sha256": "402d804950a9bae3660097e2e43a622381fe3dd0f88743dab936989d963e4db2"
+    },
+    {
+      "path": "build/knee_fixture_replay_20261031_results/full-leg/metadata.json",
+      "bytes": 3649,
+      "sha256": "da678b7a1dab36cad2d272d1f16c840bb87c4862c9da1d209dd9b62e867ee14b"
+    },
+    {
+      "path": "build/knee_fixture_replay_20261031_results/full-leg/simulation.csv",
+      "bytes": 890662,
+      "sha256": "f2abcbe0ecbe1824c97e488bae6efb65b1ff8f1c814d2d3b5256c7627a86e1ae"
+    },
+    {
+      "path": "build/knee_fixture_replay_20261031_results/knee-fixture/comparison.csv",
+      "bytes": 31640,
+      "sha256": "29701a6af4f533c4891172dc55bb354d2acf264c1adde16ad59cba58ea15b50d"
+    },
+    {
+      "path": "build/knee_fixture_replay_20261031_results/knee-fixture/metadata.json",
+      "bytes": 3656,
+      "sha256": "811a0df652d3fa0719916d380221a461092edcb77c1a51d925c77e917753f12f"
+    },
+    {
+      "path": "build/knee_fixture_replay_20261031_results/knee-fixture/simulation.csv",
+      "bytes": 914532,
+      "sha256": "63171925860b33a6b01f7ad35bf8f0487cad3fcdf2836bc48eb607043dcb1219"
+    },
+    {
+      "path": "build/knee_fixture_replay_20261031_results/summary.json",
+      "bytes": 1647,
+      "sha256": "f2d4c1e3c1f803e73b088b3138ca1467226e8ac7377d5a401204ba51dcc4fa76"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/armature_0.5x/comparison.csv",
+      "bytes": 31553,
+      "sha256": "64245d5711d5b49343a64c8a685bc129fa8180d7da2f9c3f995eac3aab4eb18e"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/armature_0.5x/metadata.json",
+      "bytes": 1374,
+      "sha256": "233e84fe809d86943214a415e532338531ace4e60be4395259e235f5499fd303"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/armature_0.5x/simulation.csv",
+      "bytes": 910549,
+      "sha256": "aa93da7cb8dfd19f551e236a2207c8458659c553bf6eaafe705dc3f5a5b41ffb"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/armature_0x/comparison.csv",
+      "bytes": 31565,
+      "sha256": "a32511439fdc8c640c8775970712305997bd7531608c571fcd0f443a556e93e0"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/armature_0x/metadata.json",
+      "bytes": 1372,
+      "sha256": "18995c0ffd2626e06da82c084da01b7635f3ad2559923a16bad4552e5ab361b2"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/armature_0x/simulation.csv",
+      "bytes": 909347,
+      "sha256": "4ed5fa38d75ba189c5c6a07faee3c4fa5d3693f13f04443d141fa51bc9ce95c6"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/armature_2x/comparison.csv",
+      "bytes": 31795,
+      "sha256": "ce56b0c0710b7d6d1bbea8b9b735c66fe6e7c8848fc36319a5f782c17ccd12d9"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/armature_2x/metadata.json",
+      "bytes": 1373,
+      "sha256": "77ee42b417f6f3eff1a22c98ced6cb01f3884e8e16ece25000cb2282226ecb72"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/armature_2x/simulation.csv",
+      "bytes": 924064,
+      "sha256": "4ef6db2a202fda928c5b42198e9c6f5882cae92ede6cdbe04324f606789bc6bc"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/baseline/comparison.csv",
+      "bytes": 31640,
+      "sha256": "29701a6af4f533c4891172dc55bb354d2acf264c1adde16ad59cba58ea15b50d"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/baseline/metadata.json",
+      "bytes": 1373,
+      "sha256": "7d9813c925c2f83f46775328f7335cffcf256ca8b6a2694bc15eb4ea16869783"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/baseline/simulation.csv",
+      "bytes": 914532,
+      "sha256": "63171925860b33a6b01f7ad35bf8f0487cad3fcdf2836bc48eb607043dcb1219"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/damping_0.5x/comparison.csv",
+      "bytes": 31871,
+      "sha256": "06dca60ed15ebeedd272d7fbe70e573f6786d4463055b9fc5225323070db6daa"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/damping_0.5x/metadata.json",
+      "bytes": 1374,
+      "sha256": "895edf84654628dead70051cc5bf681b94e2432fe2fe42cd139b06860e7f434e"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/damping_0.5x/simulation.csv",
+      "bytes": 923749,
+      "sha256": "c780078262acee4aa59c1c60d7507cfb43432d08da2e29a94e3f1bc0f547c31a"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/damping_0x/comparison.csv",
+      "bytes": 31748,
+      "sha256": "8a3838c3bc8573915eacd518862f551eb8dd1eb88bc0f4525c423fb080fc7ae6"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/damping_0x/metadata.json",
+      "bytes": 1373,
+      "sha256": "cb66212b3acb96986ec494d6f077bac2905c2f7aa1fa146b4ecd255b1d361f0f"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/damping_0x/simulation.csv",
+      "bytes": 924688,
+      "sha256": "d6fcda5faeed228befc76521c1c3a674a9be3483f8abc33b24a3f5b508c45a6e"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/damping_2x/comparison.csv",
+      "bytes": 31580,
+      "sha256": "f6b91875aadee59a76b48035c35b50826ece51e38a7617e510bbb4c0bcb31c39"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/damping_2x/metadata.json",
+      "bytes": 1373,
+      "sha256": "9a95802ad4277d10db9224258e6517ce45a7888ec4485ac73074ea54ca4135d0"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/damping_2x/simulation.csv",
+      "bytes": 908968,
+      "sha256": "4a966938423bd2cd6efed53b911e4e2c207d8d98fc4bbb99634d322715ffe201"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/frictionloss_0.5x/comparison.csv",
+      "bytes": 31789,
+      "sha256": "54aafbae53e1b921c51c7004c5b8455bd8a6de726305fe6252c36f05fe7da421"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/frictionloss_0.5x/metadata.json",
+      "bytes": 1373,
+      "sha256": "d039d7a33551effce97b21602172f699ee7c9e15ff231c88ae8b067e7ab828ec"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/frictionloss_0.5x/simulation.csv",
+      "bytes": 920374,
+      "sha256": "70295c0af36a7da8fd14b0e91ba4dd78f9c220a8ddad4af3e76fbde0379881f9"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/frictionloss_0x/comparison.csv",
+      "bytes": 31843,
+      "sha256": "d8a6a7756443771d7cdfad89e18c1f440634171bae8f61b648aecdda3bcb4188"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/frictionloss_0x/metadata.json",
+      "bytes": 1373,
+      "sha256": "4e27f380eedaab68f6aa8836a04cc2fd066028106e6426cc5ed54a2ff1befa65"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/frictionloss_0x/simulation.csv",
+      "bytes": 921851,
+      "sha256": "74667c243a70e9f01aa30c956e2e1e84f64a6c5a2b06d20ce9880d94c3158c90"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/frictionloss_2x/comparison.csv",
+      "bytes": 31600,
+      "sha256": "d2563a42aeafa5193e5c5a53b7d818ccbd01918daa523f3b1b838f17442c3783"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/frictionloss_2x/metadata.json",
+      "bytes": 1373,
+      "sha256": "9acee48323563a6124da4ff95651c22b92b46a94a045a54db8d171b50e26a32c"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/frictionloss_2x/simulation.csv",
+      "bytes": 909635,
+      "sha256": "07fdb4b595db76aa1c6422340b0048b405ee1ae99f70f644f3b355426f19c938"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/summary.csv",
+      "bytes": 3873,
+      "sha256": "8ae084f50b0bf319276f25a5d56170ff39c2ee63d451390eab8e4cbeb512d73e"
+    },
+    {
+      "path": "build/knee_fixture_sensitivity_20261031/summary.json",
+      "bytes": 9605,
+      "sha256": "6b2864b3216a3e7fc0a35418d79570f88426915a8fac2149a98b40d925a110dd"
+    },
+    {
+      "path": "data/hardware/2026-11-02/All_Step_Results.zip",
+      "bytes": 3137260,
+      "sha256": "4474af8cf5d31d5e990d3f6a7dc9aebc76f15d2d475d7eea5f4fbcd12de38f2c"
+    },
+    {
+      "path": "data/hardware/2026-11-02/manifest.json",
+      "bytes": 4383,
+      "sha256": "47f00fd70d6c834750ac9ace31ad2cbb6974a98dd8ee1dc147b8e64772e78db9"
+    },
+    {
+      "path": "docs/ACTUATOR_DYNAMICS_ANALYSIS.md",
+      "bytes": 50365,
+      "sha256": "6f5ba8330208f830355b78c5f0db7b20110171e004c331f20b76b83442fe2a8d"
+    },
+    {
+      "path": "docs/ANKLE_PARAMETER_SENSITIVITY.md",
+      "bytes": 6906,
+      "sha256": "69f0d395d8bc24ca068164cdf3123a2fbc685b61e6fa6065795eff8d7894444f"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "bytes": 12312,
+      "sha256": "6571e9ece606c230f5a0b761b3c1da01c2f11dd119a8abcd149c09b04eb20e40"
+    },
+    {
+      "path": "docs/ARMATURE_PILOT.md",
+      "bytes": 16343,
+      "sha256": "041036f7c4381881ad41e29c01bcca1bd8d211bea7682d4ed8d1d1b40c64e34b"
+    },
+    {
+      "path": "docs/assets/research_briefing/01_control_flow.png",
+      "bytes": 215245,
+      "sha256": "a3def8a851c09852c8fa5cadb27ae5562d5a345bb454589ecafe404168db0152"
+    },
+    {
+      "path": "docs/assets/research_briefing/01_control_flow.svg",
+      "bytes": 108015,
+      "sha256": "58aa8cf4f0396fb561e2217b32990cdc1bad3589d44932bd3287ff89478c1117"
+    },
+    {
+      "path": "docs/assets/research_briefing/02_code_architecture.png",
+      "bytes": 243754,
+      "sha256": "e8e7439992fc3cf6aa56bd12daf867886a98faaf012ec8b16c587b5fcd8d720b"
+    },
+    {
+      "path": "docs/assets/research_briefing/02_code_architecture.svg",
+      "bytes": 127180,
+      "sha256": "20c012588be46d3693d8f7f2cbd07e0f43cb856ed51e862bc32ae93b9fcc9f02"
+    },
+    {
+      "path": "docs/assets/research_briefing/03_live_pipeline.png",
+      "bytes": 276419,
+      "sha256": "b501b5b91148420cca37cafb2abd6d70c42b8e6af8dced15f3b2aa8c5a9de9ab"
+    },
+    {
+      "path": "docs/assets/research_briefing/03_live_pipeline.svg",
+      "bytes": 122319,
+      "sha256": "6217deefdc805cbbdfa0c2c4256e554f7f6b490420067c9ee081e7da5ae18dcc"
+    },
+    {
+      "path": "docs/assets/research_briefing/04_paper_hardware_simulation.pdf",
+      "bytes": 29850,
+      "sha256": "cc81f791fcc346f91e90a6efc8b3344ffbf264a901060a7ed73ab29835623b06"
+    },
+    {
+      "path": "docs/assets/research_briefing/04_paper_hardware_simulation.png",
+      "bytes": 422666,
+      "sha256": "46b1a3abae869713e980895bca0e51c2a06b4554159a8435e790b0cd4466b5b0"
+    },
+    {
+      "path": "docs/assets/research_briefing/04_paper_hardware_simulation.svg",
+      "bytes": 19614,
+      "sha256": "8570e390eeb38c43203cbb2b0426acab29fa4599b682f4ee31956e0691af753d"
+    },
+    {
+      "path": "docs/assets/research_briefing/make_diagrams.py",
+      "bytes": 7502,
+      "sha256": "658fcbd6ad8d81113a8d71e1cd04c9a426ca7e3c25209b8c49ee98cdfa464881"
+    },
+    {
+      "path": "docs/assets/research_briefing/make_paper_architecture.py",
+      "bytes": 4518,
+      "sha256": "384b381c37790210c18f11d8e2d73db6c5e48f7d3d395fd3cafe208c522dd185"
+    },
+    {
+      "path": "docs/assets/weekly_gait_report/01_sensitivity_tracking.png",
+      "bytes": 267925,
+      "sha256": "e751a9fa89939ce05e2c2eb3f5f99aa716857db97431e74bce019399ae696f1e"
+    },
+    {
+      "path": "docs/assets/weekly_gait_report/02_sensitivity_belt.png",
+      "bytes": 374281,
+      "sha256": "b33e3ae709045f889bd03b89f25fd46111e695a5ed64f90361efc92535bb1542"
+    },
+    {
+      "path": "docs/assets/weekly_gait_report/03_feedback_tracking.png",
+      "bytes": 312584,
+      "sha256": "c99d83a0157f7ea6d4725054e2b8a8584e4e10f8ab0f589444a8513f76e5debd"
+    },
+    {
+      "path": "docs/assets/weekly_gait_report/04_feedback_loading.png",
+      "bytes": 397780,
+      "sha256": "6e64087168165a628d717db58c586df31cca004ded37201855b930e1b915af8c"
+    },
+    {
+      "path": "docs/assets/weekly_gait_report/05_estimator_loading.png",
+      "bytes": 423572,
+      "sha256": "ae2c3a3317806fc76a91dbfbf7b2e8147a6f3b529d7e43ec2dbb3911800a771c"
+    },
+    {
+      "path": "docs/assets/weekly_gait_report/06_estimator_difference.png",
+      "bytes": 249076,
+      "sha256": "a4a711667792f819c468c4d6e92d06424115ac0eb33f9d0fceac8e602237e883"
+    },
+    {
+      "path": "docs/assets/weekly_gait_report/07_timestep_tracking.png",
+      "bytes": 208820,
+      "sha256": "e5b3b6555573857631c8fcbaac2fc9afcff90e5401130d429d1bb643ec955c57"
+    },
+    {
+      "path": "docs/assets/weekly_gait_report/08_timestep_loading.png",
+      "bytes": 230234,
+      "sha256": "9cdcc09790187fb1a6d17c0252d2d4bf9b5dd59e978419cad91fe6bccb5a5f5b"
+    },
+    {
+      "path": "docs/assets/weekly_knee_telemetry_report/01_knee_tracking.png",
+      "bytes": 190027,
+      "sha256": "0affb8416eb35f59f4f4c9cbf7ee03b0ee98d4d60380c61c78c9850ddcd04ca8"
+    },
+    {
+      "path": "docs/assets/weekly_knee_telemetry_report/02_architecture.png",
+      "bytes": 116910,
+      "sha256": "9e661684e37a20e703900a42c59c35259558fdfa97656840dffe7d4b0be93bfa"
+    },
+    {
+      "path": "docs/assets/weekly_knee_telemetry_report/03_control_loop.png",
+      "bytes": 62418,
+      "sha256": "dcba4d0e00070441bde1ff9ce83a2a215e1c4c8ef87c80d59ad2e003004ba393"
+    },
+    {
+      "path": "docs/assets/weekly_knee_telemetry_report/04_full_pipeline.png",
+      "bytes": 332110,
+      "sha256": "851c4a97b5a0f254a54dba7ed72c6240ae47c2d170f6db16a411859e368a583c"
+    },
+    {
+      "path": "docs/assets/weekly_knee_telemetry_report/make_figures.py",
+      "bytes": 3849,
+      "sha256": "866b1547a9569f336f2599dbee7e842445159dcb06ae9125ae40c89e5c1bab1b"
+    },
+    {
+      "path": "docs/baselines/phase6b_20261018.json",
+      "bytes": 29934,
+      "sha256": "8c20c1296bdb2ea57469fcbb249e8ff51df2e4c16fa3ac757bc7e50c1ead8c02"
+    },
+    {
+      "path": "docs/BENCH_EXPERIMENT.md",
+      "bytes": 18465,
+      "sha256": "443b979d02716cda6d4b990a882a8c86a4401fe7b0ec1709a2d8926d190ca46d"
+    },
+    {
+      "path": "docs/CAD_FINDINGS.md",
+      "bytes": 9894,
+      "sha256": "80445204442fa4df7ff1c93a9c3739b3f3a301289c89c088cddacf6e66c49dac"
+    },
+    {
+      "path": "docs/CODE_MAP.md",
+      "bytes": 5161,
+      "sha256": "f9c6864819e7c1c21a8124bd5fa305aac84c28759c2e069764822fa3c7b1d2c5"
+    },
+    {
+      "path": "docs/CONTROL_PATHS.md",
+      "bytes": 7182,
+      "sha256": "23cb0302eb3e6b3cf25996986ab4ee26f4d5424a696dd26eba30285839289750"
+    },
+    {
+      "path": "docs/DEMO_AND_HARDWARE_2026-10-30.md",
+      "bytes": 7550,
+      "sha256": "570e0042697be19de3ad86006b777101633facecfa4d60522b7c7aabe38cb3db"
+    },
+    {
+      "path": "docs/DOCUMENTATION_AUDIT_2026-11-02.md",
+      "bytes": 9567,
+      "sha256": "3c763b772d1290157af1d606691ccc3c22c0d0c65f39312e947b7c392ad1f648"
+    },
+    {
+      "path": "docs/DRIVETRAIN_INSTABILITY_DIAGNOSIS.md",
+      "bytes": 48471,
+      "sha256": "7eb720120195ffb5fa06811f9ac3a129f7914f765c6d093d5cd5bc0ae7d44794"
+    },
+    {
+      "path": "docs/DRIVETRAIN_INTEGRATION_OPTIONS.md",
+      "bytes": 14992,
+      "sha256": "4f4cbdb8ef0a76ef0fb7ff88e5ed78432061b26a2fb739e754ed8b7d692a7f01"
+    },
+    {
+      "path": "docs/DRIVETRAIN_PARAMETERS.md",
+      "bytes": 16978,
+      "sha256": "ee3d955ff7c3c50e50367dde6c96495ecf04ffd47009f5386b3fc5451134f138"
+    },
+    {
+      "path": "docs/IMU_TELEMETRY.md",
+      "bytes": 14237,
+      "sha256": "f3f30065e61af11f3bb008b5c763b27549d6894177ca6e8ccd8cd1a60f75e746"
+    },
+    {
+      "path": "docs/KNEE_CONTROLLER_COMPARISON.md",
+      "bytes": 12578,
+      "sha256": "4253ddd241ceeded0983f4b87488f5058f6eaae215d1b6c809995ef283a93e2a"
+    },
+    {
+      "path": "docs/KNEE_DERIVATIVE_AUDIT_2026-10-31.md",
+      "bytes": 4459,
+      "sha256": "ba0642bee8061b48a577494717368f0899faad74771ed32a39e3bf1a46fe747e"
+    },
+    {
+      "path": "docs/KNEE_FIXTURE.md",
+      "bytes": 4362,
+      "sha256": "8a0c2fd6f3a1e84e327419357d11faf3275989416a3c2b75cded995a3018171d"
+    },
+    {
+      "path": "docs/KNEE_FIXTURE_SENSITIVITY_2026-10-31.md",
+      "bytes": 2890,
+      "sha256": "4f3745f3b47781bc18f8b84c1397c1a2c60c9ab4bbf934cf36d66755434c3d1d"
+    },
+    {
+      "path": "docs/LIVE_DEMO.md",
+      "bytes": 16809,
+      "sha256": "7283e2f2929506fef1c8036c63da2d31ecb475d3559a621a803c7b037e001d73"
+    },
+    {
+      "path": "docs/LIVE_KNEE_COMPARISON.md",
+      "bytes": 8112,
+      "sha256": "46a86785c3f7381fac247fec0b2ce43ea32634fc5bb2307df564910f76d535a9"
+    },
+    {
+      "path": "docs/MEETING_DEMO_COMMANDS_2026-10-26.md",
+      "bytes": 3632,
+      "sha256": "8d9a99713ae4208d20eb8c64cb6b2d753304f015b22a58d68378763ebc766224"
+    },
+    {
+      "path": "docs/MEETING_READINESS_2026-10-26.md",
+      "bytes": 5807,
+      "sha256": "b95f9263089ee64c04b1d9806582fa1e3736b2dcbd029b1aceb5d89223366f6b"
+    },
+    {
+      "path": "docs/MYOASSIST_FINDINGS.md",
+      "bytes": 10208,
+      "sha256": "8da2aa31b6c54afedc85bb6d8452ba7657cde00a00cbfd8863966815d08a747a"
+    },
+    {
+      "path": "docs/MYOASSIST_PIVOT.md",
+      "bytes": 18798,
+      "sha256": "99c03a78474174d233af26b5415db28f5b14e937d78bbadefbc44df36728d88d"
+    },
+    {
+      "path": "docs/NEXT_PHASE_PROPOSAL.md",
+      "bytes": 72436,
+      "sha256": "e60fdc440622a7865bb9a71c4a4d4ecdacbe444fc90267892851e9bc233cc64d"
+    },
+    {
+      "path": "docs/PAPER_ARCHITECTURE_REPLY_2026-11-02.md",
+      "bytes": 3850,
+      "sha256": "d8fb97321dfa71edac3144c432c8366e3216c7f8c7a3aefe657091a88151035a"
+    },
+    {
+      "path": "docs/PHYSICAL_ANKLE_CONTROL_ALIGNMENT.md",
+      "bytes": 40972,
+      "sha256": "41a299d97e63344e2512ed7522772c046f19560a7d20f2b91932e7f3e9adb680"
+    },
+    {
+      "path": "docs/PRIOR_ART_AND_DIRECTION.md",
+      "bytes": 33885,
+      "sha256": "cc0cc2ae9119f2e6618213faeb7444db5e669c3264e2c134a8e61db5ecaf318a"
+    },
+    {
+      "path": "docs/PROJECT_HANDOVER.md",
+      "bytes": 14647,
+      "sha256": "b264b19dedc097da203d3b887dc392d83283884e442baa7c9580d9469528961c"
+    },
+    {
+      "path": "docs/README_PRE_PHASE6B.md",
+      "bytes": 40282,
+      "sha256": "2b1214cea3ea52a58d2b84be4e820b152a99a2f1c5cbf642c6fb04a1f27296d8"
+    },
+    {
+      "path": "docs/REFACTOR_MAP.md",
+      "bytes": 14209,
+      "sha256": "350327a40032057b8c4b9137cc2af046485595d774a0af5621ac8e719aeb1b77"
+    },
+    {
+      "path": "docs/RESEARCH_BRIEFING_2026-10-30.md",
+      "bytes": 22863,
+      "sha256": "7643c380d49c2cfd0e705a9454e0355abc574a4359b36da4d810b2511d636e3a"
+    },
+    {
+      "path": "docs/RESEARCH_INDEX.md",
+      "bytes": 8870,
+      "sha256": "983595e01c6eb9659d2045843c808212b587f435b8d8e6666b236f8f016cd1aa"
+    },
+    {
+      "path": "docs/TELEMETRY_REPLAY.md",
+      "bytes": 13187,
+      "sha256": "7fba97e28555bf0d194eddad2ab44e751ecede7dd8d2c46d92822efaba2ddd7e"
+    },
+    {
+      "path": "docs/TELEMETRY_SOURCE.md",
+      "bytes": 7927,
+      "sha256": "d29d6bf485c84d60eed3e1e8a1003fdd3a95e31303b2d44ebe9827c2444e6a8d"
+    },
+    {
+      "path": "docs/VALIDATION.md",
+      "bytes": 6114,
+      "sha256": "d34d8f869515c72db142f77f20e7db65275a13e6fda66aed746f5f4174756e10"
+    },
+    {
+      "path": "docs/WEEKLY_GAIT_PROGRESS_REPORT.md",
+      "bytes": 25165,
+      "sha256": "345badd0138ba3e21f8e52556ae0b419aef7a6a56ab4d13de2fb654f0892e808"
+    },
+    {
+      "path": "docs/WEEKLY_KNEE_TELEMETRY_REPORT_2026-10-26.md",
+      "bytes": 12735,
+      "sha256": "5c3f44031ad13ba19d4b0114ff81b69ab131d5c2fd2ea5e85a9bc768dfc1a5e3"
+    },
+    {
+      "path": "docs/WORKING_BASELINE.md",
+      "bytes": 2732,
+      "sha256": "4b6f4a0f1ed20d02f25ad000a75d1b5c8b54d40623cdf0b945fcc7f1d4c18a2d"
+    },
+    {
+      "path": "experiments/camargo_probe.py",
+      "bytes": 23064,
+      "sha256": "e35c183020e1ece6ca1faa86fdb25cc2b340bb4bb7728f8934fb58ce98f3264f"
+    },
+    {
+      "path": "experiments/check_drivetrain_model.py",
+      "bytes": 18398,
+      "sha256": "71443bb4e0ab783c137cccce6a7090139971ba58daf51f5d5b270d35e07aaa40"
+    },
+    {
+      "path": "experiments/diagnose_drivetrain_instability.py",
+      "bytes": 72077,
+      "sha256": "c39172122782956e478b00a959f6cde2fafac4175e0bf2a2805ed26014761e1e"
+    },
+    {
+      "path": "experiments/gain_sweep_analytic.py",
+      "bytes": 10222,
+      "sha256": "ca7ed7509ff2f2205a18279aeb639dde908e3a80c1cfcb330e991962d99434be"
+    },
+    {
+      "path": "experiments/gain_sweep_prediction.png",
+      "bytes": 427857,
+      "sha256": "6f3d0dbaea2fda328b9b2fd0e475fcd2053193b5390c40c15ebec7a46c6fb3a4"
+    },
+    {
+      "path": "experiments/knee_fixture_sensitivity.py",
+      "bytes": 3424,
+      "sha256": "278fe467e31e99d0ae00a1b2f6ef7f3533f281b99f170ba8f910493b98345910"
+    },
+    {
+      "path": "experiments/layer_dynamic_test.py",
+      "bytes": 85141,
+      "sha256": "39aa966c800675a550c9e524c810340c478cb8d97594ffc281c1af1bca7b03bf"
+    },
+    {
+      "path": "experiments/layer_energy_drift.py",
+      "bytes": 17597,
+      "sha256": "2634f739472b92dabf53dcb9b06107cd46ae1a2203155842ee93925d36f7517f"
+    },
+    {
+      "path": "experiments/layer_null_test.py",
+      "bytes": 21684,
+      "sha256": "b290bfd65499045551a34e955ecb5df9c8f13d585cd4f8e81aa58dd18edb6c46"
+    },
+    {
+      "path": "experiments/layer_static_test.py",
+      "bytes": 24377,
+      "sha256": "c827fe56958b0af9fd43f86a520673941cc9a01abfffaebe984f27a243220009"
+    },
+    {
+      "path": "experiments/plot_bench_results.py",
+      "bytes": 4908,
+      "sha256": "4c206402c3b9e128ecc24ba53f6d121f00444f8b55196d5a3cb96751fe54ffef"
+    },
+    {
+      "path": "experiments/preview_knee_fixture.py",
+      "bytes": 1834,
+      "sha256": "825b06f3351b903b4ec239cbfd8790945ff7ff2ffcec79f7c044420c36ea173c"
+    },
+    {
+      "path": "experiments/replay_knee_fixture.py",
+      "bytes": 6419,
+      "sha256": "59b15be5dcbcaa46b046a88ac841b08b7b77e44d1a9f881ad5900fa2a8f05baa"
+    },
+    {
+      "path": "experiments/run_ankle_current_loop_sensitivity.py",
+      "bytes": 21802,
+      "sha256": "4a74b57f5002bb6652d75525ba39fc377142bbf483b623b9fbe894a4a2eca171"
+    },
+    {
+      "path": "experiments/run_ankle_current_step.py",
+      "bytes": 47055,
+      "sha256": "82ddb81d0c2b604f842bb17068b78b6857102e9271b5297dbbe192c3cee9235c"
+    },
+    {
+      "path": "experiments/run_ankle_parameter_sensitivity.py",
+      "bytes": 17558,
+      "sha256": "4c1e73eebc881a726a4a496eeceb71c44b8cc081c358d4ef7b705287712acbc4"
+    },
+    {
+      "path": "experiments/run_armature_pilot.py",
+      "bytes": 11010,
+      "sha256": "f7a7683b99abf933fc9350cbc15610f032a33e564b6cfa0d5378c78184bd770b"
+    },
+    {
+      "path": "experiments/run_bench_ab19.py",
+      "bytes": 10513,
+      "sha256": "9ef30097bf913fe0e3550924e8bde4671a851fa1d846d6a0849169ccaf4eaf1a"
+    },
+    {
+      "path": "experiments/run_bench_ab19_drivetrain.py",
+      "bytes": 33679,
+      "sha256": "298b2f0acf293cbb6d649d812de1b2b8bdce5d7914b56db84341827251934d26"
+    },
+    {
+      "path": "experiments/run_current_controlled_gait.py",
+      "bytes": 312,
+      "sha256": "bc3173a99db62dc3dfa53e4f589e7fb4238938e21dba5a0095208569fa12c38f"
+    },
+    {
+      "path": "experiments/run_gain_sweep.py",
+      "bytes": 7495,
+      "sha256": "3b3c5a9abaad283578a4e56cddfc6c7275a2104044d7c24b4001818bc45299ea"
+    },
+    {
+      "path": "experiments/run_gait_current_loop_sensitivity.py",
+      "bytes": 9803,
+      "sha256": "1fe02222289c89a8b5992e1746aeee91bc3f19ff019017b27484fd5f1be32afc"
+    },
+    {
+      "path": "experiments/run_gait_feedback_location_ab.py",
+      "bytes": 10109,
+      "sha256": "f8bfe196bef2d286f86dcbdf03bad94c0332c405ea6e9d2a57b7b22a1700e1a6"
+    },
+    {
+      "path": "experiments/run_gait_feedback_location_estimator.py",
+      "bytes": 6976,
+      "sha256": "1a9ed382fce5869336e5aa91248e3c65d722f8b8364b4360b12cec96aa23cf7b"
+    },
+    {
+      "path": "experiments/run_gait_feedback_location_timestep.py",
+      "bytes": 5797,
+      "sha256": "99391e1d505641113dab1b53e076d489a568986457a461a4b6822d0ec93e5fd8"
+    },
+    {
+      "path": "experiments/run_imu_service.py",
+      "bytes": 2284,
+      "sha256": "224379bf57b7c328b97adaaa2b0788455687449799338b6103ce0ad3e33d16ab"
+    },
+    {
+      "path": "experiments/run_imu_telemetry.py",
+      "bytes": 2410,
+      "sha256": "574e4fbe2b1a7bfb930764f6673da8f83f539a7d8ac479b1f733a2aa74ff45f2"
+    },
+    {
+      "path": "experiments/run_knee_hardware_controller_comparison.py",
+      "bytes": 11633,
+      "sha256": "cd6a43d1ae716f2341c22cc9d44c9b7f9c063c9a16f0774266b3a5131e967c42"
+    },
+    {
+      "path": "experiments/run_live_demo.py",
+      "bytes": 9012,
+      "sha256": "f008e8e5a48411af4086b9747863922719a56437d41cdeb6aa3980643d45dd70"
+    },
+    {
+      "path": "experiments/run_live_drivetrain_demo.py",
+      "bytes": 31309,
+      "sha256": "ec82ba1564ae6e96ba5feefa8430dca474abc675affecc5c6099f3d835cf0c1a"
+    },
+    {
+      "path": "experiments/run_mock_telemetry.py",
+      "bytes": 2303,
+      "sha256": "8af533b7eeb2f15caea65cedcad226c075a3cc312c5fce45cdcbf739ab0cfcdd"
+    },
+    {
+      "path": "experiments/run_paper_parameters.py",
+      "bytes": 29191,
+      "sha256": "a4cbcab8e3647f91086ad11b817a68051f8fefa0813a95e39cec42cb9891dbce"
+    },
+    {
+      "path": "experiments/run_step_response.py",
+      "bytes": 11370,
+      "sha256": "4f216d6d36cafec3007bfb01cf441c4483156854499d850631b60e2182104838"
+    },
+    {
+      "path": "experiments/run_telemetry_replay.py",
+      "bytes": 2798,
+      "sha256": "b0facde6941522fda5673d489723220085eb2b75c3abb8a491ee3a39489c92b0"
+    },
+    {
+      "path": "experiments/test_knee_hardware_controller_comparison.py",
+      "bytes": 3619,
+      "sha256": "f61d4ef1a397a85a3d752b26990ff9a3a4a9546c8c262ec8188ca37617dc08b0"
+    },
+    {
+      "path": "experiments/verify_against_oracle.py",
+      "bytes": 11075,
+      "sha256": "0cea35de2bafeac9b8beaaf28b42afe1e33f8cd30dc2848794dc0df795a6bceb"
+    },
+    {
+      "path": "hardware/__init__.py",
+      "bytes": 78,
+      "sha256": "64392cab3031d73968e960b492e6c4152a98c0737b531152978a13ebf81153b8"
+    },
+    {
+      "path": "hardware/knee_step_test_PID_control_me.py",
+      "bytes": 54189,
+      "sha256": "957b79b39d871185fc73cac96d1de8478ff217f06040b660c127cfdfb6a4c10b"
+    },
+    {
+      "path": "hardware/knee_telemetry.py",
+      "bytes": 7938,
+      "sha256": "5eb53bb6ec9420ce4c3a0866599126dade4acc5985c80715a84b2495644f8672"
+    },
+    {
+      "path": "hardware/README.md",
+      "bytes": 9336,
+      "sha256": "1166ba475075750b81833a6def12f279f9343e005a0c1e4c57598f9dc9c3b406"
+    },
+    {
+      "path": "models/osl_v2_bench.pred.json",
+      "bytes": 1512,
+      "sha256": "00bdb4f064640fcda34ad0082554c072ed801e853b0d9cbca3400399d54c62f7"
+    },
+    {
+      "path": "models/osl_v2_bench.xml",
+      "bytes": 60059,
+      "sha256": "c417e691ff90a6f4a47ef581e6caaa341b0e1c829038f6d3e6740927ae69053d"
+    },
+    {
+      "path": "models/osl_v2_ground.pred.json",
+      "bytes": 2293,
+      "sha256": "d3acc076d28f41e572a2d268e1b86d8cf510cc388e422490949eeec96dedf1f1"
+    },
+    {
+      "path": "models/osl_v2_ground.xml",
+      "bytes": 61234,
+      "sha256": "d4000323bf98cea0a113fedb78cb88c2a1b5340bfc41b2324612b000262249e2"
+    },
+    {
+      "path": "models/osl_v2_knee_fixture.json",
+      "bytes": 4025,
+      "sha256": "24b2dc77263aea4614d0cc0d863f7027a8737d4a066d778dc87c5d3234083467"
+    },
+    {
+      "path": "models/osl_v2_knee_fixture.xml",
+      "bytes": 35803,
+      "sha256": "a1fb2b0b41db8fed86df1a7679944d40dbe50b9d8cf68378fe5ef5c4551bbcb5"
+    },
+    {
+      "path": "models/osl_v2_walk.pred.json",
+      "bytes": 2035,
+      "sha256": "726a82317ea972a27bd5f8a4a92a873a669b66846b081c5a90bdac1f77f68d87"
+    },
+    {
+      "path": "models/osl_v2_walk.xml",
+      "bytes": 65985,
+      "sha256": "cf979ab4897d206598c71a638fe4038163751ff2bc4ad62888bb085abd1e014d"
+    },
+    {
+      "path": "oslbench/__init__.py",
+      "bytes": 3879,
+      "sha256": "480a4e70af3292a4a0f28c8b0d28216c5a7fc0965ac512ab225ed12d47674035"
+    },
+    {
+      "path": "oslbench/apps/__init__.py",
+      "bytes": 83,
+      "sha256": "43313de7e5a869ac57033cd1a9b42980aa9abc2bad38cefa75a8b062853a2196"
+    },
+    {
+      "path": "oslbench/apps/current_gait.py",
+      "bytes": 10057,
+      "sha256": "86709f8e9bea78b6b526577d5d68f807cb531740fbdc592c3b9aabed9141f900"
+    },
+    {
+      "path": "oslbench/apps/imu_reference.py",
+      "bytes": 1763,
+      "sha256": "2bf8ca3c9e58699e01d831b321d5f63b3ae22a4ba291129fd097643c161b1c8f"
+    },
+    {
+      "path": "oslbench/apps/knee_telemetry.py",
+      "bytes": 7610,
+      "sha256": "7df509eb2bb954ae1828874497164127ecc538da0ae4084aa890e8c1434b7aaf"
+    },
+    {
+      "path": "oslbench/apps/live_knee_comparison.py",
+      "bytes": 9879,
+      "sha256": "bbd8432a1b257cc87dda1bff7caf4116d7299bdd497077f20c6e9c1cadb781f4"
+    },
+    {
+      "path": "oslbench/contracts.py",
+      "bytes": 5672,
+      "sha256": "7dc070763e96d2013d5a6300be9a8d0a4b2bb7a1a8c0c668769355a650640dc4"
+    },
+    {
+      "path": "oslbench/control/__init__.py",
+      "bytes": 98,
+      "sha256": "f70bd0efd6d3463e4a46b1a17ac942691f831a09d8751dcf87b79f77d69d4418"
+    },
+    {
+      "path": "oslbench/control/compliance.py",
+      "bytes": 13070,
+      "sha256": "371b660d6e29ff0537060a9ddc30c876859a12e36c99ece77298ce98184a4062"
+    },
+    {
+      "path": "oslbench/control/current.py",
+      "bytes": 35471,
+      "sha256": "d7461c09c11839018e27f12e6799319d5ec27edd6963c50d830c6eaa279935bb"
+    },
+    {
+      "path": "oslbench/control/drivetrain.py",
+      "bytes": 38286,
+      "sha256": "54b83b964df3e861832e92d68a3c64ecf60b40aa958cdaa7f952c33a0781660a"
+    },
+    {
+      "path": "oslbench/control/feedback.py",
+      "bytes": 7220,
+      "sha256": "9ad9d7e2696ff38f7d33ba5f7719b5cb85b0bf89bb6e27ac237e962d321a2fef"
+    },
+    {
+      "path": "oslbench/control/gait.py",
+      "bytes": 13250,
+      "sha256": "c695b4cb35d95b07a7e0d1f374ee7f0743b5538322f2eb928d6bef782cb6d05b"
+    },
+    {
+      "path": "oslbench/control/servo.py",
+      "bytes": 8004,
+      "sha256": "73564cbe65e89159c43bcdd5bec2ccac1d331c0e16b333dbc9c3174bdc691b86"
+    },
+    {
+      "path": "oslbench/control/torque.py",
+      "bytes": 8278,
+      "sha256": "0a35e2fafa13d72e2c721506dcb3a0b63522be9c4c004764aff9cae44b189ea5"
+    },
+    {
+      "path": "oslbench/logging.py",
+      "bytes": 14442,
+      "sha256": "2152cabdf7033a4bcaaa61722ee7dc7941b14dbfe3eade91fa81ba2c92b730b7"
+    },
+    {
+      "path": "oslbench/metrics.py",
+      "bytes": 8485,
+      "sha256": "70e10f0e50a7db8bd9c4983d6c256d72f458c791fe7cd4585607a5a751433db9"
+    },
+    {
+      "path": "oslbench/paths.py",
+      "bytes": 491,
+      "sha256": "54a83d86fd90fb5745bb10d8aaff00ad927d3775a658fe441fdbccc32b6d7d4e"
+    },
+    {
+      "path": "oslbench/plotting.py",
+      "bytes": 18118,
+      "sha256": "b860f2a2de696835290581d41ab07eb16aa9ebab741913aa8b04b5e4179e9ae6"
+    },
+    {
+      "path": "oslbench/presentation/__init__.py",
+      "bytes": 80,
+      "sha256": "55e4c9c0be0972ccc910d26c7222621c25bf6eca2a3070631ccddaa5e638cd08"
+    },
+    {
+      "path": "oslbench/presentation/current_gait.py",
+      "bytes": 9614,
+      "sha256": "bfe1346003347d4283e07b08cc610cf9863119e3883176780a03901c877f7bcf"
+    },
+    {
+      "path": "oslbench/presentation/current_gait_plots.py",
+      "bytes": 5709,
+      "sha256": "2791d2634f0af06490ea4d92afc9dbeb9fcfe23d7b0798a2da603bc1b203942d"
+    },
+    {
+      "path": "oslbench/presentation/drivetrain_dashboard.py",
+      "bytes": 29602,
+      "sha256": "b3e5e0bd23ca25f961e0102887d651d9819b85eb8640a2feaf7b13d568b1da82"
+    },
+    {
+      "path": "oslbench/presentation/http.py",
+      "bytes": 713,
+      "sha256": "3bba9f6f841c93e56c8787e94b436fd01b43683e83a48f75978dd4963fed0399"
+    },
+    {
+      "path": "oslbench/presentation/live_knee.py",
+      "bytes": 3447,
+      "sha256": "6627d6d025b83e12d4d845fdd88e194607dcfad75a4a4eae476507b39b11b68c"
+    },
+    {
+      "path": "oslbench/presentation/mirroring.py",
+      "bytes": 1002,
+      "sha256": "489d65fa02966ea043a9314802b1711416877c6b472a5d83f605105b4cbac6d1"
+    },
+    {
+      "path": "oslbench/presentation/observations.py",
+      "bytes": 1985,
+      "sha256": "bae0fddd1f84a5d93a480fd628a9782a7c34882282155de7538953671a03d119"
+    },
+    {
+      "path": "oslbench/presentation/replay.py",
+      "bytes": 10675,
+      "sha256": "80bf7a13362c47f7771e284b0875e8d54fe8e2841cabae511fdf94a00ec56fd8"
+    },
+    {
+      "path": "oslbench/presentation/servo_dashboard.py",
+      "bytes": 36721,
+      "sha256": "897973e371469cf3493d7d56128d6652d51533a7f97b2d105e2e8399f049eb27"
+    },
+    {
+      "path": "oslbench/presentation/telemetry.py",
+      "bytes": 2995,
+      "sha256": "70488392612665e3f276d2c6c13223cbd0964f9651aa1373e88382eb90382046"
+    },
+    {
+      "path": "oslbench/presentation/viewer.py",
+      "bytes": 27401,
+      "sha256": "b2b942f4b60c57be7647a0896bfe3d894ba2daeaf5e4d98643a48950611f8325"
+    },
+    {
+      "path": "oslbench/reference.py",
+      "bytes": 23827,
+      "sha256": "40ec49f7c590d853453038b965f32706dfe0fdb47cd247110fba6c302db00b86"
+    },
+    {
+      "path": "oslbench/sim/__init__.py",
+      "bytes": 71,
+      "sha256": "fa3372e39270472692e331c49939eeab9744ada2d8f1b1fc8ded09d45d6d8022"
+    },
+    {
+      "path": "oslbench/sim/ankle.py",
+      "bytes": 14509,
+      "sha256": "2a9625a07111c9f3d54392363d267b9fe15fcc896029dc5dbd368a74e322af2d"
+    },
+    {
+      "path": "oslbench/sim/compliant.py",
+      "bytes": 8404,
+      "sha256": "32bd02f3ded9a9c279a4d20fdf3a654907617011ccb54947edbf80c7bba1f466"
+    },
+    {
+      "path": "oslbench/sim/contracts.py",
+      "bytes": 3637,
+      "sha256": "f92aa1d0acdf60d21085eab56685a2180e12e2dd9a0bcf17b17fe7133f4ba6ff"
+    },
+    {
+      "path": "oslbench/sim/current_gait.py",
+      "bytes": 24887,
+      "sha256": "a83fe81d99c553927e416a9fb9742cb0f8dda2af1a5cb5e4669a707419c8de6c"
+    },
+    {
+      "path": "oslbench/sim/knee_fixture.py",
+      "bytes": 1899,
+      "sha256": "77236886b1ab889a69a588d9f2e118e467bbd8fa6c2718adf014f28159aa3f42"
+    },
+    {
+      "path": "oslbench/sim/live_knee.py",
+      "bytes": 5040,
+      "sha256": "cf9e4a7a396f776096be5e0e2cbe024be3398809a6dc47c5566ea7321b101d15"
+    },
+    {
+      "path": "oslbench/sim/model.py",
+      "bytes": 15428,
+      "sha256": "43f1281361ba596eff7a31e574176c04f4533e97b301691cb221a6d795012f29"
+    },
+    {
+      "path": "oslbench/sim/servo.py",
+      "bytes": 10979,
+      "sha256": "f38b545b13744537436332722d58e917fbb6c91b6367d04955671bd4a0bf7f3b"
+    },
+    {
+      "path": "oslbench/telemetry/__init__.py",
+      "bytes": 90,
+      "sha256": "9f01370d04f948bf82f9d6e3a3688bb96ab71565f93e974c7548a6da77267680"
+    },
+    {
+      "path": "oslbench/telemetry/http.py",
+      "bytes": 8593,
+      "sha256": "465fec87b504e57dbc32b7ac587710f1445d40048c3570397dc1ba91b4c587cb"
+    },
+    {
+      "path": "oslbench/telemetry/imu_schema.py",
+      "bytes": 5370,
+      "sha256": "f430205541c50e0a2028a7d01c3155b57677be37791ce8635bb8e6de250d5671"
+    },
+    {
+      "path": "oslbench/telemetry/imu_service.py",
+      "bytes": 6449,
+      "sha256": "761bc21c8e7538bbfa81c7192d3f998c324e799594be430e7cd5a4de7888744b"
+    },
+    {
+      "path": "oslbench/telemetry/knee.py",
+      "bytes": 2857,
+      "sha256": "78d277c3c74e72331306a86579169302243b1cb52380c39b168bba26cb1cc212"
+    },
+    {
+      "path": "oslbench/telemetry/microstrain.py",
+      "bytes": 5168,
+      "sha256": "fa75b5fece6de6c277324bb94e620fb5021dee9128267f54b1b105b71dcccf4a"
+    },
+    {
+      "path": "oslbench/telemetry/replay.py",
+      "bytes": 8736,
+      "sha256": "a5144d8376478e66d82c5d931243277cdff7a688b9d46ab4bbff327547e8df4c"
+    },
+    {
+      "path": "oslbench/telemetry/source.py",
+      "bytes": 5767,
+      "sha256": "a2814c886e5e394c4bb75d2f79931abdc7f965b7d89945edf5a2977d6e869993"
+    },
+    {
+      "path": "oslbench/telemetry_schema.py",
+      "bytes": 1562,
+      "sha256": "9e2097f51526c026caaf467ccb1e3da663d0ef7265af4b5374c6dcbaca4535ce"
+    },
+    {
+      "path": "README.md",
+      "bytes": 8494,
+      "sha256": "1b2602a85d5dd12121d86f4860212a05a5af166e882c3edfc478e2f51b4ec37c"
+    },
+    {
+      "path": "requirements-imu-pi.txt",
+      "bytes": 221,
+      "sha256": "5db40055f48f1fcf8347073045e002da7603cf54bc4465a4ed7594ce7ab40ed2"
+    },
+    {
+      "path": "scripts/check_model.py",
+      "bytes": 31113,
+      "sha256": "5a2a2157d73aa196dc464969ce63db72a1725b00dc84aa0fd7628d8af527be10"
+    },
+    {
+      "path": "scripts/demo_sweep.py",
+      "bytes": 5029,
+      "sha256": "d8220db322d1f4988585c15e22195e877b9429fa9ff595b50ab60eccb0c89e1d"
+    },
+    {
+      "path": "scripts/inspect_urdf.py",
+      "bytes": 897,
+      "sha256": "d85c6b925061541c2bd0f7f8b091b7dfce9aed8f63bb3ceb114edd28e79b7adc"
+    },
+    {
+      "path": "scripts/mjcommon.py",
+      "bytes": 2934,
+      "sha256": "c3092121f3a98540857c921471876872dcb87bc902e18419e549af4d40edecc6"
+    },
+    {
+      "path": "scripts/view_osl.py",
+      "bytes": 3432,
+      "sha256": "e5d952bf9f79d85ae444b304fdd62ae67a4e9f529d6feadfed175f8e72e901c7"
+    },
+    {
+      "path": "tests/fixtures/telemetry_replay/manifest.json",
+      "bytes": 2561,
+      "sha256": "7bd42e354b34cb8c4254d47345983b03e86bc60891f9fd1d2af86e6b418e699c"
+    },
+    {
+      "path": "tests/fixtures/telemetry_replay/samples.csv",
+      "bytes": 359,
+      "sha256": "be5a7b3900bde4ac5fb6a87d344330061d328a41541d4036193c0213b4657275"
+    },
+    {
+      "path": "tests/oracle/bench_track_ab19.csv",
+      "bytes": 483020,
+      "sha256": "a1c0bfada8e27739c1f5ab504a83456f5302e7819439b843459e68dcaf726672"
+    },
+    {
+      "path": "tests/oracle/bench_track_ab19_metrics.csv",
+      "bytes": 2153,
+      "sha256": "4cd46e91506e21806f0e796f0bfed3b7b8b07483e3a0903519d171cd33637e28"
+    },
+    {
+      "path": "tests/run_tests.py",
+      "bytes": 7529,
+      "sha256": "66491e6fccad7e6450ccd43c115d6efab423c40466ca5cf8564e72a2d2320db2"
+    },
+    {
+      "path": "tests/stub_mujoco.py",
+      "bytes": 11668,
+      "sha256": "847aa4702a93b4abc02b514c4052d014ea203c8bdc7f3bb9a47852823a53800e"
+    },
+    {
+      "path": "tests/test_ankle_current_step.py",
+      "bytes": 57454,
+      "sha256": "f28f6899063c558d01df59094aacb0f0f6101fadf69d857df0fe6a546ea305ce"
+    },
+    {
+      "path": "tests/test_architecture.py",
+      "bytes": 4738,
+      "sha256": "5c18d92c64101e30ccbed08da1d72a9d55375e7ef8ebe5d9c8cb58563f71c7f3"
+    },
+    {
+      "path": "tests/test_contracts.py",
+      "bytes": 5485,
+      "sha256": "dff9aea22541b58c943fa0efa92fd9616ee9826d427dcf9a849083e01f18c0f1"
+    },
+    {
+      "path": "tests/test_current_gait_live.py",
+      "bytes": 4603,
+      "sha256": "c5edd55c7f9a2516ad995257bbe9f8b00398c5426605586fe032682453eefdd4"
+    },
+    {
+      "path": "tests/test_drivetrain.py",
+      "bytes": 39642,
+      "sha256": "f9b65b047e101e05317751d515588e462d559786264d4011fc0d64b3f5a79843"
+    },
+    {
+      "path": "tests/test_drivetrain_sim.py",
+      "bytes": 37408,
+      "sha256": "93cca42620d4ea8bdb67b81bbf75b250b27935e28c6ab8dc36e67bde7488eed2"
+    },
+    {
+      "path": "tests/test_gait_feedback_location_ab.py",
+      "bytes": 5963,
+      "sha256": "cd7e142116fea8dcaef3c3ecc0d1fed0d90b007473b5043c1e4b9054f1ff44bf"
+    },
+    {
+      "path": "tests/test_gait_feedback_location_estimator.py",
+      "bytes": 5316,
+      "sha256": "88ea422b6521edc04f493889cca438b514f271b060df2a8b06a4f7ce1975362b"
+    },
+    {
+      "path": "tests/test_imu_telemetry.py",
+      "bytes": 15879,
+      "sha256": "d26636b2c6a1eadf4004d2a194fa92580ebb4616854d40893485550f67607edd"
+    },
+    {
+      "path": "tests/test_joint_current_control.py",
+      "bytes": 19323,
+      "sha256": "9b6455c71d771fcfc62ff1ee298616f9c62b178db93c499849dee14767f9bb84"
+    },
+    {
+      "path": "tests/test_knee_fixture.py",
+      "bytes": 3900,
+      "sha256": "b8eb52b344a09a3a35561dae8f15de7fb52d726ed25ba4ab83d6923330836983"
+    },
+    {
+      "path": "tests/test_knee_live_connection.py",
+      "bytes": 7794,
+      "sha256": "48cba8f368b070bb971884e950f5b86a653833cd5317771374a870bea45f6df6"
+    },
+    {
+      "path": "tests/test_live_knee_comparison.py",
+      "bytes": 5945,
+      "sha256": "50129180f64ee1c30cbfe7d935e4cb933cdf6aeb41ef5dd1b3002874371bb563"
+    },
+    {
+      "path": "tests/test_oslbench.py",
+      "bytes": 31058,
+      "sha256": "7b3e59f5fff26a47310875c8ad9691d4f60174ee1878cbb6621a1825b63e649c"
+    },
+    {
+      "path": "tests/test_replay_presentation.py",
+      "bytes": 6437,
+      "sha256": "6a4f37d041bae87b9c8baf050281718d34a5e8c5fe6526b06d2826aed2e5ee61"
+    },
+    {
+      "path": "tests/test_step_response.py",
+      "bytes": 1327,
+      "sha256": "6e26522a21b55765c5c2a6b4498eed1f7a92940bae96b18d386e84c08a386dbc"
+    },
+    {
+      "path": "tests/test_telemetry_replay.py",
+      "bytes": 8273,
+      "sha256": "c8f78617939c123991f6fdd8eedda327c7085e108b1f5fc220a1dc632c6e9940"
+    },
+    {
+      "path": "tests/test_telemetry_source.py",
+      "bytes": 9501,
+      "sha256": "0cb137a7855b0baa62654f4f46079d8ed8252e9c1a4877cdc02d932317d74efa"
+    },
+    {
+      "path": "tools/build_knee_fixture.py",
+      "bytes": 4083,
+      "sha256": "ae50c178f208c04bb138e94d1ac456afa52686789334970cded21a1ebefc47ac"
+    },
+    {
+      "path": "tools/build_mjcf.py",
+      "bytes": 85906,
+      "sha256": "00e19da3ee7cdfd606bab8e5f57ba734fbfe057e2a81fbe8e902b2f0e16be25e"
+    },
+    {
+      "path": "tools/cad_findings.py",
+      "bytes": 15213,
+      "sha256": "9e9a84d85421f22335af2a95e8887c287bc725b9e9c551cd64e177981d153d26"
+    },
+    {
+      "path": "tools/export_gait_telemetry.py",
+      "bytes": 4870,
+      "sha256": "d8fda0f5e1b2d1739d4c8c30b40143722f3e693c71c7d2bb68474f173ce4ec0b"
+    },
+    {
+      "path": "tools/oslcad.py",
+      "bytes": 16472,
+      "sha256": "820c72ad94da28bc933c2de7d31c9d379c91165e31fd075f8eaa87aa2d44e990"
+    },
+    {
+      "path": "tools/render_poses.py",
+      "bytes": 5803,
+      "sha256": "db1014935784101ca459c167de50867808898d247191d237f1b5b2c29820f6d6"
+    },
+    {
+      "path": "tools/softrender.py",
+      "bytes": 10019,
+      "sha256": "fc0380c74deb0ce790901d4086e2e7154435dbcfaa0b6b971bc3d8bc3f528bae"
+    },
+    {
+      "path": "tools/validate_mjcf.py",
+      "bytes": 27415,
+      "sha256": "dc50b2341f6270db7ffac0a8a61c02fe7884fd06e9f7744d1bc6357d1216a5b6"
+    },
+    {
+      "path": "tools/verify_frames.py",
+      "bytes": 4061,
+      "sha256": "0a3604f4a1f8f0dcd4d4737832d0d315bbe65f83c2b053af1a545a80c1667644"
+    },
+    {
+      "path": "tools/verify_visorigin.py",
+      "bytes": 3700,
+      "sha256": "7a9fe07e8be3096f30a91d0153a7fc371860a800537d612a95c6b919680114b6"
+    }
+  ]
+}
