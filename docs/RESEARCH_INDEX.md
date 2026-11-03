@@ -1,5 +1,11 @@
 # Research and evidence index
 
+**Current continuation:** [PROJECT_HANDOVER.md](PROJECT_HANDOVER.md) indexes the
+30 October physical knee recording, 31 October fixture/derivative/sensitivity
+results and 2 November incoming datasets. The table below is the **18 October
+inventory**, not a current statement that telemetry or hardware data are absent.
+For a document-by-document status map see [the documentation audit](DOCUMENTATION_AUDIT_2026-11-02.md).
+
 Navigation verified against the local workspace on 2026-10-18. Linked build outputs are local, generally ignored by Git, and may be absent in a fresh checkout. Preserve their locations and contents. This index does not certify hardware fidelity or rerun any experiment.
 
 ## Research stages

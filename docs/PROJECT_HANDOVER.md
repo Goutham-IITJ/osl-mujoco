@@ -1,5 +1,52 @@
 # Project handover — OSL V2 MuJoCo
 
+## Latest handoff milestone: 4 November 2026 — dual-joint telemetry package
+
+User confirmed the continuous tracking recordings used the FULLY ASSEMBLED leg.
+Do not use independent fixed knee/ankle fixtures as the matching gait plant.
+User requested a bounded hardware-code handoff first, mindful of usage budget.
+Deliverable ZIP: `build/osl_gait_tracking_telemetry_20261104.zip` (18 files,
+CRC checked); final synthetic sample count was 599 per joint.
+New `hardware/gait_tracking/`: all five supplied trajectory scripts with marked
+telemetry startup/publish/shutdown additions, one shared standalone `telemetry.py`,
+all reference CSV dependencies, README and source-hash manifest. Portable normal-
+walk dataset paths are the only non-telemetry source changes; gains, guards,
+timing settings, motion and logging algorithms preserved. Old knee module untouched.
+Builder: `tools/build_tracking_telemetry_package.py` (does not overwrite README).
+Protocol is `osl-joint-telemetry-v1` with both joint tags, global/per-joint sequences,
+control tick, raw controller signs and separate reference/sensor-read times.
+Use new `experiments/record_tracking_telemetry.py`; old knee receiver/simulation
+cannot consume this stream. Recorder has no dashboards or simulation yet.
+Local auth/channel/drop tests and all-five-controller source-preservation test
+passed; synthetic end-to-end COMPLETE with 599 samples/joint in
+`build/tracking_received_20261104_001414_067189`. First demo attempt failed due to
+Windows coarse monotonic timestamps; synthetic generator corrected to perf_counter
+and retested. Physical scripts already use perf_counter and were not affected.
+No hardware script executed. Tests require loopback network outside sandbox.
+Next: operator lab telemetry check, then assembled-leg replay/controller adapter
+and dashboards. Ankle coordinate/range and actual assembled mount orientation
+still need resolution before quantitative comparison. No model tuning/production
+controller change/commit/push performed.
+
+## Latest inspection: 3 November 2026 — continuous tracking archive
+
+Inspected `Downloads/Tracking Results & Codes & Dataset.zip` statically; no supplied
+hardware script imported/executed, no simulation/tuning. Report:
+`TRACKING_ARCHIVE_INSPECTION_2026-11-03.md`. Evidence:
+`build/tracking_inspection_20261103/` (original code/CSV copies, inventory/hashes,
+recording summary). Reproducible tool `tools/inspect_tracking_archive.py`.
+Five code snapshots, five AB01 angle/GRF pairs, six paired knee/ankle result runs:
+normal walk at two speeds, ramps up/down, stairs up/down. All logs nominal 200 Hz;
+folder suffixes `0.6ms` etc are not control dt. Fixed confirmed gains and logged
+PID terms match within 3.56e-15 A; no recorded clipping flags. Distinguish hardware
+target errors from sim-to-real errors; no tracking simulation results yet.
+Blocking interpretation questions: separate fixtures versus assembled mechanical
+leg (asked user), ankle zero/direction/range (several targets outside CAD +20 deg),
+source snapshot/run time-scale correspondence. Preserve loop-start vs per-joint
+measurement clocks, mixed exported column signs, nonzero homed initial pose.
+Next: resolve setup/ranges and run one controlled normal-walking replay before
+expanding to all conditions. No model defaults or hardware code changed.
+
 ## Paper preparation milestone: 2 November 2026 — Section 3 scope
 
 Construction audit completed as a separate working document:
