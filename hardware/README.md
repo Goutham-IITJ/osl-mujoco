@@ -1,5 +1,11 @@
 # Knee step-test telemetry package
 
+**Status, 2 November 2026:** this pipeline was used for the saved 30 October
+physical knee step. See [current handover](../docs/PROJECT_HANDOVER.md) for evidence
+and limitations, and [integrated comparison](../docs/LIVE_KNEE_COMPARISON.md) for
+the implemented independent simulation path. This guide's hardware-only receiver
+remains useful but is not the complete comparison application.
+
 Copy both `knee_step_test_PID_control_me.py` and `knee_telemetry.py` into the
 hardware controller's existing working folder, preserving a backup of the
 original controller first. Keep its existing hardware dependencies/environment.
@@ -155,13 +161,13 @@ busy buffer drops that tick and increments a counter. Python threads still share
 the GIL; this is not a hard-real-time guarantee. Compare actual hardware loop-dt
 statistics with and without telemetry before accepting it for experiments.
 
-The live plot currently shows **hardware target and encoder**, not a simulated
-curve. The next stage supplies the streamed target to the existing knee
-simulation, which must use its own simulated feedback and integrate on source
-time with a jitter buffer. Encoder motion is the comparison signal, not a
-continual overwrite of simulated joint position. That integration needs the
-actual gait controller, verified reference/encoder signs, initial conditions
-and physical load/setup. Current replay is a separate possible experiment;
+The hardware-only receiver described above shows **hardware target and encoder**.
+The separate integrated application now supplies the streamed target to the knee
+simulation, which uses its own simulated feedback and integrates on source time
+with a jitter buffer. Encoder motion is the comparison signal, not a continual
+overwrite of simulated joint position. Extending the step workflow to gait needs
+the actual gait controller, verified signs, initial conditions and physical setup.
+Replaying commanded current is a separate possible experiment;
 do not convert driver amperes to simulated torque before confirming shaft,
 ratio and sign conventions. No IMU work is needed for this connection.
 
