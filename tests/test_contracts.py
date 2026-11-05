@@ -3,7 +3,7 @@ from dataclasses import replace
 from types import SimpleNamespace
 from oslbench.contracts import (Sample, RobotState, PositionCommand, TorqueCommand,
     CurrentCommand, CurrentState, GaitContractAdapter, layer_current)
-from oslbench.joint_current_control import make_gait_source
+from oslbench.control.gait import make_gait_source
 from test_gait_feedback_location_ab import setup_source
 
 
@@ -106,7 +106,7 @@ def test_contracts_clipping_and_lag_remain_distinct():
     src, layer=pair('legacy')
     src.ref=[10.]*6
     # Use actual CurrentLoopModel constructor rather than assuming its internal field.
-    from oslbench.ankle_current_control import CurrentLoopModel
+    from oslbench.control.current import CurrentLoopModel
     src.loop=CurrentLoopModel(.01)
     adapter=GaitContractAdapter(src,layer); adapter(0,0.,0.)
     c=adapter.currents

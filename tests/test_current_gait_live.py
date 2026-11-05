@@ -2,9 +2,9 @@
 from types import SimpleNamespace
 import json
 import numpy as np
-from oslbench.joint_current_control import make_gait_source,GaitCurrentSource
-from oslbench.feedback_location_diagnostic import ActuatorDifferenceSource
-from oslbench.current_gait_live import LiveState,snapshot
+from oslbench.control.gait import make_gait_source,GaitCurrentSource
+from oslbench.control.feedback import ActuatorDifferenceSource
+from oslbench.presentation.current_gait import LiveState,snapshot
 from test_gait_feedback_location_ab import setup_source
 
 
@@ -34,7 +34,7 @@ def test_current_live_initial_snapshot_is_finite_and_identified():
     ctx=dict(dt=.0005,bench=SimpleNamespace(data=SimpleNamespace(qpos=[.2]),knee_qpos=0),
         sim=SimpleNamespace(layer=layer),res={'ref_rad':[.2]})
     args=SimpleNamespace(feedback_mode='actuator-difference',kp=.75,kd=.03,ki=0)
-    from oslbench.drivetrain_dashboard import SCALARS
+    from oslbench.presentation.drivetrain_dashboard import SCALARS
     s=snapshot([],ctx,'paused',args)
     assert all(np.isfinite(s[k]) for k in SCALARS)
     assert 'actuator-difference' in s['status'] and 'PAUSED' in s['status']
@@ -44,8 +44,8 @@ def test_current_live_empty_attempt_saves_status_without_steps():
     import tempfile
     from pathlib import Path
     from unittest.mock import patch
-    from oslbench.current_gait_live import save_attempt
-    from oslbench.drivetrain_dashboard import NoDashboard
+    from oslbench.presentation.current_gait import save_attempt
+    from oslbench.presentation.drivetrain_dashboard import NoDashboard
     from experiments import run_current_controlled_gait as gait
     ctx=dict(cfg=SimpleNamespace(current_loop_tau_s=0),src=SimpleNamespace(updates=0),dt=.0005)
     args=SimpleNamespace(feedback_mode='actuator-difference')
@@ -74,7 +74,7 @@ def test_current_live_snapshot_uses_logged_current_and_torques():
 
 
 def test_current_live_dashboard_extended_snapshot_and_keys():
-    from oslbench.drivetrain_dashboard import DrivetrainWebDashboard,SCALARS,TRACES
+    from oslbench.presentation.drivetrain_dashboard import DrivetrainWebDashboard,SCALARS,TRACES
     limits=dict(ang=(-10,125),ths=(-.07,.07),gap=(-5,5),tau=(-160,160),iq=(-60,60),fit_edge=.055,stance_end=60)
     d=DrivetrainWebDashboard(dict(subject='AB19',trial='test',current_controlled=True),([0,100],[0,0]),limits,port=0,open_browser=False)
     try:

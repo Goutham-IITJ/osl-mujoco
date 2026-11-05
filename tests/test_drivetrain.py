@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-test_drivetrain.py -- unit tests for oslbench/drivetrain.py (Best et al. 2025 eqs 1-12).
+test_drivetrain.py -- unit tests for oslbench/control/drivetrain.py (Best et al. 2025 eqs 1-12).
 
 WHAT THESE TESTS ARE FOR
     They check that the PAPER'S EQUATIONS are encoded correctly and that the SIGNS and
@@ -43,10 +43,10 @@ MODULE_PATH = os.path.join(ROOT, "oslbench", "control", "drivetrain.py")
 
 
 def _load_drivetrain():
-    """Load oslbench/drivetrain.py WITHOUT executing oslbench/__init__.py.
+    """Load oslbench/control/drivetrain.py WITHOUT executing oslbench/__init__.py.
 
     The package __init__ eagerly imports the numpy-dependent modules, so a plain
-    `import oslbench.drivetrain` would drag numpy in and defeat the point of the test
+    `import oslbench.control.drivetrain` would drag numpy in and defeat the point of the test
     below.  Loading the file directly proves the module really is standalone.
 
     THE ONE TRAP:  sys.modules[name] must be set BEFORE exec_module.  @dataclass looks
