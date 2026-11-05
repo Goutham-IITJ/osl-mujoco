@@ -1,13 +1,22 @@
 # OSL V2 in MuJoCo
 
+**Continuing this project or changing accounts? Start with
+[the current handover](docs/PROJECT_HANDOVER.md).** As of 2 November 2026, a physical
+15-degree knee step has been recorded and compared; offline knee-only fixture,
+derivative and sensitivity studies are complete. The next work is comparison of
+new 5/10/15-degree knee and ankle recordings. See the handover for scope and gaps.
+
 Implemented 2026-10-19: `oslbench/control/`, `sim/`, `telemetry/` and `presentation/` now own the four responsibility domains; shared contracts remain at package root and `apps/` composes workflows. Experiment commands remain available. Root-level module redirectors have been retired; use the canonical modules described in the architecture guide. The current-gait viewer uses the library runtime directly. See [architecture](docs/ARCHITECTURE.md) for D1 measured-joint mirroring and D2 explicit IMU-estimator handoff. Encoder calibration/transport and a validated IMU estimator remain pending.
 
 CAD-derived Open-Source Leg V2 simulation for fixed-base knee tracking, compliant-drivetrain research and eventual sim-to-real comparison. The current live application runs current-controlled gait with a native MuJoCo viewer, browser dashboard and saved traces from the same execution.
 
-This is a simulation research platform. Deterministic file replay is implemented for the seven established state channels; browser replay displays those recorded observations with explicit timestamps and validity. A passive MSCL IMU reader and read-only Pi-to-laptop HTTP pipeline are implemented with hardware-free tests; physical deployment remains unvalidated. IMU-driven simulation, full-pose replay and predictive hardware comparison remain future work. AB19 human gait is a reference, not a measurement of this robot.
+This is a simulation research platform. Deterministic observation replay and a separate knee hardware-to-simulation comparison are implemented. A physical knee step and subsequent offline fixture replays are documented in the handover; broader hardware validation remains open. The passive MSCL IMU pipeline has hardware-free tests but no established physical deployment validation. IMU-driven simulation and full-pose replay remain future work. AB19 human gait is a reference, not a measurement of this robot.
 
 ## Start here
 
+- [Current state, evidence, next work and account-independent handover](docs/PROJECT_HANDOVER.md)
+- [Hardware knee telemetry integration](hardware/README.md) and [independent live comparison](docs/LIVE_KNEE_COMPARISON.md)
+- [Offline knee fixture and recorded hardware comparison](docs/KNEE_FIXTURE.md)
 - [Live instructions and controls](docs/LIVE_DEMO.md)
 - [Recorded telemetry playback, schema and API](docs/TELEMETRY_REPLAY.md)
 - [Synthetic mock telemetry and read-only source boundary](docs/TELEMETRY_SOURCE.md)
@@ -15,7 +24,7 @@ This is a simulation research platform. Deterministic file replay is implemented
 - [Authoritative control paths](docs/CONTROL_PATHS.md)
 - [Current architecture and proposed boundaries](docs/ARCHITECTURE.md)
 - [Research and evidence index](docs/RESEARCH_INDEX.md)
-- [Authoritative roadmap](docs/NEXT_PHASE_PROPOSAL.md)
+- [Historical roadmap and design rationale](docs/NEXT_PHASE_PROPOSAL.md) (current priorities are in the handover)
 - [Working baseline and provenance](docs/WORKING_BASELINE.md)
 - [Original benchmark validation record](docs/VALIDATION.md) (dated evidence; see the research index)
 
