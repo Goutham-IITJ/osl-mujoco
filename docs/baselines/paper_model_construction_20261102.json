@@ -1,0 +1,182 @@
+{
+  "date": "2026-11-02",
+  "method": "Read-only reconstruction. Independent centroid-centred segment summation reuses existing mesh mass integration, CAD transforms, segmentation and density rules; not an independent mesh integration or physical validation. MuJoCo compilation and mj_forward only; no physics stepping.",
+  "mujoco_version": "3.12.0",
+  "source_hashes": {
+    "tools/build_mjcf.py": "00e19da3ee7cdfd606bab8e5f57ba734fbfe057e2a81fbe8e902b2f0e16be25e",
+    "tools/oslcad.py": "820c72ad94da28bc933c2de7d31c9d379c91165e31fd075f8eaa87aa2d44e990",
+    "osl_v2_0_assembly/urdf/osl_v2_0_assembly.urdf": "4dbaacbb44dd0f5894f869c31ce7fb988a03ebd3231769315328d32e24d2ddbe",
+    "models/osl_v2_bench.xml": "c417e691ff90a6f4a47ef581e6caaa341b0e1c829038f6d3e6740927ae69053d",
+    "models/osl_v2_knee_fixture.xml": "a1fb2b0b41db8fed86df1a7679944d40dbe50b9d8cf68378fe5ef5c4551bbcb5",
+    "models/osl_v2_ankle_fixture_with_foot.xml": "2c817c32c2f924f23fc4d304165848641a1062f7af17b1cd70f5a7c1157214ca"
+  },
+  "segments": {
+    "knee_prox": {
+      "mass_kg": 0.44984643550291803,
+      "com_world_m": [
+        0.00017294360782380268,
+        -0.007420584153163331,
+        0.19969418831895158
+      ],
+      "inertia_world_kg_m2": [
+        [
+          0.00047038288459435863,
+          6.464632593115613e-06,
+          -1.0800456670316134e-06
+        ],
+        [
+          6.464632593115613e-06,
+          0.00046176751240559124,
+          -6.421694253433136e-06
+        ],
+        [
+          -1.0800456670316146e-06,
+          -6.421694253433136e-06,
+          0.0003655171056413705
+        ]
+      ],
+      "parts": 88,
+      "kept": 28,
+      "culled": 60,
+      "mass_difference_builder": 5.551115123125783e-17,
+      "com_max_difference_builder": 1.1102230246251565e-16,
+      "inertia_max_difference_builder": 2.1521413123837263e-17,
+      "principal_repair_needed": false
+    },
+    "shank": {
+      "mass_kg": 3.5907579626516175,
+      "com_world_m": [
+        0.004746696536253818,
+        0.0028323133659335473,
+        0.0319980248164993
+      ],
+      "inertia_world_kg_m2": [
+        [
+          0.03978103391486875,
+          0.0001334278216228043,
+          0.005344507399914541
+        ],
+        [
+          0.0001334278216228043,
+          0.041518707772559824,
+          -0.00016045399404173433
+        ],
+        [
+          0.005344507399914541,
+          -0.00016045399404173433,
+          0.0076347506521675075
+        ]
+      ],
+      "parts": 489,
+      "kept": 142,
+      "culled": 347,
+      "mass_difference_builder": 4.440892098500626e-16,
+      "com_max_difference_builder": 2.0816681711721685e-17,
+      "inertia_max_difference_builder": 4.85722573273506e-17,
+      "principal_repair_needed": false
+    },
+    "foot": {
+      "mass_kg": 0.9151589360611899,
+      "com_world_m": [
+        -0.006622103654452903,
+        -0.0037401197125168464,
+        -0.16079228944661206
+      ],
+      "inertia_world_kg_m2": [
+        [
+          0.0016953977731993329,
+          1.4404715329684383e-05,
+          -0.0004536680627346369
+        ],
+        [
+          1.4404715329684383e-05,
+          0.0025438470075798765,
+          5.4424800101981724e-05
+        ],
+        [
+          -0.0004536680627346369,
+          5.4424800101981724e-05,
+          0.0015461967533029312
+        ]
+      ],
+      "parts": 73,
+      "kept": 47,
+      "culled": 26,
+      "mass_difference_builder": 1.1102230246251565e-16,
+      "com_max_difference_builder": 8.326672684688674e-17,
+      "inertia_max_difference_builder": 3.0791341698588326e-17,
+      "principal_repair_needed": false
+    }
+  },
+  "mesh_cache_count": 260,
+  "nonwatertight_meshes": [],
+  "compiled_models": {
+    "models/osl_v2_bench.xml": {
+      "nq": 2,
+      "nv": 2,
+      "nu": 2,
+      "timestep_s": 0.0005,
+      "compiled_total_mass_kg": 4.955763334214001,
+      "bodies": {
+        "knee_prox": {
+          "mass_kg": 0.449846435503,
+          "mass_difference_reconstructed": 8.198997036856781e-14,
+          "inertia_max_difference_reconstructed": 4.078226471804225e-16
+        },
+        "shank": {
+          "mass_kg": 3.59075796265,
+          "mass_difference_reconstructed": 1.617372902273928e-12,
+          "inertia_max_difference_reconstructed": 2.25956406363359e-14
+        },
+        "foot": {
+          "mass_kg": 0.915158936061,
+          "mass_difference_reconstructed": 1.8995915951336428e-13,
+          "inertia_max_difference_reconstructed": 3.55764679868531e-15
+        }
+      }
+    },
+    "models/osl_v2_knee_fixture.xml": {
+      "nq": 1,
+      "nv": 1,
+      "nu": 1,
+      "timestep_s": 0.0005,
+      "compiled_total_mass_kg": 0.449846435503,
+      "bodies": {
+        "knee_prox": {
+          "mass_kg": 0.449846435503,
+          "mass_difference_reconstructed": 8.198997036856781e-14,
+          "inertia_max_difference_reconstructed": 4.078226471804225e-16
+        }
+      }
+    },
+    "models/osl_v2_ankle_fixture_with_foot.xml": {
+      "nq": 1,
+      "nv": 1,
+      "nu": 1,
+      "timestep_s": 0.0005,
+      "compiled_total_mass_kg": 0.915158936061,
+      "bodies": {
+        "ankle_output": {
+          "mass_kg": 0.915158936061,
+          "mass_difference_reconstructed": 1.8995915951336428e-13,
+          "inertia_max_difference_reconstructed": 3.55764679868531e-15
+        }
+      }
+    }
+  },
+  "myoassist_local_xml": {
+    "path": "C:\\Users\\Goutham A.S\\Documents\\GitHub\\myo_folder\\assist_sim\\assist_sim\\models\\OpenSourceLeg\\KA_L1model.xml",
+    "sha256": "48359ffbf61584c2223b8543b47b8f2d748624c48c98f01ec4125463639fc4cd",
+    "explicit_body_masses_kg": {
+      "osl_generic_socket": 0.849991,
+      "osl_femoral_pylon": 0.022058,
+      "osl_proximal_adapter": 0.167,
+      "osl_knee_assembly": 2.2455,
+      "osl_tibial_pylon": 0.062925,
+      "osl_ankle_assembly": 1.739,
+      "osl_foot_assembly": 0.291
+    },
+    "total_kg": 5.377474,
+    "excluding_socket_kg": 4.527483
+  }
+}
