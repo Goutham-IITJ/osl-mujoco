@@ -1,5 +1,143 @@
 # Project handover — OSL V2 MuJoCo
 
+## Paper gait and step replay cross-check, 7 November 2026
+
+Replayed all six assembled trajectories at 200 Hz control and 0.5 ms physics
+with the original hardware gains and the top-ranked simulation gains. All 24
+joint/configuration/trajectory metric rows reproduced the saved ranking's
+RMS errors and sample counts within 1e-10, with zero current clipping or belt-fit
+exceedance. New evidence in `build/paper_gait_replay_20261107/` includes paired
+CSV traces, an RMS summary, and two visually checked 12-panel PNG/SVG figures.
+Reproduce with `experiments/replay_ranked_assembled_gains.py`.
+
+Reran the three steps per isolated fixture using the existing multi-step
+experiment. The paper's joint-error D rise times were reproduced within 0.1 ms
+of the displayed values. Simulation's 10–90% rise was 19.74–28.22 ms longer
+than hardware. This transient discrepancy coexists with full-record step RMS
+differences of 0.144–0.475 degrees. Step plots and metrics are in
+`build/paper_replay_20261107_knee_steps/` and
+`build/paper_replay_20261107_ankle_steps/`. Report step rise separately from
+continuous gait RMS, which uses configuration C.
+
+## Paper mass and gain study, 7 November 2026
+
+Mass arithmetic cross-check passed on a translated cuboid and all 260 CAD
+meshes. At the existing assigned densities and segmentation, the independent
+surface-volume sum matched the 4.955763 kg compiled model within 1.61e-12 kg
+per segment. Physical inventory and weighing are still needed. Evidence in
+`build/assembled_mass_check_20261107/`.
+
+An experiment-only gain override in the assembled runtime enabled a 54-candidate
+configuration C sweep. Two development trajectories selected knee 2.25/.30/.09
+and ankle 3/0/.1125, scoring .6637 relative to the hardware gains. On four
+evaluation trajectories the candidate tracked the target more closely but
+exceeded the 60 A simulated knee clip on stairs ascent, at both .5 and .25 ms
+physics steps. The hardware gains passed all four at both steps. Baseline
+hardware-difference metrics matched the saved assembled results. Four runtime
+tests passed. The sweep, figures and raw evidence are in
+`build/assembled_gain_sweep_20261107/`.
+
+The complete six-panel tuning score and peak requested current grids are in
+`build/assembled_gain_sweep_figures_20261107/`. The separate stairs ascent
+replay matched the saved request peaks and clipping counts. Its knee trace
+shows 70.225 A requested and 60.000 A applied for one 5 ms interval with
+the lowest-error tuning gains. The PNG and SVG figures were generated from
+the saved sweep and replay; the PNGs were visually checked. Only the baseline
+and lowest-error tuning candidate were run on the four evaluation trajectories.
+That original split study was followed by a separate retrospective ranking of
+all 54 sets across all six recordings. At 0.5 ms, 44 passed the no-clipping and
+belt-fit checks. Lowest normalized target RMSE (0.835701) used the baseline
+knee 1.50/0.15/0.060 and ankle 3.00/0/0.1125. It passed all six again at
+0.25 ms physics, with a maximum request of 51.52 A. Ankle agreement with
+the recorded hardware worsened on five of six trajectories, so keep the
+hardware gains for sim-to-real comparisons. See
+`build/assembled_gain_ranking_20261107/Ranking.json`.
+
+Read `PAPER_MASS_AND_GAIN_STUDY_2026-11-07.md` for methods, limitations and text
+for Sections III-B, III-E and IV. The local Section III Word draft was read for
+structure. The paper draft and hardware controller gains are preserved.
+
+## Paper drafting milestone, 7 November 2026
+
+The Overleaf upload copy is `paper/Software_architecture.pdf`. It matches the
+hardware figure's visual style with white boxes, gray outlines and a blue
+telemetry accent. The `Pi telemetry server` block reads `HTTP · JSON batches`,
+with endpoint, port and authentication details in the manuscript prose. The
+CSV branch is labeled `Per-joint records`. Both sources lead to the `Laptop
+input adapter`, which sends the target to the simulated controller and the
+measured angle and sample time to the comparison. Checked these paths against
+the live receiver, CSV reader and assembled runtime. The vector figure was
+visually reviewed after rendering.
+
+The user selected a three-column block layout with short signal and protocol
+labels. Use `paper/Fig_Software_Architecture_Three_Columns.pdf` for III-A.
+It gives the physical bench, data interface and MuJoCo their own columns.
+The vector PDF was rendered and visually checked. The earlier compact
+two-column version is `paper/Fig_Software_Architecture_Compact.pdf`.
+
+Revised standalone figure `paper/Fig_Software_Architecture_Interfaces.pdf` adds
+I²C/CAN payloads, CSV field and clock definitions, the assembled live HTTP setup
+and JSON polling, and separate target, initialization and measurement paths.
+Checked labels against the hardware scripts and replay adapters, then rendered
+and visually inspected the vector PDF. Use the archived CSV branch to explain
+the reported results. The Word draft still contains the earlier figure.
+
+Drafted Section III-A in the root `paper/` folder with one Word page and a
+standalone vector diagram. Files are `Section_III_Software_and_Sim_to_Real_Framework.docx`
+and `Fig_Software_Architecture.pdf`. Used the 7 November attached draft
+`Downloads/ICORR_2027 (1).pdf` for section placement and cross-references.
+Checked the archived step and assembled workflows, including 5 ms simulated
+control updates, 0.5 ms physics steps, initialization from encoder angles,
+timestamp-aligned comparisons, and the different derivative feedback used in
+the two result sets. Verified the final one-page layout via Microsoft Word PDF
+export and visual inspection. Next paper page is MuJoCo model construction.
+Hardware gain reuse and physical component mass checks remain separate topics.
+
+## Paper handoff, 5 November 2026
+
+Prepared `build/OSL_MuJoCo_Paper_Handoff_2026-11-05.zip` and its matching folder
+for Preetam. Start at `00_START_HERE.md`. The archive contains the six assembled
+tracking comparisons, both isolated step series, the original physical knee
+capture and supporting diagnostics, methods and vector architecture figure, and
+a runnable replay snapshot with the original input archives. The incomplete
+joint-error D run is isolated from the completed C results.
+
+Verified 310 source copies by SHA-256 and the 315-file ZIP by CRC. From the
+bundled snapshot, reproduced slow walking, both isolated step series, and the
+full-leg versus knee-fixture replay. Their 16 reported RMS values matched the
+archived values to 1e-10 degrees. Evidence is in
+`build/paper_handoff_check_20261105/` and the package's `05_Reproduction/VERIFICATION.md`.
+The bundle contains the meshes needed by its three MJCF files. Full CAD
+regeneration requires the complete original export. Original runs and the
+paper's existing model assumptions are preserved.
+
+## Latest integration: 4 November 2026 — assembled replay + live dashboard
+
+New `oslbench.apps.assembled_tracking` connects the dual-joint hardware schema to
+one coupled full-leg MuJoCo model with two independent shared PID/drivetrain states.
+New joint/category-selectable dashboard on 8798 includes both comparisons and
+simulation torques/current/belt/PID/motion, pause, stable DOM and Stop/save.
+Guide `ASSEMBLED_TRACKING.md`; results `ASSEMBLED_TRACKING_RESULTS_2026-11-04.md`.
+All six archived conditions completed with C and explicit runtime `--ankle-range
+hardware` (±31 deg; CAD default not edited, zero/travel unverified). Results in
+`build/assembled_matrix_20261104_C/`, including aggregate CSV/manifest. RMS knee/
+ankle: slow walk .762/.237, fast walk 2.272/.662, ramp up 1.351/.505, ramp down
+2.381/.691, stairs down 1.277/.675, stairs up 1.090/.330 deg. No clipping/fit
+exceedance in C matrix. Joint-error D slow walk diverges by ~.58 s and is incomplete.
+Hardware and C derivative signals differ, so matching gains do not mean same law.
+New adapter initially inherited wrong motor sign; invalid `assembled_first_*` and
+`assembled_fine_*` development artifacts excluded, explicit +1 and negative-
+feedback assertions/tests fixed before completed C matrix. No timestep change
+in reported matrix. No source models, mechanical defaults or hardware gains tuned.
+Four runtime tests and executable Node controls test passed. HTTP page/data/Stop
+and synthetic live/source/MuJoCo-viewer integration passed with 60 pairs per joint
+(latest `build/assembled_validation_20261104/live_result_1793734555609325200/`).
+Browser screenshot layout not checked; comparison plot visually inspected.
+Next physical lab check uses NEW assembled app, NOT old knee live app/recorder.
+Exact commands in guide; old knee applications preserved. Remaining: physical
+mount/zero/travel, D instability, uncertain KT/drivetrain/preload, real streaming
+timing/performance. No physical hardware run or commit/push performed.
+
 ## Latest handoff milestone: 4 November 2026 — dual-joint telemetry package
 
 User confirmed the continuous tracking recordings used the FULLY ASSEMBLED leg.
