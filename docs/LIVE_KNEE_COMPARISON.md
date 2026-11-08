@@ -1,5 +1,10 @@
 # Live hardware and independent simulation comparison
 
+Current evidence and next work: [PROJECT_HANDOVER.md](PROJECT_HANDOVER.md).
+The 30 October physical knee step is saved; broader calibration/validation remains
+open. The live application uses the full-leg plant; knee-only fixture results
+were obtained through offline replay, not a live fixture run.
+
 Use this integrated application instead of running the two old mock tools.
 One process consumes the hardware target stream, runs the shared knee PID and
 MuJoCo drivetrain, records results, and publishes two browser views:
@@ -115,7 +120,7 @@ controller and shutdown responsibility. The laptop sends no motor commands.
 - An invalid encoder reading is omitted from paired error metrics. Simulated
   feedback remains independent. A belt deflection outside +/-0.055 rad is flagged
   because it exceeds the fitted belt-law range, not a known physical safety limit.
-- Display publication is 5 Hz and viewer synchronization is capped at 30 Hz;
+- Display publication is 5 Hz and viewer synchronization is capped at 10 Hz;
   every physics step is still recorded. The status shows pending samples and
   source lag, with CATCHING UP when the simulation falls behind. Ending a run
   does not pretend queued samples were simulated; the summary reports them.
@@ -135,5 +140,6 @@ Tests:
 .venv\Scripts\python.exe -B tests/run_tests.py
 ```
 
-Local tests establish the software path only. Physical calibration, load matching,
-current/shaft conventions and the actual Wi-Fi experiment remain unverified.
+Local tests establish the software path only. The saved 30 October physical step
+provides one live experiment; physical calibration, current/shaft conventions,
+general transport reliability and broader trajectory validation remain open.

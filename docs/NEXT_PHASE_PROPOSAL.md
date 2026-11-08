@@ -1,5 +1,11 @@
 # OSL V2 project roadmap
 
+**Status superseded, 2 November 2026:** use [PROJECT_HANDOVER.md](PROJECT_HANDOVER.md)
+for current priorities. The roadmap below preserves its dated design history.
+Knee encoder telemetry, a physical step comparison and offline fixture studies
+now exist; passive IMU validation remains separate. Legacy root redirectors have
+been retired, so historical compatibility statements below are no longer current.
+
 Implemented 2026-10-19: `oslbench/control/`, `sim/`, `telemetry/` and `presentation/` now own the four responsibility domains; shared contracts remain at package root and `apps/` composes workflows. Legacy imports and experiment commands remain compatible. The current-gait viewer uses the library runtime directly. See [architecture](ARCHITECTURE.md) for D1 measured-joint mirroring and D2 explicit IMU-estimator handoff. Encoder calibration/transport and a validated IMU estimator remain pending.
 
 ## Authoritative current roadmap — 2026-10-18
