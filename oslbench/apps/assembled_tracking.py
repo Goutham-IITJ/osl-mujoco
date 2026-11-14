@@ -1,5 +1,5 @@
 """Replay saved tracking CSVs or compare both live joints with an assembled leg."""
-import argparse,csv,io,json,math,os,time,zipfile
+import argparse,csv,io,json,math,os,time,zipfile,hashlib
 from pathlib import Path
 from datetime import datetime
 from urllib.request import Request,build_opener,ProxyHandler
@@ -23,7 +23,7 @@ def archive_ticks(archive,run):
             tick['joints'][j]=dict(time_s=elapsed[j],reference_deg=float(r['reference_deg']),actual_deg=float(r['actual_deg']),encoder_valid=True)
         yield tick
 
-def live_ticks(args,raw):
+def live_ticks(args,raw,should_stop=lambda:False,on_idle=lambda:None):
     from hardware.gait_tracking.telemetry import SCHEMA,validate_sample
     opener=build_opener(ProxyHandler({}));token=os.environ.get('OSL_TELEMETRY_TOKEN')
     headers={'Authorization':'Bearer '+token} if token else {}
@@ -31,12 +31,16 @@ def live_ticks(args,raw):
         with opener.open(Request(f'http://{args.host}:{args.port}'+path,headers=headers),timeout=1) as r:return json.load(r)
     meta=None;deadline=time.monotonic()+60
     while time.monotonic()<deadline:
+        on_idle()
+        if should_stop():return
         try:meta=get('/v1/metadata');break
         except Exception:time.sleep(.2)
     if meta is None or meta.get('schema')!=SCHEMA:raise ValueError('No compatible two-joint server')
     raw.write(json.dumps(dict(kind='metadata',payload=meta))+'\n');raw.flush()
     seq=-1;local={j:-1 for j in JOINTS};pending={};start=time.monotonic()
     while time.monotonic()-start<args.seconds:
+        on_idle()
+        if should_stop():return
         b=get(f'/v1/samples?after={seq}&limit=1000')
         if b.get('session_id')!=meta['session_id']:raise ValueError('Hardware session changed')
         raw.write(json.dumps(dict(kind='batch',receipt_elapsed_s=time.monotonic()-start,payload=b))+'\n');raw.flush()
@@ -44,7 +48,7 @@ def live_ticks(args,raw):
             validate_sample(r);j=r['joint']
             if r['sequence']!=seq+1 or r['joint_sequence']!=local[j]+1:raise ValueError('Sample gap or duplicate; stop comparison')
             seq=r['sequence'];local[j]=r['joint_sequence'];k=r['control_tick']
-            signs=meta['joints'][j];tick=pending.setdefault(k,dict(control_tick=k,reference_time_s=r['reference_time_s'],joints={}))
+            signs=meta['joints'][j];tick=pending.setdefault(k,dict(control_tick=k,reference_time_s=r['reference_time_s'],source=meta['source'],joints={}))
             if abs(tick['reference_time_s']-r['reference_time_s'])>1e-8:raise ValueError('Tick reference clocks differ')
             tick['joints'][j]=dict(time_s=r['time_s'],reference_deg=signs['angle_multiplier']*r['reference_deg'],
                 actual_deg=signs['angle_multiplier']*r['actual_deg'],encoder_valid=r['encoder_valid'])
@@ -105,7 +109,7 @@ def main(argv=None):
     p.add_argument('--live',action='store_true');p.add_argument('--host',default='127.0.0.1');p.add_argument('--port',type=int,default=8794)
     p.add_argument('--archive',type=Path,default=Path.home()/'Downloads/Tracking Results & Codes & Dataset.zip')
     p.add_argument('--run',default='knee_ankle_normal_walk_0.6ms');p.add_argument('--all',action='store_true')
-    p.add_argument('--feedback',choices=('legacy','actuator-difference'),default='legacy')
+    p.add_argument('--feedback',choices=('legacy','actuator-difference'),default='actuator-difference')
     p.add_argument('--ankle-range',choices=('cad','hardware'),default='cad',help='hardware explicitly expands runtime ankle range to ±31°; unverified coordinate/travel assumption')
     p.add_argument('--outdir',type=Path);p.add_argument('--seconds',type=float,default=120)
     p.add_argument('--no-dashboard',action='store_true');p.add_argument('--no-browser',action='store_true');p.add_argument('--dashboard-port',type=int,default=8798)
@@ -128,10 +132,13 @@ def main(argv=None):
         dash=dashboard(presentation,args.dashboard_port,not args.no_browser);print('Dashboard:',dash.url,flush=True)
     raw=(out/'hardware_batches.jsonl').open('x')
     try:
-        stream=live_ticks(args,raw) if args.live else archive_ticks(args.archive,args.run)
+        def idle():
+            if dash:dash.pump();dash.update(presentation.snapshot())
+        stream=live_ticks(args,raw,lambda:presentation.stop_requested,idle) if args.live else archive_ticks(args.archive,args.run)
         for tick in stream:
             if sim is None:
                 sim=AssembledTracking(tick,args.feedback,args.ankle_range,step,args.physics_dt)
+                if args.live:presentation.source=tick.get('source','unknown')+' live'
                 presentation.assumptions=json.dumps(sim.metadata)
                 if args.view:
                     import mujoco.viewer
@@ -149,6 +156,7 @@ def main(argv=None):
                     if viewer:viewer.sync()
                     last_draw=now
                 if presentation.stop_requested:status='STOPPED_BY_DASHBOARD';break
+        if presentation.stop_requested:status='STOPPED_BY_DASHBOARD'
     except KeyboardInterrupt:status='STOPPED_BY_USER'
     except Exception as exc:status='STOPPED: '+str(exc)
     finally:
@@ -158,6 +166,11 @@ def main(argv=None):
         summary=dict(status=status,feedback=args.feedback,ankle_range=args.ankle_range,joints=summarize(pairs,steps))
         if sim:
             summary['within_belt_fit']=sim.fit_exceeded==0
+            sim.metadata.update(source='live stream' if args.live else str(args.archive),run=args.run if not args.live else None,
+                source_sha256=hashlib.sha256(args.archive.read_bytes()).hexdigest() if not args.live else None,
+                csv_validity='Finite CSV values assumed usable; no original validity flags' if not args.live else 'Published validity flags retained',
+                model_feedback_sign='Explicit +1 for both simulation coordinates; hardware signs normalized separately',
+                gains={'knee':[1.5,.15,.06],'ankle':[2.,0.,.075]},torque_constant_Nm_per_A=.5701,torque_constant_verified=False)
             (out/'metadata.json').write_text(json.dumps(sim.metadata,indent=2)+'\n')
         (out/'summary.json').write_text(json.dumps(summary,indent=2)+'\n');plot(out,pairs)
         presentation.status=status
