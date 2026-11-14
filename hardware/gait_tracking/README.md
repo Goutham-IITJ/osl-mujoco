@@ -1,5 +1,13 @@
 # Assembled-leg gait telemetry handoff
 
+**Laptop integration update:** the assembled simulation and combined dashboard
+are now available through `oslbench.apps.assembled_tracking`. See
+`docs/ASSEMBLED_TRACKING.md` in the laptop repository for live and recorded-data
+commands and the explicit ankle-range assumption. The hardware files in this
+folder are compatible; they do not need a further controller edit. Statements
+below describing the assembled dashboard as a future stage are historical to
+the original handoff ZIP and are superseded by this update.
+
 One `telemetry.py` is shared by all five controller scripts. Copy this complete
 folder to the Pi, for example `/home/legpi/test_codes/gait_tracking`. Keep the
 existing working hardware environment and dependencies. Run ONE controller at
