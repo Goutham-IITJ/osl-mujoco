@@ -1,5 +1,448 @@
 # Project handover — OSL V2 MuJoCo
 
+## Current-loop dynamics gait sensitivity, 14 November 2026
+
+Reused the existing exact first-order current loop in closed-loop offline
+replays of all six gait trials, at 0, 0.25, 0.725, 1.5, 3, 5 and 8 ms.
+Held the 2810 kg/m³ model, ratio 4.61, output gain 0.7044, controller gains
+and actuator-side derivative fixed. The zero-lag baseline reproduced the
+saved angle RMS to 1e-10 degrees. Verified the current update on each
+physics sample via generated torque divided by the output coefficient.
+All 42 runs completed without clipping or belt-fit exceedance. CubeMars
+line-to-line L/R gives 0.725 ms as an electrical reference case, not a
+measured driver bandwidth. Fast-walk knee command jump RMS fell from
+12.63 to 12.45 A at 0.725 ms. At 8 ms the command still jumped by 11.90 A,
+while modeled current jumps fell to 4.18 A. Hardware command reference
+is 1.69 A on the same grid. No measured current data. Scripts, metrics,
+traces and visually checked PNGs: `build/ak80_current_dynamics_20261114/`.
+Next: characterize the physical inner loop before adopting a lag or test
+command-side derivative filtering separately if smoother commands are required.
+
+## Aluminium density gait replay, 14 November 2026
+
+Built a separate 5.068973 kg bench MJCF from the recalculated segment mass,
+COM and inertia for 2810 kg/m³. Replayed all six archived gait trials with
+the 2700 and 2810 kg/m³ models at belt ratio 4.61 and output coefficient
+0.7044 Nm/A, using identical gains and Configuration C. The 2700 model
+reproduced prior RMSE within 1e-10 degrees. Knee hardware RMSE decreased
+by 0.0023–0.0211 degrees across trials, and ankle changes were under
+0.0003 degrees. No simulated clipping or belt-fit exceedance. Model,
+paired angles, RMSE and reproducible script: `build/aluminium_density_gait_20261114/`.
+Next: confirm alloy and physical component inventory before adopting the density.
+
+## Aluminium density sensitivity, 14 November 2026
+
+Recomputed segment mass, centre of mass and inertia using the CAD builder
+with all 245 aluminium-assigned instances at 2810 instead of 2700 kg/m³.
+The model total rose from 4.955763 to 5.068973 kg (+0.113210 kg, +2.28%).
+Inventory volume sums independently reproduced each mass increment. Evidence
+is in `build/aluminium_density_2810_20261114/`. The density change was local
+to the calculation. No dynamic replay or physical weighing was performed.
+Compare against the measured mass for the same component inventory before
+adopting a density change as a hardware correction.
+
+## Belt ratio gait sensitivity, 14 November 2026
+
+Replayed all six recorded gait conditions at 50/11 and the user-confirmed
+4.61 hardware belt ratio, holding the effective torque coefficient fixed
+within each comparison (0.5701 and 0.7044 Nm/A). Applied each ratio to
+both the drivetrain and actuator-side derivative, with zero initial belt
+deflection. Both 50/11 baselines reproduced saved angle RMS within 1e-10
+degrees. Maximum ratio-only changes were 0.012 degrees in hardware RMS,
+0.044 A in current RMS and 0.014 A in RMS current jumps. No clipping or
+belt-fit exceedances. Evidence: `build/belt_ratio_gait_20261114/`.
+Use 4.61 for the hardware-matched configuration. The archived results
+document 50/11, and the production defaults have not been edited.
+
+## Current command comparison figures, 14 November 2026
+
+Created step and gait current overlays in `build/ak80_current_comparison_20261114/`
+from archived hardware commands and reproduced 0.5701/0.7044 simulations.
+Step plots use joint-error feedback and show the first 250 ms. Gait plots
+use the six assembled Configuration C recordings. Checked archived angle
+metrics during replay, verified gait current sign against recorded P terms,
+and visually reviewed both figures. Current traces are commands, and the
+physical motor current remains unmeasured in these recordings.
+
+## AK80-9 gearbox coefficient step replay, 14 November 2026
+
+Replayed recorded 5/10/15-degree knee and ankle steps with 0.5701 versus
+0.7044 Nm/A in the existing isolated fixtures. Retained gains, timing,
+belt law and effective friction. Verified archived input/model hashes and
+baseline metrics for both derivative signals. With the joint-error signal
+used in the paper, RMS improved for all three knee steps and worsened for
+all three ankle steps. The 0.7044 simulation still rose 20–29 ms slower
+than hardware. Configuration C gave small ankle RMS improvements instead.
+All completed without simulation clipping or belt-fit exceedance.
+Evidence: `build/ak80_step_07044_20261114/` includes both feedback modes,
+paired traces, summary, protocol, replay script and a reviewed plot.
+Next: confirm physical output coefficient before updating reported results.
+
+## AK80-9 manual revision and 0.7044 gait sensitivity, 14 November 2026
+
+See `docs/AK80_9_MANUAL_REVISION_2026-11-14.md`. The supplied CubeMars V3
+Drive Software Manual p. 31 lists 0.7044 Nm/A at the output and p. 23 links
+it to servo current mode. An older manufacturer manual copy lists 0.5701.
+Replayed all six archived gait conditions at 0.7044 with effective friction
+and other model settings fixed. Baseline reproduced within 1e-10 degrees.
+Knee RMS fell on all six trials. Ankle RMS fell on two and rose on four.
+All completed with zero clipping and belt-fit exceedance. Evidence in
+`build/ak80_gait_07044_20261114/`. Next: confirm as-tested firmware and
+measure torque versus actual Iq before using either figure as calibration.
+
+## AK80-9 replay comparison figures, 13 November 2026
+
+Shareable overlay, numerical difference plot and RMS table are in
+`build/ak80_gait_sensitivity_share_20261113/`. Recomputed RMS from 12,416
+timestamp-matched angles across all six trials. Maximum difference between
+the simulated angles was 5.68e-14 degrees with the output coefficient and
+effective friction fixed. Visually checked both PNGs. Confirmation of the
+physical 0.5701 Nm/A output coefficient remains open.
+
+## AK80-9 gait sensitivity, 13 November 2026
+
+Replayed all six recorded gait CSVs offline in `build/ak80_gait_sensitivity_20261113_160126/`.
+The baseline reproduced archived RMS to 1e-10 degrees. Setting rotor k_t to
+0.095 while retaining effective output k_t of 0.5701 and the same friction
+per commanded amp reproduced all angles to 6e-14 degrees. Using nominal
+0.855 Nm/A output with 0.095 rotor and the same friction per commanded amp
+reduced knee hardware RMS in five of six runs and increased ankle RMS in all
+six. Largest changes were knee ramp descent −0.453 degrees and ankle ramp
+ascent +0.386 degrees. No clipping or belt fit exceedance. Preserved gains,
+mass, inertia, timing and the archived Configuration C. See `summary.csv`,
+`protocol.json`, `replay.py` and paired traces. Next: confirm whether 0.5701
+was measured and how current is defined before treating either value as a
+hardware calibration. Step tests and inertial tuning remain separate.
+
+## Gait recording assets, 13 November 2026
+
+Ran the current-controlled AB19 knee gait and the assembled slow-walk replay
+in MuJoCo 3.12.0 with Configuration C, 200 Hz control and 0.5 ms physics.
+Evidence: `build/gait_recordings_20261113_144526/`, including
+`Gait_raw_results.zip` (13 CSV, PNG and metadata entries; CRC verified).
+AB19 target RMS was 3.394 degrees; assembled simulation versus recorded
+hardware RMS was 0.762 degrees knee and 0.237 degrees ankle (2,173 pairs
+each). Assembled ankle range used the existing experimental ±31-degree
+override. No new physical trial or controller/model changes.
+
+The side-by-side clips synchronize the repository dashboard plots and
+offscreen MuJoCo rendering against the new result files. Playback is slowed
+for viewing; use the raw CSV timestamps for analysis. The AB19 view depicts
+the ankle at its servo hold angle. Both 1280×720 MP4s loaded and seeked in
+Chrome; reviewed the paired screenshots. The full-view MP4s and PNGs were
+copied to the user's Downloads/Recordings folder. Next: share the full-view
+clips and raw results with the professor.
+
+## AK80-9 motor parameter audit, 13 November 2026
+
+See `docs/AK80_9_PARAMETER_AUDIT_2026-11-13.md`. Found the local CubeMars
+V3.0.1 manual and checked the AK80-9 V3 KV100 catalogue specifications against
+the hardware script, simulation code and archived runs. Verified the slow-walk
+archive's effective generated output torque coefficient of 0.5701 Nm/A over
+43,446 nonzero-current rows. Nominal manufacturer candidate is 0.095 Nm/A rotor
+and 0.855 Nm/A ideal gearbox output, subject to current convention. The existing
+adapter's current scaling also changes gear friction. Next: isolate the torque
+coefficient in offline replay, then compare the current-rescaling variant.
+The audit used archived evidence. Dynamic sensitivity is pending.
+
+## Robotic-device-only MyoAssist 1.0 comparison, 13 November 2026
+
+Created `docs/OSL_V2_DEVICE_COMPARISON_2026-11-13.md` after the user narrowed
+the scope to the prosthesis and supplied Robbins et al.'s MyoAssist 1.0 preprint.
+Section III-B confirms the simplified direct-torque device representation; the
+local KA_L1 MJCF and YAML establish exact device values. Verified axis spacing
+and compared rigid-body knee and ankle inertias at zero joint angles using
+compiled models and body COM Jacobians. No dynamic test or model change. Use
+this device-only report for the professor; matched physical component inventory
+and head-to-head hardware response remain open.
+
+## CAD versus MyoAssist comparison, 13 November 2026
+
+Created `docs/MYOASSIST_COMPARISON_2026-11-13.md` from the user-supplied
+MyoAssist 0.1 ICORR 2025 PDF, local Myo repositories, current runtime and archives.
+Distinguishes the paper/legacy 54-muscle model with four socket coordinates from
+modern rigid-socket KA_L1 composed with 65 or 15 remaining muscles. Clarifies that
+our active plant is a device-only CAD model with explicit compliant drivetrain,
+not a biological musculoskeletal model or the old servo-only experiment.
+Compiled bench, walk scaffold, saved modern scene and legacy scene using existing
+MuJoCo 3.12; fresh myolegs22 composition used existing MyoAssist MuJoCo 3.11.
+No new rollout, parameter change or hardware experiment. Evidence and reproducible
+inspection script: `build/myoassist_comparison_20261113/`. PDF text extracted and
+relevant page rendered/visually checked. Historical reports preserved.
+
+Key qualifications: 260 source CAD meshes are not 260 moving bodies (compiled
+bench: 80 mesh assets, 217 geoms, two joints); socket-normalized device mass gap is
++0.428280 kg for our model, but component inventories are not fully matched.
+49.4/58.4 are Myo torque gains, not verified V2 mechanical reductions. Existing
+Myo traces demonstrate exploration, not stable prosthetic walking. The explicit
+drivetrain adds shaft states outside MuJoCo nq; authored joint placeholders remain.
+Next: professor review; resolve physical foot/battery inventory, inertias, torque
+constant and feedback-law differences before any matched human/device experiment.
+No commits, pushes or changes to either model source.
+
+
+## Notebook torque-PD drivetrain timestep slide, 12 November 2026
+
+Created `build/final_evaluation_20261112_torque_pd_step/output/OSL_V2_Torque_PD_Drivetrain_Timestep.pptx`.
+The standalone slide documents the earlier torque-PD path and paper belt ratio
+4.61 using the notebook notation. The belt torque is evaluated from the pre-step
+state and the damping term uses the new shaft speed, per the implementation.
+The current-PID replay path and its CAD belt ratio remain separately documented.
+Rendered and reviewed the slide. Package and first-party import checks passed.
+
+## Standalone gait-cycle RMS comparison, 12 November 2026
+
+Created `build/final_evaluation_20261112_gait_rms/output/OSL_V2_Knee_Gait_Cycle_RMS_Comparison.pptx`.
+Computed all three RMS differences from the same 435 paired knee samples
+in the selected slow-walk cycle. Hardware versus target is 1.273299 degrees,
+MuJoCo versus target is 1.636524 degrees, and hardware versus MuJoCo is
+0.685574 degrees. The target is the logged AB01-derived command. Rendered
+and reviewed the slide. Package and first-party import passed.
+
+## Standalone knee gait cycle with human target, 12 November 2026
+
+Created `build/final_evaluation_20261112_gait_three_traces/output/OSL_V2_Human_Hardware_and_MuJoCo_Gait_Cycle.pptx`.
+Added the logged AB01-derived target_deg trace to the same selected slow-walk
+cycle. The 0.69 degree RMS still compares the recorded hardware and MuJoCo
+angles. Rendered and reviewed the slide. Package and first-party import passed.
+Canva import remains untested.
+
+## Standalone hardware and simulated knee cycle, 12 November 2026
+
+Created `build/final_evaluation_20261112_hardware_gait_cycle/output/OSL_V2_Hardware_and_Simulated_Knee_Cycle.pptx`.
+It shows the first complete interior slow-walk knee cycle from
+`build/assembled_normal_20261104_C/comparison.csv`, bounded by successive
+reference extension minima at source times 2.107644 s and 4.275673 s.
+The 435 paired angles give 0.685574 degrees RMS simulation-to-hardware
+difference without relative time shifting. Rendered and reviewed the slide.
+Package and first-party import passed. Canva import remains untested.
+
+## Monochrome controller development slide, 12 November 2026
+
+Created `build/final_evaluation_20261112_controller_mono/output/OSL_V2_Controller_Development_Monochrome.pptx`
+as a standalone replacement for the controller journey page. The revised layout
+uses editable equation text and matches the PID diagram's E[k] notation. Code
+inspection confirmed the bounded integral is active in the knee profile at
+Ki = 0.15 and inactive at Ki = 0. Rendered and reviewed the slide. Package and
+first-party import checks passed. Canva import remains untested.
+
+## Standalone AB19 gait tracking result, 12 November 2026
+
+Created `build/final_evaluation_20261112_ab19/output/OSL_V2_AB19_Gait_Tracking.pptx`
+to introduce the human reference and the early single-knee simulation result
+on one slide. A static line plot uses all 2,410 rows per archived case from
+`build/knee_controller_selection/{old_matched,knee}/gait_trace.csv`. The two
+cases use the same reference, fixed-base model and 200 Hz Configuration C.
+Recomputed simulation-versus-target RMS as 6.846268 and 3.394414 degrees.
+The plot labels the cases initial and revised PID settings. The stance/swing
+descriptions are general context. No toe-off marker is inferred. The single
+slide was rendered and checked, and package and first-party import passed.
+Canva import remains untested.
+
+## Standalone PID signal-label revision, 12 November 2026
+
+Created `build/final_evaluation_20261112_pid_labels/output/OSL_V2_Knee_Angle_PID.pptx`
+to replace the first current-pipeline slide. It names the angle and current
+signals with units and defines E as the bounded accumulated angle error.
+Rendered and reviewed the slide. Package, layout and first-party import
+checks passed. Canva import remains untested.
+
+## Standalone drivetrain timestep revision, 12 November 2026
+
+Created `build/final_evaluation_20261112_drivetrain_step/output/OSL_V2_Drivetrain_Timestep.pptx`
+as a replacement for the second current-pipeline slide. It uses physics indices
+n and n + 1 and adds the continuous shaft torque balance, reflected belt load
+and symbol definitions. Speaker notes show the implicit damping discretization.
+Rendered and reviewed the one slide. Package, layout and first-party import
+checks passed. Canva import remains untested.
+
+## Standalone current-control and drivetrain slides, 12 November 2026
+
+Created `build/final_evaluation_20261112_current_pipeline/output/OSL_V2_Current_Control_and_Drivetrain_Slides.pptx`
+for insertion after the controller development slide and before the AB19 results.
+The two editable monochrome slides show the sampled position PID with separate
+Configuration C derivative feedback, and one compliant drivetrain timestep.
+Equations were checked against the current path, including old-state belt
+evaluation, implicit viscous damping and the actuator-output current conversion.
+The notebook's earlier 4.61 belt ratio is discussed in notes. The current
+configuration uses 50/11. Both slides were rendered and reviewed, and package
+integrity and import passed. Canva import remains untested.
+
+## Standalone controller development slide, 12 November 2026
+
+Created `build/final_evaluation_20261112_controller/output/OSL_V2_Controller_Development.pptx`
+for insertion after CAD reconstruction and before the current-controller details
+and AB19 tracking results. The single slide includes the original servo gains,
+the torque-PD request and rotor-current conversion, the feedback-location
+instability diagnosis and correction, and the current PID transition. Speaker
+notes contain the gain derivation and source paths. Rendered and reviewed the
+slide, and verified one-slide PPTX package integrity and import. Canva import
+remains untested.
+
+## Final evaluation CAD slide update, 12 November 2026
+
+Created a copy of Visual Revision 3 with slide 4 rebuilt around a same-view
+visual-origin diagnostic and a distinct URDF inertial audit. The four stages
+show mesh placement, rigid body recovery, mass and inertia reconstruction, and
+explicit MJCF emission. Appended slide 30 with the part inertia equations, the
+parallel-axis aggregation and the nominal density assignments by part family.
+The density assignments remain model assumptions.
+
+Deck: `build/final_evaluation_20261112_cad/output/OSL_V2_MuJoCo_Sim_to_Real_Visual_Revision_3_CAD_Update.pptx`.
+Previews: `rendered/slide-04.png` and `rendered/slide-30.png` in that build directory.
+Reviewed both rendered slides. The finalizer passed package, layout, chart and
+import checks. Verified 30 slides, 32 embedded chart workbooks, matching text on
+the other existing slides, and identical embedded MP4 bytes on slide 13.
+PowerPoint slideshow playback was not tested. SHA-256:
+`63bd34f110c4e9129508b20f0f6177df81800fe0aac7ae79369e917d4a5f5b22`.
+
+## Final evaluation presentation visual revision 3, 10 November 2026
+
+Completed the requested media/design pass in a new directory, preserving v1/v2:
+`build/final_evaluation_20261110_v3/output/OSL_V2_MuJoCo_Sim_to_Real_Visual_Revision_3.pptx`.
+There are 17 main slides (720 seconds planned speech) and 12 backup slides, with
+29 notes and 32 editable native charts / embedded XLSX files. The deck adds an
+embedded H.264 MP4 on slide 13 and an interface-diagnostics backup on slide 28.
+The cover now has a dark navy background, and editable process diagrams use
+purple/control, blue/actuator, orange/belt and teal/plant stages. Slide 4 was
+redesigned around the failed export, reconstruction stages and corrected MuJoCo
+model. Slide 7 groups each equation inside its process stage, connects the held
+current to the physics loop and distinguishes the 5 ms and 0.5 ms updates.
+
+No saved video clips were found in build. The new clip visualises the first six
+seconds of the archived original-gain slow-walk simulation in
+`build/assembled_normal_20261104_C/simulation.csv`. Interpolated saved simulated
+joint angles were assigned to the unchanged MJCF and rendered with `mj_forward`
+only; no new physics stepping or hardware action. There are 72 frames at 12 fps;
+the browser-encoded H.264 MP4 lasts approximately 6.7 seconds, so it must not be
+used for response-timing measurements. Source/model hashes and camera/method
+are recorded in `media/provenance.json`; the model matches the archived metadata
+hash. A 30 fps render was stopped in this new revision directory to reduce media
+processing time; its partial frames are private authoring intermediates.
+
+Captured the actual `oslbench/presentation/assembled_tracking.html` layout and
+plot code displaying archived comparison/simulation CSV values, with no network
+or hardware connection. Screens show angles, residuals, current and belt states.
+The preserved historical `build/dashboard_video_review/frame_01.png` supplements
+the new captures. These are interface evidence, not new physical tests. An offline
+copy of the real assembled interface has working view selectors, an explicit
+archive status and a disabled Stop control. UI/data hashes are in
+`media/source_hashes.json`. Original source files remain unchanged.
+
+User media package:
+`build/final_evaluation_20261110_v3/output/OSL_V2_Presentation_Media.zip`.
+It includes the standalone MP4, six MuJoCo stills, model/fixture/Myo views, interface
+captures, provenance, a README and `Open_Archived_Dashboard.html`. For Canva,
+upload the MP4 manually if PPTX import does not preserve embedded media.
+Canva import and native PowerPoint slideshow playback have not been tested.
+Browser MP4 decode confirmed a 408 x 380 H.264 clip, and embedded video bytes
+were checked identical to the standalone MP4. Media relationships and on-click
+timing are present in the PPTX; the poster is the image fallback.
+
+Reviewed all 29 slide PNGs and refreshed/rechecked affected curves and diagrams.
+The packaged finalizer passed integrity, geometry/font, native charts/workbooks
+and exact-file first-party import. ZIP CRC and inventory checks passed. Images
+were resized only in the new authoring copies; archived originals are intact.
+Chart curves now use at most 160 selected original points per series to keep the
+expanded media deck within the importer's construction budget. All full-record
+reported metrics and comparison definitions remain unchanged. Validation records
+are `validation.json` and `chart_snapshot_reviewed_receipt.json`.
+PPTX SHA-256:
+`b012b667fef698d7d482b7bd682f43bc5ecdeb01d505464963fa5ffe89673d1f`.
+Next: user review of slides 4, 7, 13 and 28, Canva/media playback check, and a
+12-minute rehearsal. Existing paper/model uncertainties remain as recorded below.
+No source controller/model edits, commits, pushes or hardware commands.
+
+## Final evaluation presentation revision 2, 10 November 2026
+
+Completed the user's technical revision in a new directory, preserving version 1:
+`build/final_evaluation_20261110_v2/output/OSL_V2_MuJoCo_Sim_to_Real_Revision_2.pptx`.
+The title is now CAD-Derived OSL V2 Simulation in MuJoCo / Sim-to-Real Analysis.
+There are 16 main slides (690 seconds planned speech) and 11 backup slides.
+All 27 slides have speaker notes and evidence paths; 32 native charts have
+embedded editable XLSX data. Canva import fidelity remains untested.
+
+Replaced the main position-servo benchmark with the archived current-controlled
+AB19 comparison (matched C/200 Hz/0.5701 Nm/A cases, target RMS 6.846 to 3.394 deg).
+The earlier servo and torque formulations are development history. Expanded CAD
+reconstruction with original visual-origin failure/correction images, the custom
+pipeline, and inertia equations. Added a dedicated current/planetary/belt/physics
+update diagram and a parameter table. Expanded MyoAssist using the saved
+80-muscle lineage composition (65 retained muscles and two OSL motors) and local
+reflex-control documentation; no stable prosthetic walking result is claimed.
+Used the original `paper/Software_architecture.pdf` figure. Added six-time-constant
+current-loop response curves and actual original/tuned ankle curves plus gain
+ranges. Original hardware gains remain the comparison baseline. Target RMS and
+simulation-to-hardware RMS are visibly distinguished; C and hardware joint-error
+D are not described as identical controllers. Historical 1 kHz/0.855 Nm/A studies
+are labelled separately from the later hardware-comparison settings.
+
+Evidence includes 18 additional archived CSV sources, with hashes in
+`additional_source_hashes.json`, plus the earlier evidence and source images.
+No new dynamic experiment or hardware action was performed and no gains or
+mechanical defaults changed. Full-record metrics were retained. Plot curves use
+up to 200 selected original points per series (largest-triangle selection), rounded
+to ten significant digits for portability; this does not recalculate the reported
+metrics. The first-party importer initially hit its XML construction limit on the
+larger chart package; point selection resolved this without rasterizing charts.
+
+All slide layouts were reviewed as PNGs, with affected curves rechecked after
+selection. The packaged finalizer passed package integrity, layout/font, native
+chart title/data/workbook checks and exact-file first-party import. ZIP CRC and
+inventory checks confirmed 27 slides, 27 notes, 32 charts and 32 embedded XLSX
+files. Receipts: `validation.json` and `chart_snapshot_final_receipt.json` in the
+new directory. Final SHA-256:
+`434a00ba8b3ab408112ac6b01fcd264b4a7ce014bcb3a83c884829b4afb8145e`.
+Local exclusive-copy publication retains the no-overwrite and hash checks because
+the Windows sandbox rejects hard links; managed runtime files remain untouched.
+
+Remaining: user content review, Canva import check and timed rehearsal. Paper
+component correspondence (SACH/Variflex, batteries), belt-ratio discrepancy and
+unverified physical parameters remain unresolved, as described in the existing
+paper notes. No manuscript edits, commits or pushes were performed.
+
+## Final evaluation presentation, 10 November 2026
+
+Created the editable PPTX for the 12 November evaluation in
+`build/final_evaluation_20261110_v1/output/OSL_V2_MuJoCo_Final_Evaluation.pptx`.
+It has 13 main slides with an 11-minute speaking budget and 11 supplementary
+slides, leaving time for questions in the 15-minute slot. All 24 slides contain
+speaker notes and evidence paths. Thirty native charts have embedded XLSX data;
+text, diagrams, tables and those charts remain editable in the PPTX. Original
+gain-grid and clipping figures remain images. Canva import fidelity is untested.
+
+Used the user-supplied `Downloads/ICORR_2027 (4).pdf` for manuscript context and
+the two physical-device photographs. The main presentation concerns Goutham's
+simulation work; hardware construction is context. MyoAssist occupies one brief
+exploration slide, without claiming stable prosthetic walking. Rendered existing
+CAD and saved MyoAssist MJCFs at prescribed poses using `mj_forward` only; no
+new dynamic experiment, hardware command, gain change or physical calibration.
+
+Authoring source, selected chart data, source hashes, slide manifest and PNG
+previews are in the new build directory. Full-record step RMS values were checked
+against archived paired CSVs. Chart samples are selected and rounded to ten
+significant digits for Office portability; displayed metrics retain the original
+full-record basis. The packaged validators passed PPTX integrity, layout/font,
+native chart title/data/workbook checks, and first-party import. All slide layouts
+were reviewed as rendered PNGs. The final file contains 24 notes and 30 embedded
+workbooks. Validation records are `validation.json` and
+`chart_snapshot_receipt.json`; SHA-256 is
+`fd2bab2320977a047be698c536e645240ef5f2bbdec2fdedb005d1b801448ecb`.
+Windows sandbox hard-link publication was replaced locally with exclusive-copy
+publication while retaining the packaged validation and final hash checks.
+Managed dependency files were not modified.
+
+Keep hardware-difference RMS separate from target-tracking RMS. Isolated primary
+steps use joint-error D; assembled results use C, unlike hardware's derivative.
+The new paper describes a SACH foot/off-board batteries and a 4.61 belt ratio;
+saved replays use the CAD-derived model/component accounting and 50/11 ratio.
+These correspondences remain unresolved and are qualified in the notes/backup
+slides. The paper's remaining template text and broad fidelity conclusions were
+not adopted as verified claims. Paper and historical outputs were preserved.
+Next: review the deck with the user, check any Canva import, rehearse to 11 minutes,
+and continue manuscript revisions separately before the 17 November submission.
+No commit or push performed.
+
 ## Paper gait and step replay cross-check, 7 November 2026
 
 Replayed all six assembled trajectories at 200 Hz control and 0.5 ms physics
