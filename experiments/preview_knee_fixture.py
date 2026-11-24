@@ -11,11 +11,14 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--angle', type=float, default=15., help='Relative knee angle in degrees')
+    parser.add_argument('--angle', type=float, default=15., help='Relative angle of the selected joint in degrees')
     parser.add_argument('--view', action='store_true')
     parser.add_argument('--png', type=Path)
+    parser.add_argument('--model', choices=('knee','ankle-with-foot','ankle-output-only'), default='knee')
     args = parser.parse_args()
-    model = mujoco.MjModel.from_xml_path(str(ROOT/'models/osl_v2_knee_fixture.xml'))
+    filename={'knee':'osl_v2_knee_fixture.xml','ankle-with-foot':'osl_v2_ankle_fixture_with_foot.xml',
+              'ankle-output-only':'osl_v2_ankle_fixture_output_only.xml'}[args.model]
+    model = mujoco.MjModel.from_xml_path(str(ROOT/'models'/filename))
     model.vis.headlight.ambient[:] = [.45, .45, .45]
     model.vis.headlight.diffuse[:] = [.8, .8, .8]
     data = mujoco.MjData(model)
@@ -28,6 +31,10 @@ def main():
         cam.distance = .48
         cam.azimuth = 110
         cam.elevation = -10
+        if args.model.startswith('ankle'):
+            cam.lookat[:] = [-.025, 0., -.025]
+            cam.distance = .65
+            cam.azimuth = 110
     if args.png:
         from PIL import Image
         args.png.parent.mkdir(parents=True, exist_ok=True)
