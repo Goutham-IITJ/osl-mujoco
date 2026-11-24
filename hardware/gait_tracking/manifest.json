@@ -1,0 +1,54 @@
+{
+  "archive_sha256": "76d293d5bc0549cfdcc05c1d37ad8f3336773452ad1b1c6aabfa70cb551c08de",
+  "controllers": [
+    {
+      "file": "knee_ankle_trajectory_PID_control_me_normal_walk.py",
+      "source_sha256": "0b482b2892f01937c93513e730ef64aeeac2d38ac1b39da898fa6314571715c8",
+      "modified_sha256": "0ed628acad9a10945b1c81a8a18c1d1561c3d61db82a020e1d4eaf18c29edab4",
+      "verification": "Removing marked additions restores source exactly, except two portable dataset paths in normal-walk script"
+    },
+    {
+      "file": "knee_ankle_trajectory_PID_control_me_ramp_ascent.py",
+      "source_sha256": "e0de94617a37753fd2e1b2c3fa2effb11ecb5cc50d5bae718b591be17d780a2d",
+      "modified_sha256": "2ada92b890bf92176333a96a658b78dc46ea84652b40a9f8ff0e909637504f5a",
+      "verification": "Removing marked additions restores source exactly, except two portable dataset paths in normal-walk script"
+    },
+    {
+      "file": "knee_ankle_trajectory_PID_control_me_ramp_descent.py",
+      "source_sha256": "1cd28d6c149c3c4bacd2314f7245212c6a9386ec8a7c2cc6fd2d1da98517ac75",
+      "modified_sha256": "c031e62b65d460e2b5342b76de9cd85c7731a5d4142a9865aa2c0288b15da5b3",
+      "verification": "Removing marked additions restores source exactly, except two portable dataset paths in normal-walk script"
+    },
+    {
+      "file": "knee_ankle_trajectory_PID_control_me_stairs_down.py",
+      "source_sha256": "075cc938650ca53e4c9155dae38c7d118d0616239f0fc026d357f491bb2e5127",
+      "modified_sha256": "e7aec11111b0d3748486247ac733d97fba13ecd298ac12e6a867984bf27e7185",
+      "verification": "Removing marked additions restores source exactly, except two portable dataset paths in normal-walk script"
+    },
+    {
+      "file": "knee_ankle_trajectory_PID_control_me_stairs_up.py",
+      "source_sha256": "679f6cab37257214abf7fbfe524f599b26e29b704ce3d6a9ad566508d8cb05e4",
+      "modified_sha256": "33e06ac2299d05cfb44a165e4c6d187dc2713c9b44fa05b3e90325853222e980",
+      "verification": "Removing marked additions restores source exactly, except two portable dataset paths in normal-walk script"
+    }
+  ],
+  "files_sha256": {
+    "knee_ankle_trajectory_PID_control_me_normal_walk.py": "0ed628acad9a10945b1c81a8a18c1d1561c3d61db82a020e1d4eaf18c29edab4",
+    "knee_ankle_trajectory_PID_control_me_ramp_ascent.py": "2ada92b890bf92176333a96a658b78dc46ea84652b40a9f8ff0e909637504f5a",
+    "knee_ankle_trajectory_PID_control_me_ramp_descent.py": "c031e62b65d460e2b5342b76de9cd85c7731a5d4142a9865aa2c0288b15da5b3",
+    "knee_ankle_trajectory_PID_control_me_stairs_down.py": "e7aec11111b0d3748486247ac733d97fba13ecd298ac12e6a867984bf27e7185",
+    "knee_ankle_trajectory_PID_control_me_stairs_up.py": "33e06ac2299d05cfb44a165e4c6d187dc2713c9b44fa05b3e90325853222e980",
+    "README.md": "c9cd9a4ecc66cfe127773dd02fa5ff27b56e92ed5f0a9ad0036fc30ca425d026",
+    "telemetry.py": "4e147b402e20e3ee1a3d1b7ac9f45902dc9019952b79000a378d7331d74d8450",
+    "normal_walk_1-2/AB01_normal_walk_1_1-2_angle.csv": "dc7df380bb3f7b27278a8b2ecc20a44e7716d3873268912452fb37596a0f4acb",
+    "normal_walk_1-2/AB01_normal_walk_1_1-2_grf.csv": "f1ff339e981d58236970f149d0b32b48aec1cb756d83f426a1e0ba4fd9b577eb",
+    "ramp_acsent_10_degrees/AB01_incline_walk_2_up10_angle.csv": "e10f099eb6dd5237918a430dc746f31ac0eaaded33f3f94e4d919f21bf8f6fcc",
+    "ramp_acsent_10_degrees/AB01_incline_walk_2_up10_grf.csv": "0f1d2c1feb682a65b32bc73b2163253199496ca463216207d469b9c4f1e0b4d0",
+    "ramp_descent_10degrees/AB01_incline_walk_2_down10_angle.csv": "1cb7d6adaa9d509176a723984872e7f1c368a855e5f72b5681776c6265049710",
+    "ramp_descent_10degrees/AB01_incline_walk_2_down10_grf.csv": "85ad17385921301481dfb78667242ba126bc39904b13b14883f0d6eb109397aa",
+    "stairs_down_normal/AB01_stairs_1_2_down_angle.csv": "9acdce0bb1247e6854012bd7edd33df2b30ea5e3ea3fb5f0e4993a5dbfe19bf3",
+    "stairs_down_normal/AB01_stairs_1_2_down_grf.csv": "bc29e71de90b58dda407903f22d4efea74844378aa893398b573d60bff24ac36",
+    "stairs_up_normal/AB01_stairs_1_1_up_angle.csv": "96eb8ef3bcc7e3ee02be1997f28cc3f4498b3669e183b3f4c1e8c18f085ed9c4",
+    "stairs_up_normal/AB01_stairs_1_1_up_grf.csv": "ca63dd79168dfd6b6b61bc3a8b12309302df546657d76127851bf33ceca05abe"
+  }
+}
