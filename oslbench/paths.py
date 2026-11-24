@@ -5,7 +5,7 @@ ROOT = str(Path(__file__).resolve().parents[1])
 
 
 def source_files(root=ROOT):
-    """Include canonical nested implementations and compatibility entry points."""
+    """Include canonical nested implementations and experiment entry points."""
     root = Path(root)
     return tuple(sorted(p for folder in ("oslbench", "experiments")
                         for p in (root / folder).rglob("*.py")
