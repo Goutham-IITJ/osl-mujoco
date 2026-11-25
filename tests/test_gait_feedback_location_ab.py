@@ -4,11 +4,11 @@ import math
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from oslbench.ankle_current_control import CurrentPID, PIDGains, CurrentLimits, ConversionAudit
-from oslbench.drivetrain import PAPER
-from oslbench.drivetrain_sim import DrivetrainLayer
-from oslbench.joint_current_control import GaitCurrentSource, KNEE_GAIT_CONFIG
-from oslbench.feedback_location_diagnostic import (FeedbackLocationPID,
+from oslbench.control.current import CurrentPID, PIDGains, CurrentLimits, ConversionAudit
+from oslbench.control.drivetrain import PAPER
+from oslbench.control.compliance import DrivetrainLayer
+from oslbench.control.gait import GaitCurrentSource, KNEE_GAIT_CONFIG
+from oslbench.control.feedback import (FeedbackLocationPID,
     FeedbackLocationSource, referred_velocity)
 from experiments import run_gait_feedback_location_ab as runner
 

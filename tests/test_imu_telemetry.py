@@ -12,10 +12,10 @@ import time
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 
-from oslbench.imu_telemetry import encode, decode, NAMES
-from oslbench.imu_service import Acquisition, make_server, check_bind
-from oslbench.http_telemetry_source import HttpTelemetrySource, HttpTelemetryPresentation
-from oslbench.microstrain_reader import MsclReader
+from oslbench.telemetry.imu_schema import encode, decode, NAMES
+from oslbench.telemetry.imu_service import Acquisition, make_server, check_bind
+from oslbench.telemetry.http import HttpTelemetrySource, HttpTelemetryPresentation
+from oslbench.telemetry.microstrain import MsclReader
 
 
 def rejects(call):
@@ -192,7 +192,7 @@ def test_imu_latest_delivery_gaps_and_nonblocking_poll():
 
 
 def test_imu_existing_browser_dashboard_and_disconnect():
-    from oslbench.replay_presentation import ReplayWebDashboard
+    from oslbench.presentation.replay import ReplayWebDashboard
     with service() as (r, a, server):
         r.queue.put(packet())
         source = HttpTelemetrySource('127.0.0.1', server.server_port, interval=.01, timeout=.2)
@@ -308,7 +308,7 @@ def test_imu_transport_timeout_malformed_and_recovery():
             assert len(source.poll(0.)) == 7
             # Same endpoint with a new session must never silently join clocks.
             a.session = 'new_session'
-            from oslbench.imu_telemetry import metadata
+            from oslbench.telemetry.imu_schema import metadata
             a.metadata = metadata(a.session,'synthetic_mock','test')
             wait_for(lambda: source.status == 'SESSION_CHANGED')
             assert source.poll(1.) == ()
@@ -338,14 +338,14 @@ def test_imu_imports_no_physics_or_device_library_and_replay_schema_frozen():
 import sys, importlib.abc
 class Block(importlib.abc.MetaPathFinder):
  def find_spec(self, fullname, path=None, target=None):
-  if fullname.split('.')[0] in ('mujoco','numpy','mscl','MSCL') or fullname in ('oslbench.controller','oslbench.simulation','oslbench.joint_current_control','oslbench.drivetrain_sim'):
+  if fullname.split('.')[0] in ('mujoco','numpy','mscl','MSCL') or fullname in ('oslbench.control.servo','oslbench.sim.servo','oslbench.control.gait','oslbench.sim.compliant'):
    raise AssertionError('Forbidden dependency: '+fullname)
 sys.meta_path.insert(0,Block())
-import oslbench.imu_service, oslbench.microstrain_reader, oslbench.http_telemetry_source
+import oslbench.telemetry.imu_service, oslbench.telemetry.microstrain, oslbench.telemetry.http
 import oslbench.contracts as contracts
 def forbidden(*args, **kwargs): raise AssertionError('Actuator command construction')
 contracts.PositionCommand = contracts.TorqueCommand = contracts.CurrentCommand = forbidden
-from oslbench.telemetry_replay import CHANNELS, ReplaySource
+from oslbench.telemetry.replay import CHANNELS, ReplaySource
 from oslbench.telemetry_schema import IMU_CHANNELS
 assert len(CHANNELS)==7 and not set(CHANNELS).intersection(IMU_CHANNELS)
 assert ReplaySource('tests/fixtures/telemetry_replay/manifest.json').records

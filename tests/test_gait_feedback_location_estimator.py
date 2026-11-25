@@ -1,9 +1,9 @@
 """C's controller-sampled angle differences, signs, hold and reset contract."""
 from dataclasses import replace
 import math
-from oslbench.ankle_current_control import CurrentPID, CurrentLimits
-from oslbench.joint_current_control import KNEE_GAIT_CONFIG, GaitCurrentSource
-from oslbench.feedback_location_diagnostic import (ActuatorDifferencePID,
+from oslbench.control.current import CurrentPID, CurrentLimits
+from oslbench.control.gait import KNEE_GAIT_CONFIG, GaitCurrentSource
+from oslbench.control.feedback import (ActuatorDifferencePID,
     ActuatorDifferenceSource, FeedbackLocationPID, referred_angle)
 from test_gait_feedback_location_ab import setup_source
 
