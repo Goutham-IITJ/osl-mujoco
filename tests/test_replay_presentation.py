@@ -4,8 +4,8 @@ from pathlib import Path
 import subprocess
 import sys
 from urllib.request import urlopen
-from oslbench.telemetry_replay import ReplaySource
-from oslbench.replay_presentation import ReplayPresentation, ReplayWebDashboard
+from oslbench.telemetry.replay import ReplaySource
+from oslbench.presentation.replay import ReplayPresentation, ReplayWebDashboard
 
 FIXTURE=Path(__file__).parent/'fixtures/telemetry_replay/manifest.json'
 
@@ -93,14 +93,14 @@ def test_replay_ui_no_physics_controller_or_command_dependency():
 import sys,importlib.abc,json
 class Block(importlib.abc.MetaPathFinder):
  def find_spec(self,fullname,path=None,target=None):
-  if fullname.split('.')[0] in ('mujoco','numpy') or fullname in ('oslbench.controller','oslbench.simulation','oslbench.drivetrain_sim','oslbench.ankle_current_control','oslbench.joint_current_control'):
+  if fullname.split('.')[0] in ('mujoco','numpy') or fullname in ('oslbench.control.servo','oslbench.sim.servo','oslbench.sim.compliant','oslbench.sim.ankle','oslbench.control.gait'):
    raise AssertionError('Forbidden replay dependency '+fullname)
 sys.meta_path.insert(0,Block())
 import oslbench.contracts as c
 def forbidden(*a,**k):raise AssertionError('Actuator command constructed')
 c.CurrentCommand=c.PositionCommand=c.TorqueCommand=forbidden
-from oslbench.telemetry_replay import ReplaySource
-from oslbench.replay_presentation import ReplayPresentation,ReplayWebDashboard
+from oslbench.telemetry.replay import ReplaySource
+from oslbench.presentation.replay import ReplayPresentation,ReplayWebDashboard
 p=ReplayPresentation(ReplaySource(sys.argv[1]));d=ReplayWebDashboard(p,port=0,open_browser=False)
 try:
  p.key('space');p.advance(10);d.update(p.snapshot());assert p.status=='EOF'
@@ -119,3 +119,21 @@ def test_replay_ui_source_files_unchanged_and_snapshot_no_mutation():
     snapshot=p.snapshot();snapshot['channels']['knee_angle']['value']=42
     assert p.snapshot()['channels']['knee_angle']['value'] is None
     assert before==[hashlib.sha256(p.read_bytes()).hexdigest() for p in paths]
+
+
+def test_replay_ui_updates_keep_graph_nodes():
+    import shutil
+    import tempfile
+    from pathlib import Path
+    from oslbench.presentation.replay import _PAGE
+    node = shutil.which('node')
+    if node is None:
+        from test_oslbench import Skip
+        raise Skip('Node.js required for executable dashboard DOM regression')
+    script = _PAGE.split('<script>', 1)[1].split('</script>', 1)[0]
+    with tempfile.TemporaryDirectory() as folder:
+        path = Path(folder)/'dashboard.js'
+        path.write_text(script, encoding='utf-8')
+        result = subprocess.run([node, str(Path(__file__).with_name('replay_dom_check.js')), str(path)],
+                                capture_output=True, text=True, timeout=15)
+    assert result.returncode == 0, result.stdout + result.stderr

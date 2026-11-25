@@ -50,14 +50,14 @@ MJ = stub_mujoco.install()          # real MuJoCo if importable, else the stub
 USING_STUB = stub_mujoco.is_stub(MJ)
 
 from oslbench import metrics as mt                                        # noqa: E402
-from oslbench.controller import (AUTHORED_ANKLE_KD, AUTHORED_ANKLE_KP,    # noqa: E402
+from oslbench.control.servo import (AUTHORED_ANKLE_KD, AUTHORED_ANKLE_KP,    # noqa: E402
                                  KD, KP, PDController, ZETA_DEFAULT,
                                  kd_for_damping_ratio)
-from oslbench.model import BENCH_XML, load_bench_model                    # noqa: E402
+from oslbench.sim.model import BENCH_XML, load_bench_model                    # noqa: E402
 from oslbench.reference import (DEFAULT_REFERENCE_CSV, RAW_COLUMNS,       # noqa: E402
                                 audit_reference, load_reference,
                                 resample_reference, synthetic_references)
-from oslbench.simulation import BenchSimulation                           # noqa: E402
+from oslbench.sim.servo import BenchSimulation                           # noqa: E402
 
 # ---------------------------------------------------------------------- constants
 # sha256 of the two files the experiment is NOT allowed to change.  Recorded when the
@@ -624,9 +624,9 @@ def test_plotting_and_dashboard_carry_no_physics():
     live second window must not import MuJoCo or the simulation.  This is what makes
     'the dashboard is a consumer, not a second controller' checkable."""
     for mod, why in (("plotting.py", "offline figures must run without MuJoCo"),
-                     ("dashboard.py", "the second window must not hold a simulation")):
+                     ("presentation/servo_dashboard.py", "the second window must not hold a simulation")):
         src = open(os.path.join(ROOT, "oslbench", mod), "r", encoding="utf-8").read()
-        for bad in ("import mujoco", "from .simulation", "import simulation"):
+        for bad in ("import mujoco", "from .simulation", "import simulation", "from oslbench.sim", "import oslbench.sim"):
             for line in src.splitlines():
                 s = line.strip()
                 if s.startswith(bad):
