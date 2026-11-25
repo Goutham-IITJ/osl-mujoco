@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-test_drivetrain_sim.py -- tests for oslbench/drivetrain_sim.py, the Option-C layer.
+test_drivetrain_sim.py -- tests for oslbench/sim/compliant.py, the Option-C layer.
 
 WHY THIS FILE EXISTS
-    `tests/test_drivetrain.py` covers `oslbench/drivetrain.py` -- the paper's equations,
+    `tests/test_drivetrain.py` covers `oslbench/control/drivetrain.py` -- the paper's equations,
     deliberately free of numpy and MuJoCo.  Nothing covered `drivetrain_sim.py`, the
     module that wires those equations to MuJoCo.  That gap had a cost: the derivative
     term of the knee controller was fed JOINT velocity while its current acts on the
@@ -73,9 +73,9 @@ try:
 except Exception:                                               # noqa: BLE001
     pass
 
-from oslbench.controller import PDController, kd_for_damping_ratio   # noqa: E402
-from oslbench.drivetrain import PAPER                                # noqa: E402
-from oslbench.drivetrain_sim import (DrivetrainLayer,                # noqa: E402
+from oslbench.control.servo import PDController, kd_for_damping_ratio   # noqa: E402
+from oslbench.control.drivetrain import PAPER                                # noqa: E402
+from oslbench.sim.compliant import (DrivetrainLayer,                # noqa: E402
                                      PDCurrentSource)
 
 # The authored knee ctrlrange, so `command()` never clips in these tests and the
@@ -370,7 +370,7 @@ def test_current_conversion_is_the_paper_derived_constant():
 
 def test_gains_are_the_validated_ones_and_were_not_retuned():
     """The fix was supposed to change the feedback POINT, not the gains."""
-    from oslbench import controller as C
+    from oslbench.control import servo as C
     assert C.KP == 600.0, f"KP is {C.KP}, expected 600 -- the fix must not retune gains"
     assert C.KD == 17.253, f"KD is {C.KD}, expected 17.253"
     # And that KD is still the single-mass figure it was derived as.  This is a
@@ -416,8 +416,8 @@ def test_step_calls_the_current_source_before_advancing_the_shaft():
     Needs a compiled model, so it SKIPS when neither MuJoCo nor the stub can load one.
     """
     try:
-        from oslbench.model import load_bench_model
-        from oslbench.drivetrain_sim import DrivetrainBenchSimulation
+        from oslbench.sim.model import load_bench_model
+        from oslbench.sim.compliant import DrivetrainBenchSimulation
         bench = load_bench_model(verbose=False)
         if bench.failures:
             raise Skip(f"model preflight failed: {bench.failures}")
@@ -472,8 +472,8 @@ def test_the_current_source_and_the_simulation_share_one_layer_instance():
     Kd = 0. Stable, and meaningless. Worth an assertion rather than a comment.
     """
     try:
-        from oslbench.model import load_bench_model
-        from oslbench.drivetrain_sim import DrivetrainBenchSimulation
+        from oslbench.sim.model import load_bench_model
+        from oslbench.sim.compliant import DrivetrainBenchSimulation
         bench = load_bench_model(verbose=False)
         if bench.failures:
             raise Skip(f"model preflight failed: {bench.failures}")
@@ -512,7 +512,7 @@ def _src(path):
 def test_demo_dashboard_cannot_run_physics():
     """The second window must be unable to step a plant, structurally and not by habit.
 
-    `oslbench/dashboard.py` holds this invariant for the servo demo and it is worth
+    `oslbench/presentation/servo_dashboard.py` holds this invariant for the servo demo and it is worth
     holding here too: if the dashboard cannot import an engine or a simulation, then no
     amount of future editing can quietly turn the presentation layer into a second
     integrator whose numbers disagree with the real one.
@@ -534,8 +534,8 @@ def test_demo_dashboard_cannot_run_physics():
             elif node.module:
                 imported.add(node.module.split(".")[0])
                 imported.add(node.module)
-    banned = {"mujoco", "numpy", "oslbench.simulation", "oslbench.drivetrain_sim",
-              "oslbench.drivetrain", "oslbench.model", ".simulation",
+    banned = {"mujoco", "numpy", "oslbench.sim.servo", "oslbench.sim.compliant",
+              "oslbench.control.drivetrain", "oslbench.sim.model", ".simulation",
               ".drivetrain_sim", ".drivetrain", ".model"}
     hit = imported & banned
     assert not hit, (
@@ -577,7 +577,7 @@ def test_demo_does_not_offer_to_change_the_physics():
     """No --kp/--kv/--dt/--timestep flag, and no write to the model.
 
     A demo with a gain flag is a demo that can be shown with gains nobody validated.
-    The gains are imported from oslbench.controller and are not settable here.
+    The gains are imported from oslbench.control.servo and are not settable here.
     """
     text = _src(DEMO)
     for banned in ('"--kp"', '"--kv"', '"--kd"', '"--dt"', '"--timestep"',
@@ -597,7 +597,7 @@ def test_demo_declares_the_option_c_label_and_the_disclaimer():
     Asserted on the dashboard module (where they are defined and baked into the page)
     and on the demo (which prints them to the terminal), so neither can drift.
     """
-    import oslbench.drivetrain_dashboard as DD
+    import oslbench.presentation.drivetrain_dashboard as DD
     assert DD.BANNER == "OPTION C — PAPER-DERIVED ACTUATOR + COMPLIANT BELT", DD.BANNER
     assert DD.DISCLAIMER == "SIMULATION ONLY — NOT HARDWARE VALIDATION", DD.DISCLAIMER
     page = _src(DEMO_DASH)
@@ -610,7 +610,7 @@ def test_demo_declares_the_option_c_label_and_the_disclaimer():
 
 def test_demo_dashboard_publishes_all_eleven_requested_signals():
     """The eleven live readouts, by name, so one cannot be dropped silently."""
-    import oslbench.drivetrain_dashboard as DD
+    import oslbench.presentation.drivetrain_dashboard as DD
     want = {"phase", "ref", "act", "err", "tau_j", "i_q", "th_a", "th_ad", "th_s",
             "tau_a", "k_s"}
     assert set(DD.SCALARS) == want, (
@@ -630,7 +630,7 @@ def test_demo_dashboard_survives_a_non_finite_value():
     can have, so it gets a test rather than a comment.
     """
     import json
-    import oslbench.drivetrain_dashboard as DD
+    import oslbench.presentation.drivetrain_dashboard as DD
     d = DD.DrivetrainWebDashboard(
         dict(subject="T", trial="t"), ([0.0, 50.0], [0.0, 1.0]),
         dict(ang=(0, 1), ths=(-1, 1), gap=(-1, 1), tau=(-1, 1), iq=(-1, 1),
@@ -657,7 +657,7 @@ def test_demo_dashboard_update_does_no_physics_arithmetic():
     If the page could rescale a signal, the numbers on screen would stop being the
     numbers the simulation produced -- and nobody would be able to tell from the screen.
     """
-    import oslbench.drivetrain_dashboard as DD
+    import oslbench.presentation.drivetrain_dashboard as DD
     d = DD.DrivetrainWebDashboard(
         dict(subject="T", trial="t"), ([0.0, 50.0], [0.0, 1.0]),
         dict(ang=(0, 1), ths=(-1, 1), gap=(-1, 1), tau=(-1, 1), iq=(-1, 1),
@@ -697,14 +697,14 @@ def test_seed_rigid_puts_the_actuator_at_n_t_times_the_joint():
 
 def test_module_still_guards_its_mujoco_import():
     """drivetrain_sim must stay importable without MuJoCo, as the sandbox relies on."""
-    import oslbench.drivetrain_sim as DS
+    import oslbench.sim.compliant as DS
     assert DS is not None
-    import oslbench.simulation as S
+    import oslbench.sim.servo as S
     src_path = S.__file__
     with open(src_path, "r", encoding="utf-8") as fh:
         text = fh.read()
     assert "except ImportError" in text, (
-        "oslbench/simulation.py must keep guarding `import mujoco`, or every "
+        "oslbench/sim/servo.py must keep guarding `import mujoco`, or every "
         "sandbox-side check in this repo stops running")
 
 
@@ -722,7 +722,7 @@ def main(argv=None) -> int:
     if pattern:
         names = [n for n in names if pattern in n]
 
-    print("drivetrain_sim tests -- oslbench/drivetrain_sim.py (the Option-C layer)")
+    print("drivetrain_sim tests -- oslbench/sim/compliant.py (the Option-C layer)")
     print(f"python {sys.version.split()[0]}   "
           f"derivative feedback: {PDCurrentSource.FEEDBACK_SIDE} side")
     print("-" * 78)
