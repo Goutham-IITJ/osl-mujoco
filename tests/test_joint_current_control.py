@@ -38,18 +38,18 @@ try:
 except Exception:                                               # noqa: BLE001
     pass
 
-from oslbench.ankle_current_control import (CAD_BELT_RATIO, ConversionAudit,
+from oslbench.sim.ankle import (CAD_BELT_RATIO, ConversionAudit,
                                             CurrentLimits, CurrentPID,
                                             PIDGains, TORQUE_CONSTANT_CHOICES,
                                             torque_constant)
-from oslbench.controller import PDController
-from oslbench.drivetrain import PAPER, DrivetrainParameters
-from oslbench.drivetrain_sim import DrivetrainBenchSimulation, DrivetrainLayer
-from oslbench.joint_current_control import (GAIN_SOURCE_NOTE,
+from oslbench.control.servo import PDController
+from oslbench.control.drivetrain import PAPER, DrivetrainParameters
+from oslbench.sim.compliant import DrivetrainBenchSimulation, DrivetrainLayer
+from oslbench.control.gait import (GAIN_SOURCE_NOTE,
                                             GaitCurrentSource,
                                             JointCurrentConfig,
                                             KNEE_GAIT_CONFIG)
-from oslbench.model import load_bench_model
+from oslbench.sim.model import load_bench_model
 from experiments.run_current_controlled_gait import (CSV_HEADER, build, metrics,
                                                      require_backend, run)
 
@@ -340,3 +340,70 @@ def test_gait_current_loop_selection_hold_and_modelled_torque():
             assert np.array_equal(command,actual)
         ctx['src'].reset()
         assert ctx['src'].loop.i_actual == 0 and ctx['src'].loop.steps == 0
+# Named profiles exercise the real application -> runtime -> controller wiring.
+def test_joint_controller_profile_selection_and_overrides():
+    from oslbench.apps.current_gait import parse_args
+    from oslbench.control.gait import ANKLE_CONTROLLER_CONFIG, KNEE_CONTROLLER_CONFIG
+    a, k = parse_args([]), parse_args(['--controller', 'knee'])
+    assert (a.kp,a.ki,a.kd,a.control_hz,a.kt,a.feedback_mode) == (.75,0.,.03,1000.,'manual_rotor','legacy')
+    assert (k.kp,k.ki,k.kd,k.control_hz,k.kt,k.feedback_mode,k.integral_limit_deg_s) == (1.5,.15,.06,200.,'script','actuator-difference',50.)
+    override = parse_args(['--controller','knee','--ki','0','--control-hz','1000','--kt','manual_rotor'])
+    assert (override.ki,override.control_hz,override.kt)==(0.,1000.,'manual_rotor')
+    assert ANKLE_CONTROLLER_CONFIG.ki == 0 and KNEE_CONTROLLER_CONFIG.ki == .15
+
+
+def test_joint_knee_pid_integral_limit_and_C_terms():
+    from oslbench.control.current import CurrentPID, PIDGains, CurrentLimits
+    from oslbench.control.feedback import ActuatorDifferencePID
+    g = PIDGains(kp_A_per_deg=1.5,ki_A_per_deg_s=.15,kd_A_per_deg_per_s=.06,encoder_to_motor_sign=1)
+    a=CurrentPID(g,CurrentLimits(),integral_limit_deg_s=50.)
+    c=ActuatorDifferencePID(g,CurrentLimits(),integral_limit_deg_s=50.)
+    for n in range(300):
+        c.actuator_angle_deg=float(n)
+        a.update(100.,0.,.005); c.update(100.,0.,.005)
+        assert a.last['p_A']==c.last['p_A'] and a.last['i_A']==c.last['i_A']
+        assert c.last['d_A']==(0. if n==0 else -12.)
+    assert a.integral_deg_s==c.base.integral_deg_s==50.
+    assert c.last['i_A']==7.5
+    c.reset(); c.update(1.,0.,.005)
+    assert c.last['d_A']==0 and c.last['i_A']==.00075
+
+
+def test_joint_knee_profile_reaches_runtime_and_metadata():
+    import mujoco
+    from oslbench.apps.current_gait import parse_args
+    from oslbench.sim import current_gait as gait
+    from oslbench.control.feedback import ActuatorDifferenceSource
+    from oslbench.presentation.current_gait import snapshot
+    args=parse_args(['--controller','knee'])
+    ctx=gait.build(args,mujoco,False)
+    assert isinstance(ctx['src'],ActuatorDifferenceSource)
+    assert ctx['src'].pid.base.gains.ki_A_per_deg_s==.15
+    assert ctx['src'].pid.base.integral_limit_deg_s==50.
+    assert ctx['steps_per_update']==10 and ctx['dt']==.0005
+    assert ctx['audit'].k_t_output_Nm_per_A==.5701
+    ctx['n']=30
+    rows=np.asarray(gait.run(ctx,args))
+    col=lambda n: rows[:,gait.CSV_HEADER.index(n)]
+    assert ctx['src'].updates==3
+    assert np.any(col('pid_i_A') != 0)
+    assert all(col('current_applied_A')[n]==col('current_applied_A')[n-n%10] for n in range(30))
+    assert np.allclose(col('estimated_actuator_output_torque_Nm'),col('current_actual_modelled_A')*.5701)
+    md=gait.metadata(ctx,args,'ideal')
+    assert (md['controller_profile'],md['control_hz'],md['integral_limit_deg_s'])==('knee',200.,50.)
+    status=snapshot(rows.tolist(),ctx,'complete',args)['status']
+    assert 'control=200 Hz' in status and 'profile=knee' in status and 'Ki=0.15' in status
+
+
+def test_joint_controller_refuses_existing_output():
+    import tempfile
+    from unittest.mock import patch
+    from oslbench.apps.current_gait import main
+    with tempfile.TemporaryDirectory() as out:
+        with patch('sys.argv',['run_current_controlled_gait.py','--controller','knee','--outdir',out]):
+            try:
+                main()
+            except FileExistsError:
+                pass
+            else:
+                raise AssertionError('Existing evidence must not be overwritten')
