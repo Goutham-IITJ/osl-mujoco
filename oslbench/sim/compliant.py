@@ -19,7 +19,7 @@ class DrivetrainBenchSimulation(BenchSimulation):
         `BenchSimulation.step` has no pre-step hook, and its `on_step` callback both
         fires AFTER mj_step and is documented read-only.  The belt torque must be
         written BEFORE mj_step, from the pre-step configuration.  Overriding `step`
-        is therefore the only route that leaves `oslbench/simulation.py` untouched.
+        is therefore the only route that leaves `oslbench/sim/servo.py` untouched.
 
     THE OFF GUARANTEE
         With `layer is None` or `layer.enabled is False`, this class writes NOTHING
@@ -55,7 +55,7 @@ class DrivetrainBenchSimulation(BenchSimulation):
             damping; only the joint's own damping = 0.3 remains.
           - `forcerange` no longer bounds anything, because `qfrc_applied` is a raw
             generalized force.  Torque authority must be judged on the current side,
-            and `oslbench/drivetrain.py` documents no drive current limit.
+            and `oslbench/control/drivetrain.py` documents no drive current limit.
 
         `self.knee` keeps its real gains either way, so `StepState.tau_unclamped` still
         reports the CONTROLLER REQUEST.  Request / position-actuator output / belt

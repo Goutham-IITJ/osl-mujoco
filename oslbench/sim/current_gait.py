@@ -3,9 +3,9 @@
 run_current_controlled_gait.py -- AB19 gait tracking through the CURRENT-domain controller.
 
     SIMULATION ONLY.  PROVISIONAL.
-    The gains are the ANKLE step-test script's, provisionally transferred to the knee
-    and NOT hardware-confirmed for the knee. The torque constant is a working
-    hypothesis. Nothing here is validated against hardware.
+    Named ankle-derived and supplied-knee tuning share this knee gait runtime.
+    The torque constant is a working hypothesis. Nothing here is validated against
+    hardware. The default ankle profile preserves the historical baseline.
 
 WHAT THIS IS, AND HOW IT DIFFERS FROM THE THREE EXISTING BASELINES
     Four controller architectures now exist in this repository and they are NOT
@@ -72,7 +72,7 @@ from oslbench.control.servo import PDController
 from oslbench.control.drivetrain import PAPER
 from oslbench.sim.compliant import DrivetrainBenchSimulation
 from oslbench.control.compliance import DrivetrainLayer
-from oslbench.control.gait import GAIN_SOURCE_NOTE, make_gait_source, GaitCurrentSource, JointCurrentConfig
+from oslbench.control.gait import GAIN_SOURCE_NOTE, make_gait_source, GaitCurrentSource, JointCurrentConfig, resolve_controller_settings
 from oslbench.sim.model import load_bench_model
 from oslbench.reference import (DEFAULT_REFERENCE_CSV, STANCE_END,         # noqa: E402
                                 SUBJECT, TRIAL, audit_reference,
@@ -82,8 +82,8 @@ OUTROOT = os.path.join(ROOT, "build", "current_controlled_gait")
 CONTROL_HZ = 1000.0
 FIT_EDGE_RAD = 0.055
 BANNER = "AB19 GAIT TRACKING THROUGH THE CURRENT-CONTROLLED OPTION-C DRIVETRAIN"
-DISCLAIMER = ("SIMULATION ONLY. Gains are the ANKLE script's, provisionally "
-              "transferred to the knee and NOT hardware-confirmed for the knee.")
+DISCLAIMER = ("SIMULATION ONLY. Named ankle-derived or supplied-knee tuning; "
+              "torque/current conversion and gait behavior are NOT hardware-validated.")
 
 CSV_HEADER = (
     "time_s", "gait_phase_pct", "control_update",
@@ -156,30 +156,44 @@ def model_identity(bench, mj, is_stub):
 
 
 # =====================================================================================
-def build(args, mj, is_stub):
-    bench = load_bench_model(verbose=False)
+def build(args, mj, is_stub, live_reference_deg=None, plant='full-leg'):
+    profile = resolve_controller_settings(args)
+    if plant not in ('full-leg', 'knee-fixture'):
+        raise ValueError('Unknown plant: ' + plant)
+    if plant == 'knee-fixture':
+        if live_reference_deg is None or is_stub:
+            raise ValueError('Knee fixture requires a streamed reference and real MuJoCo')
+        from oslbench.sim.knee_fixture import load_fixture_model
+        bench = load_fixture_model()
+    else:
+        bench = load_bench_model(verbose=False)
     if bench.failures:
         print(f"\nREFUSING TO RUN: {len(bench.failures)} model precondition(s) failed")
         for f in bench.failures:
             print(f"  - {f}")
         return None
-    if not bench.path.replace("\\", "/").endswith("models/osl_v2_bench.xml"):
+    if plant == 'full-leg' and not bench.path.replace("\\", "/").endswith("models/osl_v2_bench.xml"):
         print(f"\nREFUSING TO RUN: loaded {bench.relpath()}")
         return None
     dt = bench.timestep
 
     buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
-        ref = load_reference(args.csv)
-        audit_r = audit_reference(ref, math.degrees(bench.knee_ctrlrange[0]),
-                                  math.degrees(bench.knee_ctrlrange[1]))
-        res = resample_reference(ref, dt, args.cycles, "cubic", audit=audit_r)
+    if live_reference_deg is not None:
+        # Live callers supply their own target stream; never load the AB19 CSV.
+        ref = None
+        res = {'ref_rad': np.array([math.radians(live_reference_deg)])}
+    else:
+        with contextlib.redirect_stdout(buf):
+            ref = load_reference(args.csv)
+            audit_r = audit_reference(ref, math.degrees(bench.knee_ctrlrange[0]),
+                                      math.degrees(bench.knee_ctrlrange[1]))
+            res = resample_reference(ref, dt, args.cycles, "cubic", audit=audit_r)
     if args.verbose:
         print("-" * 78 + "\n" + buf.getvalue().rstrip() + "\n" + "-" * 78)
 
-    steps_per_update = int(round((1.0 / CONTROL_HZ) / dt))
-    if steps_per_update < 1 or abs(steps_per_update * dt - 1.0 / CONTROL_HZ) > 1e-12:
-        print(f"\nREFUSING TO RUN: {CONTROL_HZ:g} Hz does not divide into dt = {dt} s; "
+    steps_per_update = int(round((1.0 / args.control_hz) / dt))
+    if steps_per_update < 1 or abs(steps_per_update * dt - 1.0 / args.control_hz) > 1e-12:
+        print(f"\nREFUSING TO RUN: {args.control_hz:g} Hz does not divide into dt = {dt} s; "
               f"the schedule would drift.")
         return None
 
@@ -203,12 +217,12 @@ def build(args, mj, is_stub):
         measurement_frame=("MuJoCo knee generalized coordinate in degrees; the AB19 "
                            "reference is in the same frame, so no encoder convention "
                            "enters and the sign is +1 by construction"),
-        gain_source=GAIN_SOURCE_NOTE,
+        gain_source=profile.provenance + '; explicit CLI/caller overrides recorded in metadata',
         sign_source=("measurement_sign +1 by construction; motor_sign +1 for negative "
                      "feedback, verified against the model's torque chain. SIMULATION "
                      "WIRING, not a knee-hardware claim."),
         derivative_on=args.derivative_on,
-        current_loop_tau_s=tau_s)
+        current_loop_tau_s=tau_s, integral_limit_deg_s=args.integral_limit_deg_s)
     if not cfg.negative_feedback:
         print("\nREFUSING TO RUN: the configured signs give POSITIVE feedback.")
         return None
@@ -222,9 +236,13 @@ def build(args, mj, is_stub):
     # `knee=` is the torque-domain PDController the base class needs for its own
     # bookkeeping; it is DISCONNECTED below, so its gains never act on the joint. The
     # current-domain law in `src` is the only thing driving the knee.
-    pd = PDController.knee(bench, 600.0, 17.253)
-    sim = DrivetrainBenchSimulation(bench, pd, layer=layer, current_source=GaitContractAdapter(src, layer),
-                                    disconnect_servo=True)
+    if plant == 'knee-fixture':
+        from oslbench.sim.knee_fixture import FixtureSimulation
+        sim = FixtureSimulation(bench, layer, GaitContractAdapter(src, layer))
+    else:
+        pd = PDController.knee(bench, 600.0, 17.253)
+        sim = DrivetrainBenchSimulation(bench, pd, layer=layer, current_source=GaitContractAdapter(src, layer),
+                                        disconnect_servo=True)
     if sim.servo_connected:
         print("\nREFUSING TO RUN: the knee position servo did not disconnect.")
         return None
@@ -232,7 +250,7 @@ def build(args, mj, is_stub):
         print("\nREFUSING TO RUN: the audit and the layer disagree about the belt ratio.")
         return None
     return dict(bench=bench, sim=sim, src=src, cfg=cfg, audit=audit, res=res,
-                dt=dt, steps_per_update=steps_per_update, n=res.n,
+                dt=dt, steps_per_update=steps_per_update, n=res.n if live_reference_deg is None else 1,
                 ident=model_identity(bench, mj, is_stub), ref=ref)
 
 
@@ -389,7 +407,9 @@ def metadata(ctx, args, loop_mode):
         reference_first_sample_deg=float(ctx["ref"].angle_deg[0]),
         cycles=int(args.cycles), n_physics_steps=int(ctx["n"]),
         n_control_updates=int(ctx["n"] // ctx["steps_per_update"]),
-        control_hz=CONTROL_HZ, physics_dt_s=ctx["dt"],
+        control_hz=1.0/(ctx['steps_per_update']*ctx['dt']), physics_dt_s=ctx["dt"],
+        controller_profile=getattr(args, 'controller', 'ankle'),
+        integral_limit_deg_s=cfg.integral_limit_deg_s,
         physics_steps_per_control_update=ctx["steps_per_update"],
         init_mode=args.init,
         init_note=("aligned: knee seeded ON the first reference sample with zero "
@@ -417,7 +437,7 @@ def metadata(ctx, args, loop_mode):
         belt_ratio_n_t=audit.belt_ratio, belt_ratio_source=audit.belt_ratio_source,
         rigid_equivalent_joint_kt_Nm_per_A=audit.rigid_joint_kt,
         planetary_n_a=PAPER.n_a,
-        architecture=("current-domain PD (deg in, A out) -> optional current loop -> "
+        architecture=("current-domain PID (deg in, A out) -> optional current loop -> "
                       "ConversionAudit rescale -> Option-C DrivetrainLayer -> "
                       "qfrc_applied[knee_dof]; legacy knee position servo DISCONNECTED"),
         not_comparable_with=("run_bench_ab19.py uses a torque-domain PD at 600 N.m/rad; "
