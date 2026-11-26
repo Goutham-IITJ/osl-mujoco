@@ -1,5 +1,5 @@
 """
-oslbench.model -- load models/osl_v2_bench.xml, resolve the joint/actuator/sensor IDs,
+oslbench.sim.model -- load models/osl_v2_bench.xml, resolve the joint/actuator/sensor IDs,
 verify the compiled model is the one the experiment was validated against, and measure
 the plant.
 
