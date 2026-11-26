@@ -1,0 +1,191 @@
+<mujoco model="osl_v2_ankle_fixture_with-foot_provisional">
+  <compiler angle="radian" meshdir="../osl_v2_0_assembly/meshes" autolimits="true" inertiafromgeom="false" balanceinertia="false" />
+  <option timestep="0.0005" integrator="implicitfast" gravity="0 0 -9.81" />
+  <visual>
+    <scale forcewidth="0.02" contactwidth="0.05" contactheight="0.02" />
+  </visual>
+  <default>
+    <default class="visual">
+      <geom type="mesh" contype="0" conaffinity="0" group="2" density="0" />
+    </default>
+    <default class="contact">
+      <geom condim="3" friction="0.9 0.9 0.005" solref="0.002 1" solimp="0.95 0.99 0.001 0.5 2" />
+      <default class="collision">
+        <geom group="3" rgba="0.8 0.2 0.2 0.3" />
+      </default>
+      <default class="floor">
+        <geom type="plane" size="3 3 0.05" material="grid" />
+      </default>
+    </default>
+  </default>
+  <asset>
+    <texture name="grid" type="2d" builtin="checker" width="512" height="512" rgb1="0.22 0.24 0.27" rgb2="0.28 0.30 0.34" />
+    <material name="grid" texture="grid" texrepeat="4 4" reflectance="0.05" />
+    <mesh name="5972k82_ball_bearing_1" file="_5972K82_Ball_Bearing_1.stl" />
+    <mesh name="5972k82_ball_bearing_3" file="_5972K82_Ball_Bearing_3.stl" />
+    <mesh name="5972k82_ball_bearing_7" file="_5972K82_Ball_Bearing_7.stl" />
+    <mesh name="5972k82_ball_bearing_8" file="_5972K82_Ball_Bearing_8.stl" />
+    <mesh name="6656k11_ultra_thin_ball_bearing_10" file="_6656K11_Ultra_Thin_Ball_Bearing_10.stl" />
+    <mesh name="6656k11_ultra_thin_ball_bearing_6" file="_6656K11_Ultra_Thin_Ball_Bearing_6.stl" />
+    <mesh name="91595a142_dowel_pin" file="_91595A142_Dowel_Pin.stl" />
+    <mesh name="92125a188_18_8_stainless_steel_hex_drive_flat_head_screw" file="_92125A188_18_8_Stainless_Steel_Hex_Drive_Flat_Head_Screw.stl" />
+    <mesh name="92290a761_super_corrosion_resistant_316_stainless_steel_socket_head_screw" file="_92290A761_Super_Corrosion_Resistant_316_Stainless_Steel_Socket_Head_Screw.stl" />
+    <mesh name="93395a304_316_stainless_steel_hex_drive_flat_head_screw" file="_93395A304_316_Stainless_Steel_Hex_Drive_Flat_Head_Screw.stl" />
+    <mesh name="ba30_p002_v04_chassis_step" file="BA30_P002_V04_CHASSIS_STEP.stl" />
+    <mesh name="ba30_p003_v04_rearcov_step" file="BA30_P003_V04_REARCOV_STEP.stl" />
+    <mesh name="ba30_p004_v04_frontcov_step" file="BA30_P004_V04_FRONTCOV_STEP.stl" />
+    <mesh name="battery_connector" file="battery_connector.stl" />
+    <mesh name="battery_connector_4" file="battery_connector_4.stl" />
+    <mesh name="connector_step" file="Connector_STEP.stl" />
+    <mesh name="gt3_5mm_325mm_belt" file="GT3_5mm_325mm_belt.stl" />
+    <mesh name="p0002_pyramid" file="p0002_pyramid.stl" />
+    <mesh name="p_b0001_inputpulley_5mm_11teeth" file="p_b0001_InputPulley_5mm_11teeth.stl" />
+    <mesh name="p_b0003_shaftcapeccentricmulti" file="p_b0003_shaftCapEccentricMulti.stl" />
+    <mesh name="p_b0004_motorcoupling" file="p_b0004_motorCoupling.stl" />
+    <mesh name="p_b0005idlershell" file="p_b0005idlerShell.stl" />
+    <mesh name="p_b0012_outputpulley_5mm_50teeth" file="p_b0012_OutputPulley_5mm_50teeth.stl" />
+    <mesh name="p_b0014_proxpyramidstut" file="P_b0014_proxPyramidStut.stl" />
+    <mesh name="p_b0101_gearstopnospring" file="p_b0101_gearStopNoSpring.stl" />
+    <mesh name="p_b0102_spacer" file="p_b0102_spacer.stl" />
+    <mesh name="p_b0303_encoderhousing" file="p_b0303_encoderHousing.stl" />
+    <mesh name="p_b2011_proxbase" file="p_b2011_proxBase.stl" />
+    <mesh name="p_b2013_housingankleleft" file="p_b2013_housingAnkleLeft.stl" />
+    <mesh name="p_b2013_housingankleright" file="p_b2013_housingAnkleRight.stl" />
+    <mesh name="p_b2015_proxpyramidvariflex" file="p_b2015_proxPyramidVariflex.stl" />
+    <mesh name="p_b2301_electronicscoverankle" file="p_b2301_electronicsCoverAnkle.stl" />
+    <mesh name="p_b2302_electronicscoverankleholderright" file="p_b2302_electronicsCoverAnkleHolderRight.stl" />
+    <mesh name="p_b2303_electronicscoverankleholderleft" file="p_b2303_electronicsCoverAnkleHolderLeft.stl" />
+    <mesh name="p_b2304_anklebatteryattachmentdephy" file="p_b2304_AnkleBatteryAttachmentDephy.stl" />
+    <mesh name="part_13_1" file="Part_13_1.stl" />
+    <mesh name="part_14_1" file="Part_14_1.stl" />
+    <mesh name="part_16" file="Part_16.stl" />
+    <mesh name="part_17_1" file="Part_17_1.stl" />
+    <mesh name="part_18_1" file="Part_18_1.stl" />
+    <mesh name="part_19_1" file="Part_19_1.stl" />
+    <mesh name="part_37" file="Part_37.stl" />
+    <mesh name="part_38" file="Part_38.stl" />
+    <mesh name="part_8_1" file="Part_8_1.stl" />
+    <mesh name="part_9_1" file="Part_9_1.stl" />
+    <mesh name="wtm_0818_015" file="WTM_0818_015.stl" />
+    <mesh name="z_lowprofilevariflexfoot_ossur_vlpe5xx0" file="z_lowProfileVariFlexFoot_ossur_VLPE5XX0.stl" />
+    <mesh name="z_m3_18mm_socketpy_mcmaster_92290a761_92290a761" file="z_m3_18mm_socketPy_mcmaster_92290A761_92290A761.stl" />
+    <mesh name="z_m4_8mm_low_mcmaster_92855a408" file="z_m4_8mm_low_mcmaster_92855A408.stl" />
+    <mesh name="z_m8_16mm_socket_mcmaster_96144a216" file="z_m8_16mm_socket_mcmaster_96144A216.stl" />
+    <mesh name="z_m8_washer_mcmaster_90965a190" file="z_m8_washer_mcmaster_90965A190.stl" />
+    <mesh name="z_steelshaft_8mm_60mm_misumi" file="z_steelShaft_8mm_60mm_misumi.stl" />
+  </asset>
+  <worldbody>
+    <light pos="0 -1 2" dir="0 0 -1" />
+    <body name="ankle_housing_fixed" pos="-0 -0 0.13873">
+      <geom class="visual" mesh="5972k82_ball_bearing_1" pos="0.000223347761648 -0.0334992822901 -0.062428896232" quat="0.707105151351 0.707104434826 0.00167584065056 0.00167771872658" rgba="0.980392 0.713726 0.00392157 1" name="5972k82_ball_bearing_20" />
+      <geom class="visual" mesh="5972k82_ball_bearing_7" pos="0.000223347761648 -0.0334992822901 -0.062428896232" quat="0.707105151351 0.707104434826 0.00167584065056 0.00167771872658" rgba="0.498039 0.498039 0.498039 1" name="5972k82_ball_bearing_28" />
+      <geom class="visual" mesh="5972k82_ball_bearing_3" pos="0.000223347761648 -0.0334992822901 -0.062428896232" quat="0.707105151351 0.707104434826 0.00167584065056 0.00167771872658" rgba="0.972549 0.529412 0.00392157 1" name="5972k82_ball_bearing_4" />
+      <geom class="visual" mesh="5972k82_ball_bearing_8" pos="0.000223347761648 -0.0334992822901 -0.062428896232" quat="0.707105151351 0.707104434826 0.00167584065056 0.00167771872658" rgba="0.768627 0.886275 0.952941 1" name="5972k82_ball_bearing_40" />
+      <geom class="visual" mesh="92125a188_18_8_stainless_steel_hex_drive_flat_head_screw" pos="-0.0123497054702 0.0339418553798 -0.0694287764129" quat="6.42879990945e-07 -0.00237308038934 0.999997184237 2.59756250186e-06" rgba="0.917647 0.917647 0.917647 1" name="92125a188_18_8_stainless_steel_hex_drive_flat_head_screw_11" />
+      <geom class="visual" mesh="92125a188_18_8_stainless_steel_hex_drive_flat_head_screw" pos="-0.000225407279577 0.0339994103664 -0.0764287161389" quat="6.42879990945e-07 -0.00237308038934 0.999997184237 2.59756250186e-06" rgba="0.917647 0.917647 0.917647 1" name="92125a188_18_8_stainless_steel_hex_drive_flat_head_screw_2" />
+      <geom class="visual" mesh="92125a188_18_8_stainless_steel_hex_drive_flat_head_screw" pos="0.0118988214147 0.034056943759 -0.0694286558651" quat="6.42879990945e-07 -0.00237308038934 0.999997184237 2.59756250186e-06" rgba="0.917647 0.917647 0.917647 1" name="92125a188_18_8_stainless_steel_hex_drive_flat_head_screw_4" />
+      <geom class="visual" mesh="92125a188_18_8_stainless_steel_hex_drive_flat_head_screw" pos="-0.0123497749666 0.0339418337858 -0.0554287764131" quat="6.42879990945e-07 -0.00237308038934 0.999997184237 2.59756250186e-06" rgba="0.917647 0.917647 0.917647 1" name="92125a188_18_8_stainless_steel_hex_drive_flat_head_screw_5" />
+      <geom class="visual" mesh="92125a188_18_8_stainless_steel_hex_drive_flat_head_screw" pos="-0.000225546272283 0.0339993671783 -0.0484287161393" quat="6.42879990945e-07 -0.00237308038934 0.999997184237 2.59756250186e-06" rgba="0.917647 0.917647 0.917647 1" name="92125a188_18_8_stainless_steel_hex_drive_flat_head_screw_7" />
+      <geom class="visual" mesh="92125a188_18_8_stainless_steel_hex_drive_flat_head_screw" pos="0.0118987519184 0.034056922165 -0.0554286558653" quat="6.42879990945e-07 -0.00237308038934 0.999997184237 2.59756250186e-06" rgba="0.917647 0.917647 0.917647 1" name="92125a188_18_8_stainless_steel_hex_drive_flat_head_screw_8" />
+      <geom class="visual" mesh="ba30_p002_v04_chassis_step" pos="0.0654225806856 -0.00568974517568 -0.0994674859986" quat="0.0380812207426 0.707757134768 -0.704409644006 -0.0379039871698" rgba="0.286275 0.286275 0.286275 1" name="ba30_p002_v04_chassis_step" />
+      <geom class="visual" mesh="ba30_p003_v04_rearcov_step" pos="0.0654225806856 -0.00568974517568 -0.0994674859986" quat="0.0380812207426 0.707757134768 -0.704409644006 -0.0379039871698" rgba="0.286275 0.286275 0.286275 1" name="ba30_p003_v04_rearcov_step_1" />
+      <geom class="visual" mesh="ba30_p004_v04_frontcov_step" pos="0.0654225806856 -0.00568974517568 -0.0994674859986" quat="0.0380812207426 0.707757134768 -0.704409644006 -0.0379039871698" rgba="0.286275 0.286275 0.286275 1" name="ba30_p004_v04_frontcov_step" />
+      <geom class="visual" mesh="battery_connector" pos="0.0654225806856 -0.00568974517568 -0.0994674859986" quat="0.0380812207426 0.707757134768 -0.704409644006 -0.0379039871698" rgba="0.286275 0.286275 0.286275 1" name="battery_connector_4" />
+      <geom class="visual" mesh="battery_connector_4" pos="0.0654225806856 -0.00568974517568 -0.0994674859986" quat="0.0380812207426 0.707757134768 -0.704409644006 -0.0379039871698" rgba="0.286275 0.286275 0.286275 1" name="battery_connector_5" />
+      <geom class="visual" mesh="connector_step" pos="0.0654225806856 -0.00568974517568 -0.0994674859986" quat="0.0380812207426 0.707757134768 -0.704409644006 -0.0379039871698" rgba="0.286275 0.286275 0.286275 1" name="connector_step_1" />
+      <geom class="visual" mesh="p0002_pyramid" pos="-0.0136984439053 -0.0521111565269 -0.0331103" quat="0.965309030905 -1.04672834873e-16 5.49577907729e-16 0.26111008187" rgba="0.286275 0.286275 0.286275 1" name="p0002_pyramid_1" />
+      <geom class="visual" mesh="p_b0001_inputpulley_5mm_11teeth" pos="8.93683e-05 -0.0052496 -0.062429" quat="-0.00167677660588 -0.00167678276533 0.707106091759 0.707103494418" rgba="0.776471 0.756863 0.737255 1" name="p_b0001_inputpulley_5mm_11teeth_1" />
+      <geom class="visual" mesh="p_b0003_shaftcapeccentricmulti" pos="0.0186169290114 -0.0409121595973 -0.0823647029932" quat="-0.497032307711 0.494641336951 0.5053004323 0.50295159408" rgba="0.6 0.6 0.6 1" name="p_b0003_shaftcapeccentricmulti" />
+      <geom class="visual" mesh="p_b0003_shaftcapeccentricmulti" pos="0.0182851122366 0.0290870139521 -0.0823644958189" quat="0.494637946144 0.497028287284 -0.50295436557 0.505304947559" rgba="0.6 0.6 0.6 1" name="p_b0003_shaftcapeccentricmulti_3" />
+      <geom class="visual" mesh="p_b0004_motorcoupling" pos="-0.000218357554792 0.032499405667 -0.0624287331102" quat="0.501185991568 0.498813676505 0.501184273056 -0.498810427346" rgba="0.6 0.6 0.6 1" name="p_b0004_motorcoupling_1" />
+      <geom class="visual" mesh="p_b0005idlershell" pos="0.0183870255806 0.0180873747796 -0.0853640044817" quat="0.707066414789 0.707094522597 -0.00418907149225 0.00754141043302" rgba="0.917647 0.917647 0.917647 1" name="p_b0005idlershell_1" />
+      <geom class="visual" mesh="p_b2011_proxbase" pos="-0.0366399188852 -0.00617385193899 -0.0331103646515" quat="-1.28239601605e-06 0.708781104795 -0.705428483607 3.4036033021e-07" rgba="0.117647 0.105882 0.105882 1" name="p_b2011_proxbase" />
+      <geom class="visual" mesh="p_b2013_housingankleleft" pos="8.12172419258e-06 -0.00158980309616 -0.138728830671" quat="0.381852511475 -0.38466807548 0.593320361027 0.595138706838" rgba="0.0862745 0.317647 0.690196 1" name="p_b2013_housingankleleft" />
+      <geom class="visual" mesh="p_b2013_housingankleright" pos="-9.61578813698e-05 0.0204099497606 -0.138728768151" quat="0.381852511475 -0.38466807548 0.593320361027 0.595138706838" rgba="0.0862745 0.317647 0.690196 1" name="p_b2013_housingankleright" />
+      <geom class="visual" mesh="p_b2301_electronicscoverankle" pos="-0.000116923009548 0.0270000053215 -0.138728950567" quat="0.840365925107 0.00128482488577 -0.542014299217 0.00199012288721" rgba="0.117647 0.105882 0.105882 1" name="p_b2301_electronicscoverankle" />
+      <geom class="visual" mesh="p_b2302_electronicscoverankleholderright" pos="-0.000127175877219 0.0270001410921 -0.138728639298" quat="0.840366744548 0.0012873107145 -0.542013016293 0.00199189815736" rgba="0.117647 0.105882 0.105882 1" name="p_b2302_electronicscoverankleholderright" />
+      <geom class="visual" mesh="p_b2303_electronicscoverankleholderleft" pos="0.00018576083506 -0.0389991271111 -0.138728900387" quat="0.840365478779 0.00128676742669 -0.542014989432 0.00198935625689" rgba="0.117647 0.105882 0.105882 1" name="p_b2303_electronicscoverankleholderleft" />
+      <geom class="visual" mesh="p_b2304_anklebatteryattachmentdephy" pos="2.89009604132e-05 -0.00599991193508 -0.13872858936" quat="0.593322280627 0.59513959908 -0.381849538191 0.384666685717" rgba="0.117647 0.105882 0.105882 1" name="p_b2304_anklebatteryattachmentdephy" />
+      <geom class="visual" mesh="part_13_1" pos="-0.000284348860907 0.0599994020244 -0.062428691739" quat="-0.498814341476 0.501185329744 -0.498811092314 -0.501183611236" rgba="0.0588235 0.0588235 0.0588235 1" name="part_13_2" />
+      <geom class="visual" mesh="part_14_1" pos="-0.000284348860907 0.0599994020244 -0.062428691739" quat="-0.498814341476 0.501185329744 -0.498811092314 -0.501183611236" rgba="0.0588235 0.0588235 0.0588235 1" name="part_14_4" />
+      <geom class="visual" mesh="part_16" pos="-0.000284348860907 0.0599994020244 -0.062428691739" quat="-0.498814341476 0.501185329744 -0.498811092314 -0.501183611236" rgba="0.0588235 0.0588235 0.0588235 1" name="part_16" />
+      <geom class="visual" mesh="part_17_1" pos="-0.000284348860907 0.0599994020244 -0.062428691739" quat="-0.498814341476 0.501185329744 -0.498811092314 -0.501183611236" rgba="0.0588235 0.0588235 0.0588235 1" name="part_17_1" />
+      <geom class="visual" mesh="part_18_1" pos="-0.000284348860907 0.0599994020244 -0.062428691739" quat="-0.498814341476 0.501185329744 -0.498811092314 -0.501183611236" rgba="0.0588235 0.0588235 0.0588235 1" name="part_18_4" />
+      <geom class="visual" mesh="part_19_1" pos="-0.000284348860907 0.0599994020244 -0.062428691739" quat="-0.498814341476 0.501185329744 -0.498811092314 -0.501183611236" rgba="0.0588235 0.0588235 0.0588235 1" name="part_19_1" />
+      <geom class="visual" mesh="part_37" pos="0.000150038915254 -0.0315306767602 -0.138728923726" quat="0.689551625602 0.148826483123 0.149529083989 0.692827746696" rgba="1 0.94902 0.909804 1" name="part_37" />
+      <geom class="visual" mesh="part_37" pos="-9.19962296268e-05 0.0195312096152 -0.138728778617" quat="-0.14882302333 0.689551273808 0.692828491755 -0.149530697612" rgba="1 0.94902 0.909804 1" name="part_37_3" />
+      <geom class="visual" mesh="part_38" pos="-9.19962296268e-05 0.0195312096152 -0.138728778617" quat="-0.14882302333 0.689551273808 0.692828491755 -0.149530697612" rgba="1 0.94902 0.909804 1" name="part_38_2" />
+      <geom class="visual" mesh="part_38" pos="0.000150038915254 -0.0315306767602 -0.138728923726" quat="0.689551625602 0.148826483123 0.149529083989 0.692827746696" rgba="1 0.94902 0.909804 1" name="part_38_3" />
+      <geom class="visual" mesh="part_8_1" pos="-0.000284348860907 0.0599994020244 -0.062428691739" quat="-0.498814341476 0.501185329744 -0.498811092314 -0.501183611236" rgba="0.0588235 0.0588235 0.0588235 1" name="part_8_1" />
+      <geom class="visual" mesh="part_9_1" pos="-0.000284348860907 0.0599994020244 -0.062428691739" quat="-0.498814341476 0.501185329744 -0.498811092314 -0.501183611236" rgba="0.0588235 0.0588235 0.0588235 1" name="part_9_5" />
+      <geom class="visual" mesh="wtm_0818_015" pos="0.0183799139659 0.0195873579211 -0.085364003845" quat="0.707066414789 0.707094522597 -0.00418907149225 0.00754141043302" rgba="0.901961 0.890196 0.6 1" name="wtm_0818_015" />
+      <geom class="visual" mesh="wtm_0818_015" pos="0.0186169677247 -0.0304120801309 -0.0853640210859" quat="0.707093584464 -0.707067352957 -0.00754140487497 -0.00418908149815" rgba="0.901961 0.890196 0.6 1" name="wtm_0818_015_1" />
+      <geom class="visual" mesh="z_m3_18mm_socketpy_mcmaster_92290a761_92290a761" pos="-1.05317939819e-05 -0.00750018955547 -0.0432197626162" quat="-0.00199189986128 -0.542011901298 -0.00128730807429 0.840367463687" rgba="0.917647 0.917647 0.917647 1" name="z_m3_18mm_socketpy_mcmaster_92290a761_92290a761" />
+      <geom class="visual" mesh="z_m3_18mm_socketpy_mcmaster_92290a761_92290a761" pos="-0.0118643469111 -0.00755624089002 -0.0911353675426" quat="-0.00199189986128 -0.542011901298 -0.00128730807429 0.840367463687" rgba="0.917647 0.917647 0.917647 1" name="z_m3_18mm_socketpy_mcmaster_92290a761_92290a761_2" />
+      <geom class="visual" mesh="z_m3_18mm_socketpy_mcmaster_92290a761_92290a761" pos="0.0340781438724 -0.00733843640475 -0.103611956614" quat="-0.00199189986128 -0.542011901298 -0.00128730807429 0.840367463687" rgba="0.917647 0.917647 0.917647 1" name="z_m3_18mm_socketpy_mcmaster_92290a761_92290a761_4" />
+      <geom class="visual" mesh="z_m4_8mm_low_mcmaster_92855a408" pos="-0.0360623898502 -0.0354714392497 -0.0411104025186" quat="0.498815336751 0.498813023166 0.501181187079 0.50118484161" rgba="0.917647 0.917647 0.917647 1" name="z_m4_8mm_low_mcmaster_92855a408_1" />
+      <geom class="visual" mesh="z_m4_8mm_low_mcmaster_92855a408" pos="0.0381455390542 0.0234810844134 -0.0433836935925" quat="0.498815336751 0.498813023166 0.501181187079 0.50118484161" rgba="0.917647 0.917647 0.917647 1" name="z_m4_8mm_low_mcmaster_92855a408_2" />
+      <geom class="visual" mesh="z_m4_8mm_low_mcmaster_92855a408" pos="0.0384233885468 -0.0351182493755 -0.0433837713427" quat="0.498815336751 0.498813023166 0.501181187079 0.50118484161" rgba="0.917647 0.917647 0.917647 1" name="z_m4_8mm_low_mcmaster_92855a408_3" />
+      <geom class="visual" mesh="z_m4_8mm_low_mcmaster_92855a408" pos="-0.0363402666978 0.0231279017301 -0.0411103247685" quat="0.498815336751 0.498813023166 0.501181187079 0.50118484161" rgba="0.917647 0.917647 0.917647 1" name="z_m4_8mm_low_mcmaster_92855a408_6" />
+      <geom class="visual" mesh="z_steelshaft_8mm_60mm_misumi" pos="0.0184984408783 -0.00541236110471 -0.0853640144554" quat="0.00419001966631 -0.00754234300832 0.707067342951 0.707093578906" rgba="0.776471 0.756863 0.737255 1" name="z_steelshaft_8mm_60mm_misumi_1" />
+      <body name="ankle_output" pos="0 0 -0.13873">
+        <joint name="ankle" type="hinge" axis="0 1 0" pos="0 0 0" range="-0.523598775598 0.349065850399" damping="0.25" armature="0.008" frictionloss="0.3" />
+        <inertial pos="-0.00662210365445 -0.00374011971252 -0.0220622894466" quat="0.663192351952 -0.6190241571 -0.293388864471 -0.301509488149" mass="0.915158936061" diaginertia="0.00115917107406 0.00207930048562 0.0025469699744" />
+        <geom class="visual" mesh="6656k11_ultra_thin_ball_bearing_6" pos="-7.20515977137e-05 0.0153250069009 1.22507299999e-06" quat="0.707069908104 0.707028095135 0.0105586408555 -0.00720644483917" rgba="0.6 0.6 0.6 1" name="6656k11_ultra_thin_ball_bearing_17" />
+        <geom class="visual" mesh="6656k11_ultra_thin_ball_bearing_10" pos="0.000130230538466 -0.0273246918151 1.14099999998e-06" quat="0.707025409062 -0.70707258664 0.00720606749064 0.0105593918037" rgba="0.6 0.6 0.6 1" name="6656k11_ultra_thin_ball_bearing_34" />
+        <geom class="visual" mesh="6656k11_ultra_thin_ball_bearing_10" pos="-7.20515977137e-05 0.0153250069009 1.22507299999e-06" quat="0.707069908104 0.707028095135 0.0105586408555 -0.00720644483917" rgba="0.6 0.6 0.6 1" name="6656k11_ultra_thin_ball_bearing_44" />
+        <geom class="visual" mesh="6656k11_ultra_thin_ball_bearing_6" pos="0.000130231124432 -0.0273246918122 1.16431699998e-06" quat="0.707025409062 -0.70707258664 0.00720606749064 0.0105593918037" rgba="0.6 0.6 0.6 1" name="6656k11_ultra_thin_ball_bearing_47" />
+        <geom class="visual" mesh="91595a142_dowel_pin" pos="-0.0334586466303 -0.00642125661312 0.000842740144" quat="0.359774967855 0.362656395752 -0.607023965922 0.608739858989" rgba="0.917647 0.917647 0.917647 1" name="91595a142_dowel_pin" />
+        <geom class="visual" mesh="91595a142_dowel_pin" pos="0.0294536136875 -0.00612280800102 0.016017013495" quat="0.681113678424 0.680202013147 0.193191557512 -0.18996420842" rgba="0.917647 0.917647 0.917647 1" name="91595a142_dowel_pin_10" />
+        <geom class="visual" mesh="91595a142_dowel_pin" pos="-0.0159852858375 -0.00633825564183 0.029424685757" quat="0.615944616533 0.617582056174 -0.34436922115 0.34729594409" rgba="0.917647 0.917647 0.917647 1" name="91595a142_dowel_pin_14" />
+        <geom class="visual" mesh="91595a142_dowel_pin" pos="0.0335194539797 -0.00610360015446 -0.000840451183" quat="0.608738537458 0.607022633806 0.362658625473 -0.359777203879" rgba="0.917647 0.917647 0.917647 1" name="91595a142_dowel_pin_15" />
+        <geom class="visual" mesh="91595a142_dowel_pin" pos="0.0160460931869 -0.00618660112575 -0.029422396797" quat="0.347293681597 0.344366952642 0.617583321108 -0.615945892218" rgba="0.917647 0.917647 0.917647 1" name="91595a142_dowel_pin_17" />
+        <geom class="visual" mesh="91595a142_dowel_pin" pos="0.0286120282019 -0.00612694973931 -0.017472413444" quat="0.494878773225 0.492475569355 0.507410652402 -0.505071522884" rgba="0.917647 0.917647 0.917647 1" name="91595a142_dowel_pin_19" />
+        <geom class="visual" mesh="91595a142_dowel_pin" pos="-0.000811181810909 -0.00626657012208 -0.033488282459" quat="0.17604441366 0.172793616411 0.685667647414 -0.68484349149" rgba="0.917647 0.917647 0.917647 1" name="91595a142_dowel_pin_23" />
+        <geom class="visual" mesh="91595a142_dowel_pin" pos="-0.0293928063381 -0.00640204876656 -0.016014724535" quat="0.189965452674 0.193192800101 -0.680201660224 0.681113331397" rgba="0.917647 0.917647 0.917647 1" name="91595a142_dowel_pin_3" />
+        <geom class="visual" mesh="91595a142_dowel_pin" pos="-0.0174429571181 -0.00634542935508 -0.028580801133" quat="0.00720700193212 0.0105603380526 -0.707026333204 0.707071638902" rgba="0.917647 0.917647 0.917647 1" name="91595a142_dowel_pin_4" />
+        <geom class="visual" mesh="91595a142_dowel_pin" pos="0.0175037644675 -0.0061794274125 0.028583090094" quat="0.707071648464 0.707026347214 0.0105593999736 -0.00720606379307" rgba="0.917647 0.917647 0.917647 1" name="91595a142_dowel_pin_5" />
+        <geom class="visual" mesh="91595a142_dowel_pin" pos="0.00087198916032 -0.00625828664551 0.033490571419" quat="0.684843813086 0.685667963072 -0.172792363836 0.176043162591" rgba="0.917647 0.917647 0.917647 1" name="91595a142_dowel_pin_7" />
+        <geom class="visual" mesh="91595a142_dowel_pin" pos="-0.0285512208525 -0.00639790702828 0.017474702404" quat="0.505069705089 0.507408843435 -0.492477433175 0.494880628453" rgba="0.917647 0.917647 0.917647 1" name="91595a142_dowel_pin_9" />
+        <geom class="visual" mesh="92290a761_super_corrosion_resistant_316_stainless_steel_socket_head_screw" pos="-8.91491961116e-05 0.0189124623789 0.009501254279" quat="0.707103646173 -0.707105949343 -0.00167750558121 0.00167210850767" rgba="0.917647 0.917647 0.917647 1" name="92290a761_super_corrosion_resistant_316_stainless_steel_socket_head_screw" />
+        <geom class="visual" mesh="92290a761_super_corrosion_resistant_316_stainless_steel_socket_head_screw" pos="0.000147136514934 -0.0309119121378 -0.009498955493" quat="-0.00167712222846 0.0016736064802 -0.707104686376 0.707104906508" rgba="0.917647 0.917647 0.917647 1" name="92290a761_super_corrosion_resistant_316_stainless_steel_socket_head_screw_3" />
+        <geom class="visual" mesh="92290a761_super_corrosion_resistant_316_stainless_steel_socket_head_screw" pos="-8.90023049393e-05 0.0189124706361 -0.009498739165" quat="0.707103646173 -0.707105949343 -0.00167750558121 0.00167210850767" rgba="0.917647 0.917647 0.917647 1" name="92290a761_super_corrosion_resistant_316_stainless_steel_socket_head_screw_4" />
+        <geom class="visual" mesh="92290a761_super_corrosion_resistant_316_stainless_steel_socket_head_screw" pos="0.000147090973418 -0.0309119552115 0.009501014968" quat="-0.00167541471954 0.00167189531604 -0.707103916526 0.707105684453" rgba="0.917647 0.917647 0.917647 1" name="92290a761_super_corrosion_resistant_316_stainless_steel_socket_head_screw_7" />
+        <geom class="visual" mesh="93395a304_316_stainless_steel_hex_drive_flat_head_screw" pos="-0.000106596090409 0.0226124250258 1.227681e-06" quat="-0.00167296409122 -0.00167835933523 0.707105560371 0.707104031097" rgba="0.647059 0.647059 0.647059 1" name="93395a304_316_stainless_steel_hex_drive_flat_head_screw" />
+        <geom class="visual" mesh="93395a304_316_stainless_steel_hex_drive_flat_head_screw" pos="0.000164630972256 -0.0346118922077 1.05273999998e-06" quat="-0.00167712222846 0.0016736064802 -0.707104686376 0.707104906508" rgba="0.647059 0.647059 0.647059 1" name="93395a304_316_stainless_steel_hex_drive_flat_head_screw_2" />
+        <geom class="visual" mesh="gt3_5mm_325mm_belt" pos="-7.7491409489e-05 0.0164998159014 1.124597e-06" quat="-0.00311883616104 -0.0023699963244 0.999992327929 -7.80736023047e-06" rgba="0.117647 0.105882 0.105882 1" name="gt3_5mm_325mm_belt" />
+        <geom class="visual" mesh="p_b0012_outputpulley_5mm_50teeth" pos="2.91587026284e-05 -0.00599993133611 1.14330199999e-06" quat="0.707071648464 0.707026347214 0.0105593999736 -0.00720606379307" rgba="0.6 0.6 0.6 1" name="p_b0012_outputpulley_5mm_50teeth_1" />
+        <geom class="visual" mesh="p_b0014_proxpyramidstut" pos="-0.000138814842446 0.0294123486983 1.22316699999e-06" quat="3.81011217086e-06 -0.00236732616448 0.999997197872 9.8757415184e-07" rgba="0.117647 0.105882 0.105882 1" name="p_b0014_proxpyramidstut" />
+        <geom class="visual" mesh="p_b0014_proxpyramidstut" pos="0.000196844005171 -0.0414118159073 1.04462199998e-06" quat="-1.13371251247e-06 0.99999719601 0.00236811431292 2.48295247555e-06" rgba="0.117647 0.105882 0.105882 1" name="p_b0014_proxpyramidstut_2" />
+        <geom class="visual" mesh="p_b0101_gearstopnospring" pos="-3.80340046432e-05 0.00815008754223 1.236716e-06" quat="-0.00237038355964 0.012563481278 3.14066527117e-05 0.999918266277" rgba="0.917647 0.917647 0.917647 1" name="p_b0101_gearstopnospring_1" />
+        <geom class="visual" mesh="p_b0101_gearstopnospring" pos="9.62021380134e-05 -0.0201497725077 1.12777299999e-06" quat="0.999918282082 -3.15231328776e-05 0.0125620810928 0.00237113528975" rgba="0.917647 0.917647 0.917647 1" name="p_b0101_gearstopnospring_3" />
+        <geom class="visual" mesh="p_b0102_spacer" pos="9.96430808211e-05 -0.0208497640607 1.208561e-06" quat="0.492507602117 0.505037672327 0.507442685282 0.494848595573" rgba="0.6 0.6 0.6 1" name="p_b0102_spacer" />
+        <geom class="visual" mesh="p_b0102_spacer" pos="9.96430808211e-05 -0.0208497640607 1.208561e-06" quat="0.492507602117 0.505037672327 0.507442685282 0.494848595573" rgba="0.6 0.6 0.6 1" name="p_b0102_spacer_10" />
+        <geom class="visual" mesh="p_b0102_spacer" pos="9.96430808211e-05 -0.0208497640607 1.208561e-06" quat="0.492507602117 0.505037672327 0.507442685282 0.494848595573" rgba="0.6 0.6 0.6 1" name="p_b0102_spacer_11" />
+        <geom class="visual" mesh="p_b0102_spacer" pos="9.96430808211e-05 -0.0208497640607 1.208561e-06" quat="0.492507602117 0.505037672327 0.507442685282 0.494848595573" rgba="0.6 0.6 0.6 1" name="p_b0102_spacer_12" />
+        <geom class="visual" mesh="p_b0102_spacer" pos="9.96430808211e-05 -0.0208497640607 1.208561e-06" quat="0.492507602117 0.505037672327 0.507442685282 0.494848595573" rgba="0.6 0.6 0.6 1" name="p_b0102_spacer_2" />
+        <geom class="visual" mesh="p_b0102_spacer" pos="9.96430808211e-05 -0.0208497640607 1.208561e-06" quat="0.492507602117 0.505037672327 0.507442685282 0.494848595573" rgba="0.6 0.6 0.6 1" name="p_b0102_spacer_3" />
+        <geom class="visual" mesh="p_b0102_spacer" pos="9.96430808211e-05 -0.0208497640607 1.208561e-06" quat="0.492507602117 0.505037672327 0.507442685282 0.494848595573" rgba="0.6 0.6 0.6 1" name="p_b0102_spacer_4" />
+        <geom class="visual" mesh="p_b0102_spacer" pos="9.96430808211e-05 -0.0208497640607 1.208561e-06" quat="0.492507602117 0.505037672327 0.507442685282 0.494848595573" rgba="0.6 0.6 0.6 1" name="p_b0102_spacer_5" />
+        <geom class="visual" mesh="p_b0102_spacer" pos="9.96430808211e-05 -0.0208497640607 1.208561e-06" quat="0.492507602117 0.505037672327 0.507442685282 0.494848595573" rgba="0.6 0.6 0.6 1" name="p_b0102_spacer_6" />
+        <geom class="visual" mesh="p_b0102_spacer" pos="9.96430808211e-05 -0.0208497640607 1.208561e-06" quat="0.492507602117 0.505037672327 0.507442685282 0.494848595573" rgba="0.6 0.6 0.6 1" name="p_b0102_spacer_7" />
+        <geom class="visual" mesh="p_b0102_spacer" pos="9.96430808211e-05 -0.0208497640607 1.208561e-06" quat="0.492507602117 0.505037672327 0.507442685282 0.494848595573" rgba="0.6 0.6 0.6 1" name="p_b0102_spacer_8" />
+        <geom class="visual" mesh="p_b0102_spacer" pos="9.96430808211e-05 -0.0208497640607 1.208561e-06" quat="0.492507602117 0.505037672327 0.507442685282 0.494848595573" rgba="0.6 0.6 0.6 1" name="p_b0102_spacer_9" />
+        <geom class="visual" mesh="p_b0303_encoderhousing" pos="-0.000142384252256 0.0301598330068 1.281415e-06" quat="0.394241258749 0.391454515018 0.588867804609 -0.587002471262" rgba="0.203922 0.203922 0.203922 1" name="p_b0303_encoderhousing" />
+        <geom class="visual" mesh="p_b2015_proxpyramidvariflex" pos="2.92748254443e-05 -0.00600209084621 -0.041998863198" quat="-0.00167561254273 0.707103988987 0.00167323980948 0.707105608342" rgba="0.117647 0.105882 0.105882 1" name="p_b2015_proxpyramidvariflex" />
+        <geom class="visual" mesh="z_lowprofilevariflexfoot_ossur_vlpe5xx0" pos="-0.16654302449 0.0306758848515 -0.080526691326" quat="0.491553601191 0.510629974318 -0.508214365435 -0.489234345941" rgba="0.117647 0.105882 0.105882 1" name="z_lowprofilevariflexfoot_ossur_vlpe5xx0" />
+        <geom class="visual" mesh="z_m8_16mm_socket_mcmaster_96144a216" pos="0.0298774435381 -0.0115439747323 -0.038374833115" quat="-0.000423025102388 0.98403739415 0.00232990528051 0.177946057853" rgba="0.917647 0.917647 0.917647 1" name="z_m8_16mm_socket_mcmaster_96144a216" />
+        <geom class="visual" mesh="z_m8_16mm_socket_mcmaster_96144a216" pos="0.0297718114962 0.0107557754784 -0.038374705704" quat="-0.000423025102388 0.98403739415 0.00232990528051 0.177946057853" rgba="0.917647 0.917647 0.917647 1" name="z_m8_16mm_socket_mcmaster_96144a216_1" />
+        <geom class="visual" mesh="z_m8_washer_mcmaster_90965a190" pos="0.0354807904008 -0.0115173868929 -0.053361553804" quat="0.984037393588 0.000424330718181 -0.177946054762 0.00233014137843" rgba="0.713726 0.760784 0.8 1" name="z_m8_washer_mcmaster_90965a190" />
+        <geom class="visual" mesh="z_m8_washer_mcmaster_90965a190" pos="0.035375158359 0.0107823633177 -0.053361426393" quat="0.984037393588 0.000424330718181 -0.177946054762 0.00233014137843" rgba="0.713726 0.760784 0.8 1" name="z_m8_washer_mcmaster_90965a190_1" />
+      </body>
+    </body>
+  </worldbody>
+  <actuator>
+    <motor name="ankle_torque" joint="ankle" gear="1" />
+  </actuator>
+  <sensor>
+    <jointpos name="ankle_q" joint="ankle" />
+    <jointvel name="ankle_qd" joint="ankle" />
+  </sensor>
+</mujoco>
