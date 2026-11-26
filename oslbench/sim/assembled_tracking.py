@@ -9,9 +9,18 @@ from oslbench.control.gait import JointCurrentConfig,make_gait_source
 from oslbench.control.compliance import DrivetrainLayer
 
 JOINTS=('knee','ankle')
+BASELINE_GAINS = {'knee': (1.5, .15, .06), 'ankle': (2., 0., .075)}
 
 class AssembledTracking:
-    def __init__(self,first,feedback='legacy',ankle_range='cad',on_step=lambda r:None,physics_dt=.0005):
+    def __init__(self,first,feedback='legacy',ankle_range='cad',on_step=lambda r:None,physics_dt=.0005,*,joint_gains=None):
+        gain_sets = BASELINE_GAINS if joint_gains is None else joint_gains
+        if set(gain_sets) != set(JOINTS) or any(
+            len(gains) != 3 or not all(math.isfinite(value) and value >= 0 for value in gains)
+            for gains in gain_sets.values()
+        ):
+            raise ValueError('Provide three finite, nonnegative PID gains for each joint')
+        if any(not first['joints'][j].get('encoder_valid',True) for j in JOINTS):
+            raise ValueError('First sample for each joint must have a valid encoder reading')
         path=Path(__file__).resolve().parents[2]/'models/osl_v2_bench.xml'
         self.model=mujoco.MjModel.from_xml_path(str(path));self.data=mujoco.MjData(self.model)
         if float(self.model.opt.timestep)!=.0005 or self.model.nq!=2:raise ValueError('Unexpected full-leg model')
@@ -26,12 +35,14 @@ class AssembledTracking:
         self.model.actuator_gainprm[:]=0.;self.model.actuator_biasprm[:]=0.
         self.origin=first['reference_time_s'];self.k=0;self.sources={};self.layers={};self.on_step=on_step
         self.range_exceeded=0;self.fit_exceeded=0
-        for j,gains in [('knee',(1.5,.15,.06)),('ankle',(2.,0.,.075))]:
+        for j in JOINTS:
+            gains = gain_sets[j]
             self.data.qpos[self.qpos[j]]=math.radians(first['joints'][j]['actual_deg'])
             limits=CurrentLimits(sim_clip_A=60)
             audit=ConversionAudit(.5701,'script','Provisional actuator-output Nm/A',CAD_BELT_RATIO,'CAD50/11',ANKLE_PAPER_CAD_BELT,limits)
-            cfg=JointCurrentConfig(j,PIDGains(*gains),limits,1,'positive CAD coordinate; exported CSV angle mapped directly',
+            cfg=JointCurrentConfig(j,PIDGains(*gains,encoder_to_motor_sign=1),limits,1,'positive CAD coordinate; exported CSV angle mapped directly',
                 'Confirmed hardware gains','positive simulated torque; physical mapping provisional',integral_limit_deg_s=50)
+            if not cfg.negative_feedback:raise ValueError('Positive feedback is forbidden in the simulation adapter')
             layer=DrivetrainLayer(audit.params,enabled=True,substeps=1)
             layer.seed_rigid(float(self.data.qpos[self.qpos[j]]),0.)
             source=make_gait_source(cfg,audit,np.array([math.radians(first['joints'][j]['reference_deg'])]),round(.005/self.dt),layer,feedback)
@@ -45,6 +56,8 @@ class AssembledTracking:
             initialization='First measured joint angles assigned at first reference time; zero velocities and belt deflections',
             assumptions='Root knee_prox fixed; no ground/load; physical zero/direction and mount orientation unverified; KT/drivetrain provisional',
             range_note='hardware range is an explicitly labelled experiment override, not verified CAD travel')
+        if joint_gains is not None:
+            self.metadata['experiment_gains'] = dict(gain_sets)
 
     def angles(self):return {j:math.degrees(float(self.data.qpos[self.qpos[j]])) for j in JOINTS}
 
